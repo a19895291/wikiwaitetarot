@@ -1,0 +1,6 @@
+node_modules
+dist
+
+# 註：本專案 .env 只含「公開安全」的 Supabase URL + publishable key，
+# 故刻意不忽略 .env，方便 StackBlitz 從 GitHub 直接帶入環境變數。
+# ⚠️ 若日後要放任何機密，請務必改成忽略 .env。
