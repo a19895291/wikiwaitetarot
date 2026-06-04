@@ -19,10 +19,14 @@ import { HistoryPage } from "./pages/HistoryPage";
 import { SpiritPage } from "./pages/SpiritPage";
 import { ShopPage } from "./pages/ShopPage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { useAuth } from "./hooks/useAuth";
+import LoginPage from "./pages/LoginPage";
 
 export default function App(){
   const {theme,themeId,switchTheme}=useTheme();
   Object.assign(C, THEMES[themeId] || THEMES[DEFAULT_THEME]);
+  const { session, loading } = useAuth();
+  const [guest, setGuest] = useState(() => load("guest_mode", false));
   const [cardBackId,setCardBackId]=useState(()=>{
     try{const s=localStorage.getItem("active_card_back");return(s&&CARD_BACKS[s])?s:DEFAULT_CARD_BACK;}catch{return DEFAULT_CARD_BACK;}
   });
@@ -109,6 +113,17 @@ export default function App(){
     }
     return {background:grad};
   })();
+
+  if (loading) return (
+  <div style={{minHeight:"100vh",display:"flex",alignItems:"center",
+    justifyContent:"center",background:C.bg,color:C.accent,
+    fontFamily:"'Cinzel Decorative',serif",letterSpacing:"0.2em"}}>
+    ✦ 載入中… ✦
+  </div>
+);
+  if (!session && !guest) return (
+  <LoginPage onGuest={() => { save("guest_mode", true); setGuest(true); }} />
+);
 
   return <div className={`theme-root theme-${theme.id}${theme.isLight?" theme-light":""}${theme.id==="skyblue"?" theme-skyblue":""}`} style={{
     minHeight:"100vh",maxWidth:390,margin:"0 auto",
