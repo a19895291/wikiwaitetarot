@@ -264,7 +264,7 @@ export default function App(){
       {page==="history"&&<HistoryPage/>}
       {page==="spirit"&&<SpiritPage spirit={spirit} onSelect={setSpirit} costumes={costumes} setCostumes={setCostumes} activeC={activeC} setActiveC={setActiveC} themeId={themeId} switchTheme={switchTheme}/>}
       {page==="shop"&&<ShopPage switchTheme={switchTheme} cardBackId={cardBackId} switchCardBack={switchCardBack}/>}
-      {page==="settings"&&<SettingsPage themeId={themeId} switchTheme={switchTheme} cardBackId={cardBackId} switchCardBack={switchCardBack}/>}
+      {page==="settings"&&<SettingsPage themeId={themeId} switchTheme={switchTheme} cardBackId={cardBackId} switchCardBack={switchCardBack} userEmail={session?.user?.email || null} onLogout={goToLogin}/>}
     </div>
 
     {/* Spirit Pet */}
