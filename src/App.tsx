@@ -25,8 +25,13 @@ import LoginPage from "./pages/LoginPage";
 export default function App(){
   const {theme,themeId,switchTheme}=useTheme();
   Object.assign(C, THEMES[themeId] || THEMES[DEFAULT_THEME]);
-  const { session, loading } = useAuth();
+  const { session, loading, signOut } = useAuth();
   const [guest, setGuest] = useState(() => load("guest_mode", false));
+  const goToLogin = async () => {
+  await signOut();
+  save("guest_mode", false);
+  setGuest(false);
+  };
   const [cardBackId,setCardBackId]=useState(()=>{
     try{const s=localStorage.getItem("active_card_back");return(s&&CARD_BACKS[s])?s:DEFAULT_CARD_BACK;}catch{return DEFAULT_CARD_BACK;}
   });
