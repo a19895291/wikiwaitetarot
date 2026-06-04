@@ -22,6 +22,38 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:21.38,color:C.gold,letterSpacing:3}}>設定</div>
       <div style={{width:50,height:1,background:`linear-gradient(90deg,transparent,${C.gold},transparent)`,margin:"10px auto 0"}}/>
     </div>
+{/* 帳號 */}
+<div style={{ background: C.bgCard, border: `1px solid ${C.gridBorder}`, borderRadius: 16, padding: 16, marginBottom: 16 }}>
+  <div style={{ fontSize: 13, fontWeight: 700, color: C.accent, letterSpacing: "0.05em", marginBottom: 12 }}>
+    帳號
+  </div>
+  {userEmail ? (
+    <>
+      <div style={{ fontSize: 13, color: C.textDim, marginBottom: 12, wordBreak: "break-all" }}>
+        已登入：{userEmail}
+      </div>
+      <button
+        onClick={onLogout}
+        style={{ width: "100%", padding: "11px 0", fontSize: 14, fontWeight: 600, color: C.textDim, background: "transparent", border: `1px solid ${C.gridBorder}`, borderRadius: 12, cursor: "pointer", fontFamily: "'Noto Sans TC', sans-serif" }}
+      >
+        登出
+      </button>
+    </>
+  ) : (
+    <>
+      <div style={{ fontSize: 13, color: C.textDim, marginBottom: 12 }}>
+        目前為訪客模式 · 註冊後可跨裝置同步
+      </div>
+      <button
+        className="pay-btn"
+        onClick={onLogout}
+        style={{ width: "100%", padding: "11px 0", fontSize: 14, fontWeight: 700, color: C.bg, background: `linear-gradient(135deg, ${C.accent}, ${C.accentDim})`, border: "none", borderRadius: 12, cursor: "pointer", fontFamily: "'Noto Sans TC', sans-serif" }}
+      >
+        登入 / 註冊帳號
+      </button>
+    </>
+  )}
+</div>
 
     <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:"0 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
       {[["推播通知","每日抽牌提醒",notif,()=>setNotif(v=>!v)],["音效","翻牌與環境音",sound,()=>setSound(v=>!v)],["深色模式","",dark,()=>setDark(v=>!v)]].map(([label,sub,val,onT],i,arr)=><div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none"}}>
