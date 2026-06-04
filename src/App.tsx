@@ -239,6 +239,27 @@ export default function App(){
     {/* Page content */}
     <div style={{position:"relative",zIndex:1,animation:"fadeInUp .45s ease"}} key={page}>
       {page==="daily"&&<DailyPage drawnCards={drawnCards} onDraw={drawDailyCard} remaining={remaining} onReset={()=>{const nd=shuffle(DECK);setDailyDeck(nd);save("daily_deck_"+todayKey(),nd);setDrawnCards([]);save("daily_"+todayKey(),[]);}}/>}
+      {!session && (
+      <div
+      onClick={goToLogin}
+      style={{
+        margin: "12px 0",
+        padding: "10px 14px",
+        fontSize: 12.5,
+        lineHeight: 1.5,
+        textAlign: "center",
+        color: C.accent,
+        background: C.accentFaint,
+        border: `1px solid ${C.accentDim}`,
+        borderRadius: 12,
+        cursor: "pointer",
+        fontFamily: "'Noto Sans TC', sans-serif",
+        }}
+      >
+        ✦ 你正在以訪客身分體驗 · 點此註冊，跨裝置同步占卜紀錄與牌靈 →
+      </div>
+    )}
+
       {page==="spread"&&<SpreadPage/>}
       {page==="online"&&<OnlinePage onStepChange={setOnlineStep}/>}
       {page==="history"&&<HistoryPage/>}
