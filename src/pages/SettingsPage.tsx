@@ -3,7 +3,7 @@ import { useState } from "react";
 import { C, THEMES, THEME_IDS } from "../data/themes";
 import { CARD_BACKS } from "../data/cardBacks";
 
-export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack}){
+export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,userEmail,onLogout}){
   const [notif,setNotif]=useState(true);
   const [sound,setSound]=useState(false);
   const [dark,setDark]=useState(true);
