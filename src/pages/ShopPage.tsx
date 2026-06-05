@@ -161,7 +161,7 @@ function ThemePreview({theme,isActive,onSelect,onBuy}){
   </div>;
 }
 
-export function ShopPage({switchTheme,cardBackId,switchCardBack}){
+export function ShopPage({switchTheme,cardBackId,switchCardBack,costumes,setCostumes}){
   const [tab,setTab]=useState("monthly");
   const [bought,setBought]=useState(()=>new Set(load("shop_bought",[])));
   const [confirm,setConfirm]=useState(null);
@@ -295,8 +295,34 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack}){
       </div>
     </div>}
 
+    {/* Spirit costume tab — 從真資料 COSTUMES 渲染，與牌靈頁共用擁有狀態 */}
+    {tab==="spirit"&&<div>
+      <div style={{fontSize:12.47,color:C.textDim,lineHeight:1.75,marginBottom:16,padding:"11px 14px",background:C.bgPanel,borderRadius:12,border:`1px solid ${C.gridBorder}`,backdropFilter:"blur(8px)"}}>
+        選擇牌靈造型，<span style={{color:C.gold}}>購買後立即套用，永久保留，牌靈頁同步顯示。</span>
+      </div>
+      {Object.keys(costumes||{}).flatMap(sid=>(costumes[sid]||[]).filter(c=>c.price>0)).map(c=>{
+        const isOwned=c.owned||bought.has(c.id);
+        return <div key={c.id} style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:18,padding:16,marginBottom:12,display:"flex",gap:13,alignItems:"center",boxShadow:"0 4px 14px rgba(0,0,0,.1)",backdropFilter:"blur(10px)"}}>
+          <div style={{width:54,height:54,borderRadius:14,background:C.bgPanel,border:`1px solid ${C.gridBorder}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:30.89,flexShrink:0}}>{c.emoji}</div>
+          <div style={{flex:1}}>
+            <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
+              <div style={{fontFamily:"'Cinzel',serif",fontSize:14.85,color:C.accent}}>{c.name}</div>
+              {isOwned&&<Badge label="擁有"/>}
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:9}}>
+              <div style={{fontFamily:"'Cinzel',serif",fontSize:19.01,color:C.blue,fontWeight:600}}>NT${c.price}</div>
+              {isOwned
+                ?<div style={{padding:"6px 14px",borderRadius:50,background:"rgba(52,211,153,.12)",border:"1px solid rgba(52,211,153,.3)",fontFamily:"'Cinzel',serif",fontSize:10.69,color:C.green}}>✓ 已購買</div>
+                :<GoldPayBtn onClick={()=>setConfirm({...c,isCostume:true,desc:"購買後立即解鎖此造型，永久保留。"})} style={{padding:"7px 16px",fontSize:9}}>立即購買</GoldPayBtn>
+              }
+            </div>
+          </div>
+        </div>;
+      })}
+    </div>}
+
     {/* Other tabs */}
-    {tab!=="theme"&&<>
+    {(tab==="monthly"||tab==="tarot")&&<>
       {/* VIP highlight for monthly */}
       {tab==="monthly"&&<div style={{
         background:`linear-gradient(135deg,${C.purpleGlow},${C.blueGlow})`,
@@ -367,6 +393,12 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack}){
               setCardBacks(p=>p.map(x=>x.id===confirm.id?{...x,owned:true}:x));
               setBought(p=>new Set([...p,confirm.id]));
               if(switchCardBack)switchCardBack(confirm.id);
+              setConfirm(null);
+            }
+                        else if(confirm.isCostume){
+              persistBuy(confirm.id);
+              setBought(p=>new Set([...p,confirm.id]));
+              setCostumes(p=>{const m={};for(const k in p){m[k]=p[k].map(x=>x.id===confirm.id?{...x,owned:true}:x);}return m;});
               setConfirm(null);
             }
             else{persistBuy(confirm.id);setBought(p=>new Set([...p,confirm.id]));setConfirm(null);}
