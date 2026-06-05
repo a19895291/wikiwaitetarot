@@ -44,6 +44,33 @@ export default function App(){
     Object.assign(CB, CARD_BACKS[id]);
     try{localStorage.setItem("active_card_back",id);}catch{}
   };
+    const [hydrated, setHydrated] = useState(false);
+
+  // 登入後：把雲端 profile 的偏好套用到 app
+  useEffect(() => {
+    if (!session) { setHydrated(false); return; }
+    let cancelled = false;
+    (async () => {
+      try {
+        const p = await db.getProfile();
+        if (!cancelled && p) {
+          if (p.active_theme) switchTheme(p.active_theme);
+          if (p.active_card_back) switchCardBack(p.active_card_back);
+        }
+      } catch (e) { /* 雲端載入失敗就維持本機設定 */ }
+      if (!cancelled) setHydrated(true);
+    })();
+    return () => { cancelled = true; };
+  }, [session]);
+
+  // 偏好變更後：寫回雲端（登入且已載入才寫，避免一上線就覆蓋雲端）
+  useEffect(() => {
+    if (session && hydrated) db.updateProfile({ active_theme: themeId }).catch(() => {});
+  }, [themeId]);
+
+  useEffect(() => {
+    if (session && hydrated) db.updateProfile({ active_card_back: cardBackId }).catch(() => {});
+  }, [cardBackId]);
   const [page,setPage]=useState("daily");
   const [spirit,setSpirit]=useState(SPIRITS[0]);
   const [costumes,setCostumes]=useState(COSTUMES);
