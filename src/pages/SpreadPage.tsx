@@ -33,6 +33,7 @@ export function SpreadPage(){
       if(todayIdx>=0)existing[todayIdx]=rec;else existing.unshift(rec);
       localStorage.setItem("spread_records",JSON.stringify(existing.slice(0,30)));
     }catch{}
+    db.saveSpread(dateKey, placed).catch(()=>{});
   },[]);
 
   const doShuffle=useCallback(()=>{
