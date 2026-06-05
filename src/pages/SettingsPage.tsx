@@ -120,23 +120,32 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
          </div>}
        </div>
 
-    {/* Card back selector */}
+        {/* Card back selector (下拉) */}
     <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:"14px 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
-      <div style={{fontSize:12,color:C.gold,fontFamily:"'Cinzel',serif",letterSpacing:1.5,marginBottom:12}}>🃏 塔羅牌款式</div>
-      <div style={{display:"flex",flexDirection:"column",gap:8}}>
+      <div style={{fontSize:12,color:C.gold,fontFamily:"'Cinzel',serif",letterSpacing:1.5,marginBottom:12}}>🃏 塔羅牌背</div>
+      {(()=>{
+        const cb=CARD_BACKS[cardBackId]||Object.values(CARD_BACKS)[0];
+        const open=openMenu==="cb";
+        return <div onClick={()=>setOpenMenu(m=>m==="cb"?null:"cb")} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 12px",borderRadius:12,cursor:"pointer",background:`linear-gradient(135deg,${C.blue}14,${C.accent}0a)`,border:`1px solid ${C.accentDim}`,transition:"all .25s"}}>
+          <div style={{width:28,height:42,borderRadius:5,...(cb.bg&&cb.bg.startsWith("data:")?{backgroundColor:cb.isMonstera?"#f0f7f0":"#fff8f5",backgroundImage:"url("+cb.bg+")",backgroundSize:"cover",backgroundPosition:"center",backgroundRepeat:"no-repeat"}:{background:cb.bg}),border:cb.isMonstera?"none":`1px solid ${cb.border}`,flexShrink:0}}/>
+          <div style={{flex:1}}>
+            <div style={{fontSize:12,fontFamily:"'Cinzel',serif",color:C.accent,letterSpacing:.5}}>{cb.emoji} {cb.name}</div>
+            <div style={{fontSize:9.5,color:C.textFaint,marginTop:1}}>點擊{open?"收起":"展開"}選擇牌背</div>
+          </div>
+          <div style={{fontSize:11,color:C.gold,flexShrink:0,transform:open?"rotate(180deg)":"rotate(0)",transition:"transform .25s"}}>▼</div>
+        </div>;
+      })()}
+      {openMenu==="cb"&&<div style={{display:"flex",flexDirection:"column",gap:8,marginTop:8}}>
         {Object.values(CARD_BACKS).map(cb=>{
           const active=cardBackId===cb.id;
           const ownedCb=cb.owned||cb.price===0||bought.includes(cb.id);
-          return <div key={cb.id} onClick={()=>{if(ownedCb&&switchCardBack)switchCardBack(cb.id);}} style={{
+          return <div key={cb.id} onClick={()=>{if(ownedCb&&switchCardBack){switchCardBack(cb.id);setOpenMenu(null);}}} style={{
             display:"flex",alignItems:"center",gap:12,
-            padding:"10px 12px",borderRadius:12,
-            cursor:ownedCb?"pointer":"default",
+            padding:"10px 12px",borderRadius:12,cursor:ownedCb?"pointer":"default",
             background:active?`linear-gradient(135deg,${C.blue}14,${C.accent}0a)`:C.bgPanel,
             border:`1px solid ${active?C.accentDim:C.gridBorder}`,
-            opacity:ownedCb?1:.5,
-            transition:"all .25s",
+            opacity:ownedCb?1:.5,transition:"all .25s",
           }}>
-            {/* mini preview */}
             <div style={{width:28,height:42,borderRadius:5,...(cb.bg&&cb.bg.startsWith("data:")?{backgroundColor:cb.isMonstera?"#f0f7f0":"#fff8f5",backgroundImage:"url("+cb.bg+")",backgroundSize:"cover",backgroundPosition:"center",backgroundRepeat:"no-repeat"}:{background:cb.bg}),border:cb.isMonstera?"none":`1px solid ${cb.border}`,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
               {cb.isHibiscus
                 ?<svg viewBox="0 0 60 70" width="16" height="20" fill="none">
@@ -163,8 +172,9 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
             {active&&<div style={{fontSize:8.5,fontFamily:"'Cinzel',serif",color:C.accent,background:`${C.accent}18`,border:`1px solid ${C.accentDim}`,borderRadius:50,padding:"2px 8px",flexShrink:0}}>使用中</div>}
           </div>;
         })}
-      </div>
+      </div>}
     </div>
+
 
     <div style={{textAlign:"center",fontSize:11.88,color:C.textFaint}}>Mystic Tarot v2.0.0</div>
   </div>;
