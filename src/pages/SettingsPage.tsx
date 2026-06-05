@@ -2,11 +2,13 @@
 import { useState } from "react";
 import { C, THEMES, THEME_IDS } from "../data/themes";
 import { CARD_BACKS } from "../data/cardBacks";
+import { load } from "../utils/storage";
 
 export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,userEmail,onLogout}){
   const [notif,setNotif]=useState(true);
   const [sound,setSound]=useState(false);
   const [dark,setDark]=useState(true);
+  const bought = load("shop_bought", []);
   const Toggle=({v,onT})=><div onClick={onT} style={{
     width:46,height:24,borderRadius:12,cursor:"pointer",
     background:v?`linear-gradient(135deg,${C.blue},${C.accent})`:C.bgPanel,
@@ -76,15 +78,18 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
     <div style={{background:C.bgPanel,border:"1px solid rgba(26,58,110,.32)",borderRadius:16,padding:"14px 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
       <div style={{fontSize:12,color:C.gold,fontFamily:"'Cinzel',serif",letterSpacing:1.5,marginBottom:12}}>✦ 介面主題</div>
       <div style={{display:"flex",flexDirection:"column",gap:8}}>
-        {THEME_IDS.map(id=>{
+       {THEME_IDS.map(id=>{
           const t=THEMES[id];
           if(!t)return null;
           const active=themeId===id;
-          return <div key={id} onClick={()=>switchTheme(id)} style={{
+          const thId=id==="midnight"?"th_default":"th_"+id;
+          const owned=id==="midnight"||bought.includes(thId);
+          return <div key={id} onClick={()=>{if(owned)switchTheme(id);}} style={{
             display:"flex",alignItems:"center",gap:12,
-            padding:"10px 12px",borderRadius:12,cursor:"pointer",
+            padding:"10px 12px",borderRadius:12,cursor:owned?"pointer":"default",
             background:active?`linear-gradient(135deg,${t.accent}14,${t.blue}0a)`:"rgba(255,255,255,.02)",
             border:`1px solid ${active?t.accent+"55":"rgba(26,58,110,.25)"}`,
+            opacity:owned?1:.5,
             transition:"all .25s",
           }}>
             <div style={{display:"flex",gap:4,flexShrink:0}}>
@@ -92,9 +97,10 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
             </div>
             <div style={{flex:1}}>
               <div style={{fontSize:12,fontFamily:"'Cinzel',serif",color:active?t.accent:C.text,letterSpacing:.5}}>{t.name}</div>
-              <div style={{fontSize:9.5,color:C.textFaint,marginTop:1}}>{t.desc}</div>
+              <div style={{fontSize:9.5,color:C.textFaint,marginTop:1}}>{owned?t.desc:"前往商城購買"}</div>
             </div>
-            {active&&<div style={{fontSize:8.5,fontFamily:"'Cinzel',serif",color:t.accent,background:`${t.accent}18`,border:`1px solid ${t.accent}44`,borderRadius:50,padding:"2px 8px",flexShrink:0}}>使用中</div>}
+            {active&&owned&&<div style={{fontSize:8.5,fontFamily:"'Cinzel',serif",color:t.accent,background:`${t.accent}18`,border:`1px solid ${t.accent}44`,borderRadius:50,padding:"2px 8px",flexShrink:0}}>使用中</div>}
+            {!owned&&<div style={{fontSize:13,flexShrink:0}}>🔒</div>}
           </div>;
         })}
       </div>
