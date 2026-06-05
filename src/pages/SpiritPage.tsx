@@ -396,6 +396,7 @@ function SpiritChooseTab({spirits,spirit,onSelect,costumes,activeC}){
 export function SpiritPage({spirit,onSelect,costumes,setCostumes,activeC,setActiveC,themeId,switchTheme}){
   const [tab,setTab]=useState("choose");
   const [buyC,setBuyC]=useState(null);
+  const persistBuy=(id)=>{const prev=load("shop_bought",[]);if(!prev.includes(id))save("shop_bought",[...prev,id]);db.addPurchase(id).catch(()=>{});};
   const mine=costumes[spirit?.id]||[];
   const curId=activeC[spirit?.id]||mine[0]?.id;
   const isNoCostume=curId==="none";
@@ -479,7 +480,7 @@ export function SpiritPage({spirit,onSelect,costumes,setCostumes,activeC,setActi
         <div style={{fontSize:12.47,color:C.textFaint,marginBottom:22,lineHeight:1.7}}>購買後立即解鎖，永久保留</div>
         <div style={{display:"flex",gap:10}}>
           <button onClick={()=>setBuyC(null)} style={{flex:1,padding:"10px 0",background:"rgba(26,58,110,.2)",border:"1px solid rgba(26,58,110,.38)",borderRadius:50,fontFamily:"'Cinzel',serif",fontSize:11.88,color:C.textDim,cursor:"pointer"}}>取消</button>
-          <GoldPayBtn onClick={()=>{setCostumes(p=>({...p,[spirit.id]:p[spirit.id].map(x=>x.id===buyC.id?{...x,owned:true}:x)}));setBuyC(null);}} style={{flex:1,padding:"10px 0",textAlign:"center",fontSize:10}}>確認購買</GoldPayBtn>
+          <GoldPayBtn onClick={()=>{persistBuy(buyC.id);setCostumes(p=>({...p,[spirit.id]:p[spirit.id].map(x=>x.id===buyC.id?{...x,owned:true}:x)}));setBuyC(null);}} style={{flex:1,padding:"10px 0",textAlign:"center",fontSize:10}}>確認購買</GoldPayBtn>
         </div>
       </div>
     </div>}
