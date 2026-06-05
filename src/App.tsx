@@ -21,6 +21,7 @@ import { ShopPage } from "./pages/ShopPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { useAuth } from "./hooks/useAuth";
 import LoginPage from "./pages/LoginPage";
+import * as db from "./lib/db";
 
 export default function App(){
   const {theme,themeId,switchTheme}=useTheme();
