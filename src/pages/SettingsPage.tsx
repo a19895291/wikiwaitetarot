@@ -112,13 +112,14 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       <div style={{display:"flex",flexDirection:"column",gap:8}}>
         {Object.values(CARD_BACKS).map(cb=>{
           const active=cardBackId===cb.id;
-          return <div key={cb.id} onClick={()=>{if((cb.owned||cb.price===0)&&switchCardBack)switchCardBack(cb.id);}} style={{
+          const ownedCb=cb.owned||cb.price===0||bought.includes(cb.id);
+          return <div key={cb.id} onClick={()=>{if(ownedCb&&switchCardBack)switchCardBack(cb.id);}} style={{
             display:"flex",alignItems:"center",gap:12,
             padding:"10px 12px",borderRadius:12,
-            cursor:(cb.owned||cb.price===0)?"pointer":"default",
+            cursor:ownedCb?"pointer":"default",
             background:active?`linear-gradient(135deg,${C.blue}14,${C.accent}0a)`:C.bgPanel,
             border:`1px solid ${active?C.accentDim:C.gridBorder}`,
-            opacity:(cb.owned||cb.price===0)?1:.5,
+            opacity:ownedCb?1:.5,
             transition:"all .25s",
           }}>
             {/* mini preview */}
@@ -143,7 +144,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
             </div>
             <div style={{flex:1}}>
               <div style={{fontSize:12,fontFamily:"'Cinzel',serif",color:active?C.accent:C.text,letterSpacing:.5}}>{cb.emoji} {cb.name}</div>
-              <div style={{fontSize:9.5,color:C.textFaint,marginTop:1}}>{cb.price===0?"免費":cb.owned?"已購買":`NT$${cb.price} — 前往商城購買`}</div>
+              <div style={{fontSize:9.5,color:C.textFaint,marginTop:1}}>{cb.price===0?"免費":(cb.owned||bought.includes(cb.id))?"已購買":`NT$${cb.price} — 前往商城購買`}</div>
             </div>
             {active&&<div style={{fontSize:8.5,fontFamily:"'Cinzel',serif",color:C.accent,background:`${C.accent}18`,border:`1px solid ${C.accentDim}`,borderRadius:50,padding:"2px 8px",flexShrink:0}}>使用中</div>}
           </div>;
