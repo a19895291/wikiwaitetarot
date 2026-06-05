@@ -132,3 +132,8 @@ grant select, insert, update, delete on public.daily_records to anon, authentica
 grant select, insert, update, delete on public.spread_records to anon, authenticated;
 alter default privileges in schema public
   grant select, insert, update, delete on tables to anon, authenticated;
+
+alter table public.spread_records add column if not exists date date;
+create unique index if not exists spread_records_user_date_key
+  on public.spread_records (user_id, date);
+
