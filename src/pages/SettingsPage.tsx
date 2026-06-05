@@ -30,7 +30,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       ?<img src={card.img} alt={card.name} draggable={false} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",pointerEvents:"none"}}/>
       :<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:30}}>{card.emoji}</div>}
     <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"8px 4px 4px",background:"linear-gradient(0deg,rgba(0,0,0,.8),transparent)",pointerEvents:"none"}}>
-      <div style={{fontFamily:"'Cinzel',serif",fontSize:8.5,color:"#fff",textAlign:"center",letterSpacing:.3,lineHeight:1.2,textShadow:"0 1px 2px rgba(0,0,0,.9)"}}>{card.name}</div>
+      <div style={{fontFamily:"'Cinzel',serif",fontSize:17,color:"#fff",textAlign:"center",letterSpacing:.3,lineHeight:1.2,textShadow:"0 1px 2px rgba(0,0,0,.9)"}}>{card.name}</div>
     </div>
   </div>;
   const bought = load("shop_bought", []);
@@ -121,14 +121,14 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
         <button onClick={()=>{setLibOpen(false);setLibCard(null);}} style={{width:30,height:30,borderRadius:"50%",background:C.accentFaint,border:`1px solid ${C.accentDim}`,color:C.accent,fontSize:14,cursor:"pointer"}}>✕</button>
       </div>
       <div style={{flexShrink:0,display:"flex",gap:8,padding:"12px 16px"}}>
-        {[["major","大阿爾克那"],["minor","小阿爾克那"]].map(([id,label])=><button key={id} onClick={()=>setLibTab(id)} style={{flex:1,padding:"9px 0",borderRadius:50,cursor:"pointer",background:libTab===id?`linear-gradient(135deg,${C.blue},${C.blue}cc)`:C.bgPanel,border:`1px solid ${libTab===id?C.accentDim:C.gridBorder}`,fontFamily:"'Cinzel',serif",fontSize:11.88,color:libTab===id?C.gold:C.textDim}}>{label}</button>)}
+             {[["major","大阿爾克那"],["minor","小阿爾克那"]].map(([id,label])=><button key={id} onClick={()=>setLibTab(id)} style={{flex:1,padding:"12px 0",borderRadius:50,cursor:"pointer",background:libTab===id?`linear-gradient(135deg,${C.blue},${C.blue}cc)`:C.bgPanel,border:`1px solid ${libTab===id?C.accentDim:C.gridBorder}`,fontFamily:"'Cinzel',serif",fontSize:23.76,color:libTab===id?C.gold:C.textDim}}>{label}</button>)}
       </div>
       <div style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",padding:"4px 16px 40px"}}>
         {libTab==="major"&&<div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>{major.map(renderTile)}</div>}
         {libTab==="minor"&&suits.map(suit=><div key={suit} style={{marginBottom:18}}>
           <div style={{display:"flex",alignItems:"center",gap:6,margin:"8px 0 10px"}}>
-            <span style={{fontSize:14}}>{SUIT_EMOJI[suit]||"✦"}</span>
-            <span style={{fontFamily:"'Cinzel',serif",fontSize:13,color:C.gold,letterSpacing:1}}>{suit}</span>
+            <span style={{fontSize:22}}>{SUIT_EMOJI[suit]||"✦"}</span>
+            <span style={{fontFamily:"'Cinzel',serif",fontSize:26,color:C.gold,letterSpacing:1}}>{suit}</span>
             <div style={{flex:1,height:1,background:`linear-gradient(90deg,${C.accentDim},transparent)`}}/>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>{minor.filter(c=>c.suit===suit).map(renderTile)}</div>
