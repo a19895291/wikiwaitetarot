@@ -10,6 +10,29 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
   const [sound,setSound]=useState(false);
   const [dark,setDark]=useState(true);
   const [openMenu,setOpenMenu]=useState(null);
+  const [libOpen,setLibOpen]=useState(false);
+  const [libTab,setLibTab]=useState("major");
+  const [libCard,setLibCard]=useState(null);
+  const lpTimer=useRef(null);
+  const lpPos=useRef({x:0,y:0});
+  const startLP=(card)=>(e)=>{lpPos.current={x:e.clientX,y:e.clientY};clearTimeout(lpTimer.current);lpTimer.current=setTimeout(()=>setLibCard(card),420);};
+  const moveLP=(e)=>{const dx=e.clientX-lpPos.current.x,dy=e.clientY-lpPos.current.y;if(Math.hypot(dx,dy)>10)clearTimeout(lpTimer.current);};
+  const cancelLP=()=>clearTimeout(lpTimer.current);
+  const major=DECK.filter(c=>!c.suit);
+  const minor=DECK.filter(c=>c.suit);
+  const suits=[...new Set(minor.map(c=>c.suit))];
+  const SUIT_EMOJI={"權杖":"🪄","聖杯":"🍷","寶劍":"⚔️","星幣":"🪙","錢幣":"🪙"};
+  const renderTile=(card)=><div key={card.id}
+    onPointerDown={startLP(card)} onPointerMove={moveLP} onPointerUp={cancelLP} onPointerLeave={cancelLP} onPointerCancel={cancelLP}
+    onContextMenu={e=>e.preventDefault()}
+    style={{position:"relative",aspectRatio:"2/3",borderRadius:8,overflow:"hidden",border:`1px solid ${C.cardBorder}`,cursor:"pointer",background:C.bgCard,WebkitUserSelect:"none",userSelect:"none",WebkitTouchCallout:"none",touchAction:"manipulation"}}>
+    {card.img
+      ?<img src={card.img} alt={card.name} draggable={false} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",pointerEvents:"none"}}/>
+      :<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:30}}>{card.emoji}</div>}
+    <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"8px 4px 4px",background:"linear-gradient(0deg,rgba(0,0,0,.8),transparent)",pointerEvents:"none"}}>
+      <div style={{fontFamily:"'Cinzel',serif",fontSize:8.5,color:"#fff",textAlign:"center",letterSpacing:.3,lineHeight:1.2,textShadow:"0 1px 2px rgba(0,0,0,.9)"}}>{card.name}</div>
+    </div>
+  </div>;
   const bought = load("shop_bought", []);
   const Toggle=({v,onT})=><div onClick={onT} style={{
     width:46,height:24,borderRadius:12,cursor:"pointer",
