@@ -1,7 +1,7 @@
 // 模組 09 — HistoryPage（占卜歷程，三分頁）
 // 同檔含 CardChip / DailyHistCard / SpreadHistCard / OnlineHistCard / EmptyHist / DEMO 資料。
 // 直接讀 localStorage（key：daily_* / spread_records / online_records）。
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { C } from "../data/themes";
 import { DECK } from "../data/deck";
 import { CardModal } from "../components/shared/CardModal";
