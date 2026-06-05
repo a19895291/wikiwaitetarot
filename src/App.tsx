@@ -80,6 +80,13 @@ export default function App(){
   const [spirit,setSpirit]=useState(SPIRITS[0]);
   const [costumes,setCostumes]=useState(COSTUMES);
   const [activeC,setActiveC]=useState({});
+    // 牌靈 / 造型選擇 → 寫回雲端
+  useEffect(() => {
+    if (session && hydrated && spirit?.id) db.updateProfile({ active_spirit: spirit.id }).catch(() => {});
+  }, [spirit]);
+  useEffect(() => {
+    if (session && hydrated) db.updateProfile({ active_costumes: activeC }).catch(() => {});
+  }, [activeC]);
   const [onlineStep,setOnlineStep]=useState("browse");
   const [drawnCards,setDrawnCards]=useState(()=>load("daily_"+todayKey(),[]) );
   // 每日占卜牌堆：洗牌後預先排好78張（含正逆位），按序取出
