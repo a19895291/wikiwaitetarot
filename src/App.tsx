@@ -71,6 +71,13 @@ export default function App(){
           if (Array.isArray(dr.cards)) { setDrawnCards(dr.cards); save("daily_" + dk, dr.cards); }
           if (Array.isArray(dr.deck) && dr.deck.length) { setDailyDeck(dr.deck); save("daily_deck_" + dk, dr.deck); }
         }
+              // 載入雲端購買紀錄 → 標記造型擁有 + 合併 shop_bought
+        const rows = await db.listPurchases();
+        if (!cancelled && rows && rows.length) {
+          const ids = rows.map(r => r.item_id);
+          save("shop_bought", Array.from(new Set([...load("shop_bought", []), ...ids])));
+          setCostumes(prev => { const m = {}; for (const k in prev) { m[k] = prev[k].map(c => ids.includes(c.id) ? { ...c, owned: true } : c); } return m; });
+        }
       } catch (e) { /* 雲端載入失敗就維持本機設定 */ }
       if (!cancelled) setHydrated(true);
     })();
@@ -85,7 +92,12 @@ export default function App(){
   }, [cardBackId]);
   const [page,setPage]=useState("daily");
   const [spirit,setSpirit]=useState(SPIRITS[0]);
-  const [costumes,setCostumes]=useState(COSTUMES);
+  const [costumes,setCostumes]=useState(()=>{
+    const bought=load("shop_bought",[]);
+    const m={};
+    for(const k in COSTUMES){ m[k]=COSTUMES[k].map(c=>({...c,owned:c.owned||c.price===0||bought.includes(c.id)})); }
+    return m;
+  });
   const [activeC,setActiveC]=useState({});
     // 牌靈 / 造型選擇 → 寫回雲端
   useEffect(() => {
