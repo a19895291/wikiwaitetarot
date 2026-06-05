@@ -94,23 +94,18 @@ export async function listSpreadRecords(): Promise<any[]> {
   return data || [];
 }
 
-export async function addSpreadRecord(rec: any): Promise<any | null> {
+export async function saveSpread(date: string, cards: any): Promise<any | null> {
   const id = await uid();
   if (!id) return null;
   const { data, error } = await supabase
     .from("spread_records")
-    .insert({
-      user_id: id,
-      spread_id: rec.spreadId ?? rec.spread_id ?? null,
-      spread_name: rec.spreadName ?? rec.spread_name ?? null,
-      question: rec.question ?? null,
-      cards: rec.cards ?? [],
-    })
+    .upsert({ user_id: id, date, cards }, { onConflict: "user_id,date" })
     .select()
     .maybeSingle();
   if (error) throw error;
   return data;
 }
+
 
 // ============================================================
 // purchases（已購買項目）
