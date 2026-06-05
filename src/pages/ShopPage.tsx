@@ -170,7 +170,7 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack}){
   const [cardBacks,setCardBacks]=useState(()=>{const b=load("shop_bought",[]);return Object.values(CARD_BACKS).map(cb=>({...cb,owned:cb.owned||b.includes(cb.id)}));});
   const activeCardBack=cardBackId||DEFAULT_CARD_BACK;
   const items=SHOP[tab]||[];
-  const persistBuy=(id)=>{const prev=load("shop_bought",[]);if(!prev.includes(id))save("shop_bought",[...prev,id]);};
+  const persistBuy=(id)=>{const prev=load("shop_bought",[]);if(!prev.includes(id))save("shop_bought",[...prev,id]);db.addPurchase(id).catch(()=>{});};
   const buyTheme=t=>{
     persistBuy(t.id);
     setThemes(p=>p.map(x=>x.id===t.id?{...x,owned:true}:x));
