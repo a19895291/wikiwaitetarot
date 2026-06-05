@@ -121,3 +121,14 @@ create policy daily_all_own on public.daily_records
 drop policy if exists spread_all_own on public.spread_records;
 create policy spread_all_own on public.spread_records
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- ============================================================
+-- API 角色授權（RLS 仍限制只能存取自己的資料）
+-- ============================================================
+grant usage on schema public to anon, authenticated;
+grant select, insert, update, delete on public.profiles      to anon, authenticated;
+grant select, insert, update, delete on public.purchases     to anon, authenticated;
+grant select, insert, update, delete on public.daily_records to anon, authenticated;
+grant select, insert, update, delete on public.spread_records to anon, authenticated;
+alter default privileges in schema public
+  grant select, insert, update, delete on tables to anon, authenticated;
