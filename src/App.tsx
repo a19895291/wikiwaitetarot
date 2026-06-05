@@ -46,7 +46,7 @@ export default function App(){
   };
     const [hydrated, setHydrated] = useState(false);
 
-  // 登入後：把雲端 profile 的偏好套用到 app
+    // 登入後：把雲端 profile 的偏好套用到 app
   useEffect(() => {
     if (!session) { setHydrated(false); return; }
     let cancelled = false;
@@ -56,21 +56,26 @@ export default function App(){
         if (!cancelled && p) {
           if (p.active_theme) switchTheme(p.active_theme);
           if (p.active_card_back) switchCardBack(p.active_card_back);
+          if (p.active_spirit) {
+            const s = SPIRITS.find(x => x.id === p.active_spirit);
+            if (s) setSpirit(s);
+          }
+          if (p.active_costumes && typeof p.active_costumes === "object") {
+            setActiveC(p.active_costumes);
+          }
+        }
+        // 載入雲端今日占卜紀錄（雲端優先）
+        const dk = todayKey();
+        const dr = await db.getDailyRecord(dk);
+        if (!cancelled && dr) {
+          if (Array.isArray(dr.cards)) { setDrawnCards(dr.cards); save("daily_" + dk, dr.cards); }
+          if (Array.isArray(dr.deck) && dr.deck.length) { setDailyDeck(dr.deck); save("daily_deck_" + dk, dr.deck); }
         }
       } catch (e) { /* 雲端載入失敗就維持本機設定 */ }
       if (!cancelled) setHydrated(true);
     })();
     return () => { cancelled = true; };
   }, [session]);
-
-  // 偏好變更後：寫回雲端（登入且已載入才寫，避免一上線就覆蓋雲端）
-  useEffect(() => {
-    if (session && hydrated) db.updateProfile({ active_theme: themeId }).catch(() => {});
-  }, [themeId]);
-
-  useEffect(() => {
-    if (session && hydrated) db.updateProfile({ active_card_back: cardBackId }).catch(() => {});
-  }, [cardBackId]);
   const [page,setPage]=useState("daily");
   const [spirit,setSpirit]=useState(SPIRITS[0]);
   const [costumes,setCostumes]=useState(COSTUMES);
