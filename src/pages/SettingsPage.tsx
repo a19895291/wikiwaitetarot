@@ -112,7 +112,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
     </div>
 
     {/* 牌庫總覽（全螢幕覆蓋）*/}
-    {libOpen&&<div style={{position:"fixed",inset:0,zIndex:500,background:C.bg,maxWidth:390,margin:"0 auto",display:"flex",flexDirection:"column"}}>
+    {libOpen&&<div style={{position:"fixed",inset:0,zIndex:500,background:C.bg,maxWidth:390,margin:"0 auto",display:"flex",flexDirection:"column",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
       <div style={{flexShrink:0,padding:"16px 16px 12px",borderBottom:`1px solid ${C.gridBorder}`,background:C.navBg,backdropFilter:"blur(20px)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div>
           <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:C.gold,letterSpacing:2}}>牌庫</div>
@@ -138,7 +138,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
 
     {/* 牌庫：單張牌義（正/逆位）*/}
     {libCard&&<div onClick={()=>setLibCard(null)} style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
-      <div onClick={e=>e.stopPropagation()} className="card-reveal-anim" style={{width:"100%",maxWidth:330,maxHeight:"86vh",overflowY:"auto",WebkitOverflowScrolling:"touch",background:C.bgModal,border:`1px solid ${C.accentDim}`,borderRadius:20,padding:20,boxShadow:"0 20px 60px rgba(0,0,0,.6)"}}>
+      <div onClick={e=>e.stopPropagation()} className="card-reveal-anim" style={{width:"100%",maxWidth:330,maxHeight:"86vh",overflowY:"auto",WebkitOverflowScrolling:"touch",background:C.bgModal,border:`1px solid ${C.accentDim}`,borderRadius:20,padding:20,boxShadow:"0 20px 60px rgba(0,0,0,.6)",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
         <div style={{display:"flex",gap:14,marginBottom:14}}>
           {libCard.img
             ?<div style={{width:84,height:130,borderRadius:9,overflow:"hidden",flexShrink:0,border:`1px solid ${C.accentDim}`,boxShadow:`0 0 16px ${C.accentFaint}`}}><img src={libCard.img} alt={libCard.name} style={{width:"100%",height:"100%",objectFit:"cover"}}/></div>
