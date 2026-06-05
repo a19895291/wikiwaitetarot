@@ -1,5 +1,5 @@
 // 模組 16 — SettingsPage（設定頁，主題/牌背快選）
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { C, THEMES, THEME_IDS } from "../data/themes";
 import { CARD_BACKS } from "../data/cardBacks";
 import { DECK, KEYWORDS } from "../data/deck";
