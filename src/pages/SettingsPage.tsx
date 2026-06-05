@@ -121,7 +121,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
         <button onClick={()=>{setLibOpen(false);setLibCard(null);}} style={{width:30,height:30,borderRadius:"50%",background:C.accentFaint,border:`1px solid ${C.accentDim}`,color:C.accent,fontSize:14,cursor:"pointer"}}>✕</button>
       </div>
       <div style={{flexShrink:0,display:"flex",gap:8,padding:"12px 16px"}}>
-             {[["major","大阿爾克那"],["minor","小阿爾克那"]].map(([id,label])=><button key={id} onClick={()=>setLibTab(id)} style={{flex:1,padding:"12px 0",borderRadius:50,cursor:"pointer",background:libTab===id?`linear-gradient(135deg,${C.blue},${C.blue}cc)`:C.bgPanel,border:`1px solid ${libTab===id?C.accentDim:C.gridBorder}`,fontFamily:"'Cinzel',serif",fontSize:23.76,color:libTab===id?C.gold:C.textDim}}>{label}</button>)}
+             {[["major","大阿爾克那"],["minor","小阿爾克那"]].map(([id,label])=><button key={id} onClick={()=>setLibTab(id)} style={{flex:1,padding:"10px 0",borderRadius:50,cursor:"pointer",background:libTab===id?`linear-gradient(135deg,${C.blue},${C.blue}cc)`:C.bgPanel,border:`1px solid ${libTab===id?C.accentDim:C.gridBorder}`,fontFamily:"'Cinzel',serif",fontSize:17.82,color:libTab===id?C.gold:C.textDim}}>{label}</button>)}
       </div>
       <div style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",padding:"4px 16px 40px"}}>
         {libTab==="major"&&<div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>{major.map(renderTile)}</div>}
