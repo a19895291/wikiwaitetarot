@@ -1,5 +1,6 @@
 // 模組 16 — SettingsPage（設定頁，主題/牌背快選）
 import { useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import { C, THEMES, THEME_IDS } from "../data/themes";
 import { CARD_BACKS } from "../data/cardBacks";
 import { DECK, KEYWORDS } from "../data/deck";
@@ -112,7 +113,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
     </div>
 
     {/* 牌庫總覽（全螢幕覆蓋）*/}
-    {libOpen&&<div style={{position:"fixed",inset:0,zIndex:500,background:C.bg,maxWidth:390,margin:"0 auto",display:"flex",flexDirection:"column",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
+    {libOpen&&createPortal(<div style={{position:"fixed",inset:0,zIndex:500,background:C.bg,maxWidth:390,margin:"0 auto",display:"flex",flexDirection:"column",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
       <div style={{flexShrink:0,padding:"16px 16px 12px",borderBottom:`1px solid ${C.gridBorder}`,background:C.navBg,backdropFilter:"blur(20px)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div>
           <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:C.gold,letterSpacing:2}}>牌庫</div>
@@ -123,7 +124,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       <div style={{flexShrink:0,display:"flex",gap:8,padding:"12px 16px"}}>
              {[["major","大阿爾克那"],["minor","小阿爾克那"]].map(([id,label])=><button key={id} onClick={()=>setLibTab(id)} style={{flex:1,padding:"10px 0",borderRadius:50,cursor:"pointer",background:libTab===id?`linear-gradient(135deg,${C.blue},${C.blue}cc)`:C.bgPanel,border:`1px solid ${libTab===id?C.accentDim:C.gridBorder}`,fontFamily:"'Cinzel',serif",fontSize:17.82,color:libTab===id?C.gold:C.textDim}}>{label}</button>)}
       </div>
-      <div style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",padding:"4px 16px 40px"}}>
+      <div style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",overscrollBehaviorY:"contain",padding:"4px 16px",paddingBottom:"calc(env(safe-area-inset-bottom,0px) + 40px)"}}>
         {libTab==="major"&&<div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>{major.map(renderTile)}</div>}
         {libTab==="minor"&&suits.map(suit=><div key={suit} style={{marginBottom:18}}>
           <div style={{display:"flex",alignItems:"center",gap:6,margin:"8px 0 10px"}}>
@@ -134,10 +135,10 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>{minor.filter(c=>c.suit===suit).map(renderTile)}</div>
         </div>)}
       </div>
-    </div>}
+    </div>, document.body)}
 
         {/* 牌庫：單張牌義（正/逆位）*/}
-    {libCard&&<div onClick={()=>setLibCard(null)} style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+    {libCard&&createPortal(<div onClick={()=>setLibCard(null)} style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
       <div onClick={e=>e.stopPropagation()} className="card-reveal-anim" style={{width:"100%",maxWidth:330,maxHeight:"86vh",overflowY:"auto",WebkitOverflowScrolling:"touch",background:C.bgModal,border:`1px solid ${C.accentDim}`,borderRadius:20,padding:20,boxShadow:"0 20px 60px rgba(0,0,0,.6)",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
         <div style={{display:"flex",gap:14,marginBottom:16}}>
           {libCard.img
@@ -160,7 +161,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
           <div style={{fontSize:19.5,color:C.textDim,lineHeight:1.75,fontWeight:300}}>{libCard.rev||libCard.reverse}</div>
         </div>
       </div>
-    </div>}
+    </div>, document.body)}
 
     
     {/* Theme selector (下拉) */}
