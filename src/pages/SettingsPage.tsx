@@ -8,6 +8,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
   const [notif,setNotif]=useState(true);
   const [sound,setSound]=useState(false);
   const [dark,setDark]=useState(true);
+  const [openMenu,setOpenMenu]=useState(null);
   const bought = load("shop_bought", []);
   const Toggle=({v,onT})=><div onClick={onT} style={{
     width:46,height:24,borderRadius:12,cursor:"pointer",
@@ -74,37 +75,50 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       </div>)}
     </div>
 
-    {/* Theme selector */}
-    <div style={{background:C.bgPanel,border:"1px solid rgba(26,58,110,.32)",borderRadius:16,padding:"14px 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
-      <div style={{fontSize:12,color:C.gold,fontFamily:"'Cinzel',serif",letterSpacing:1.5,marginBottom:12}}>✦ 介面主題</div>
-      <div style={{display:"flex",flexDirection:"column",gap:8}}>
-       {THEME_IDS.map(id=>{
-          const t=THEMES[id];
-          if(!t)return null;
-          const active=themeId===id;
-          const thId=id==="midnight"?"th_default":"th_"+id;
-          const owned=id==="midnight"||bought.includes(thId);
-          return <div key={id} onClick={()=>{if(owned)switchTheme(id);}} style={{
-            display:"flex",alignItems:"center",gap:12,
-            padding:"10px 12px",borderRadius:12,cursor:owned?"pointer":"default",
-            background:active?`linear-gradient(135deg,${t.accent}14,${t.blue}0a)`:"rgba(255,255,255,.02)",
-            border:`1px solid ${active?t.accent+"55":"rgba(26,58,110,.25)"}`,
-            opacity:owned?1:.5,
-            transition:"all .25s",
-          }}>
-            <div style={{display:"flex",gap:4,flexShrink:0}}>
-              {t.preview.map((c,i)=><div key={i} style={{width:12,height:12,borderRadius:"50%",background:c,border:"1px solid rgba(255,255,255,.15)"}}/>)}
-            </div>
-            <div style={{flex:1}}>
-              <div style={{fontSize:12,fontFamily:"'Cinzel',serif",color:active?t.accent:C.text,letterSpacing:.5}}>{t.name}</div>
-              <div style={{fontSize:9.5,color:C.textFaint,marginTop:1}}>{owned?t.desc:"前往商城購買"}</div>
-            </div>
-            {active&&owned&&<div style={{fontSize:8.5,fontFamily:"'Cinzel',serif",color:t.accent,background:`${t.accent}18`,border:`1px solid ${t.accent}44`,borderRadius:50,padding:"2px 8px",flexShrink:0}}>使用中</div>}
-            {!owned&&<div style={{fontSize:13,flexShrink:0}}>🔒</div>}
-          </div>;
-        })}
-      </div>
-    </div>
+    {/* Theme selector (下拉) */}
+        <div style={{background:C.bgPanel,border:"1px solid rgba(26,58,110,.32)",borderRadius:16,padding:"14px 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
+         <div style={{fontSize:12,color:C.gold,fontFamily:"'Cinzel',serif",letterSpacing:1.5,marginBottom:12}}>✦ 介面主題</div>
+         {(()=>{
+           const t=THEMES[themeId]||THEMES[THEME_IDS[0]];
+           const open=openMenu==="theme";
+           return <div onClick={()=>setOpenMenu(m=>m==="theme"?null:"theme")} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 12px",borderRadius:12,cursor:"pointer",background:`linear-gradient(135deg,${t.accent}14,${t.blue}0a)`,border:`1px solid ${t.accent}55`,transition:"all .25s"}}>
+             <div style={{display:"flex",gap:4,flexShrink:0}}>。 
+               {t.preview.map((c,i)=><div key={i} style={{width:12,height:12,borderRadius:"50%",background:c,border:"1px solid rgba(255,255,255,.15)"}}/>)}
+             </div>
+             <div style={{flex:1}}>
+               <div style={{fontSize:12,fontFamily:"'Cinzel',serif",color:t.accent,letterSpacing:.5}}>{t.name}</div>
+               <div style={{fontSize:9.5,color:C.textFaint,marginTop:1}}>點擊{open?"收起":"展開"}選擇主題</div>
+             </div>
+             <div style={{fontSize:11,color:C.gold,flexShrink:0,transform:open?"rotate(180deg)":"rotate(0)",transition:"transform .25s"}}>▼</div>
+           </div>;
+         })()}
+         {openMenu==="theme"&&<div style={{display:"flex",flexDirection:"column",gap:8,marginTop:8}}>
+          {THEME_IDS.map(id=>{
+             const t=THEMES[id];
+             if(!t)return null;
+             const active=themeId===id;
+             const thId=id==="midnight"?"th_default":"th_"+id;
+             const owned=id==="midnight"||bought.includes(thId);
+             return <div key={id} onClick={()=>{if(owned){switchTheme(id);setOpenMenu(null);}}} style={{
+               display:"flex",alignItems:"center",gap:12,
+               padding:"10px 12px",borderRadius:12,cursor:owned?"pointer":"default",
+               background:active?`linear-gradient(135deg,${t.accent}14,${t.blue}0a)`:"rgba(255,255,255,.02)",
+               border:`1px solid ${active?t.accent+"55":"rgba(26,58,110,.25)"}`,
+               opacity:owned?1:.5,transition:"all .25s",
+             }}>
+               <div style={{display:"flex",gap:4,flexShrink:0}}>
+                 {t.preview.map((c,i)=><div key={i} style={{width:12,height:12,borderRadius:"50%",background:c,border:"1px solid rgba(255,255,255,.15)"}}/>)}
+               </div> 
+               <div style={{flex:1}}>
+                 <div style={{fontSize:12,fontFamily:"'Cinzel',serif",color:active?t.accent:C.text,letterSpacing:.5}}>{t.name}</div>
+                 <div style={{fontSize:9.5,color:C.textFaint,marginTop:1}}>{owned?t.desc:"前往商城購買"}</div>
+               </div>
+               {active&&owned&&<div style={{fontSize:8.5,fontFamily:"'Cinzel',serif",color:t.accent,background:`${t.accent}18`,border:`1px solid ${t.accent}44`,borderRadius:50,padding:"2px 8px",flexShrink:0}}>使用中</div>}
+               {!owned&&<div style={{fontSize:13,flexShrink:0}}>🔒</div>}
+             </div>;
+           })}
+         </div>}
+       </div>
 
     {/* Card back selector */}
     <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:"14px 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
