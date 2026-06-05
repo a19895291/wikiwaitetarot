@@ -20,15 +20,7 @@ const SHOP={
     {id:"t3",name:"神諭卡牌包",desc:"42 張神諭卡，感性直覺系，每日靈感引導",price:198,emoji:"🌙",badge:null},
     {id:"t4",name:"凱爾特牌陣",desc:"解鎖高階十字牌陣佈局，感情與事業深度解析",price:128,emoji:"☯️",badge:"熱銷"},
     {id:"t5",name:"元素四色牌組",desc:"火水風土四元素重新詮釋，美學與能量兼備",price:328,emoji:"🔮",badge:"新品"},
-  ],
-  spirit:[
-    {id:"s1",name:"狐狸・火焰甲冑",desc:"狐狸靈限定戰鬥造型，帶來無懼前行的力量",price:88,emoji:"🦊🔥",badge:null},
-    {id:"s2",name:"狐狸・月光紗裙",desc:"狐狸靈典雅禮服造型，柔情而神秘",price:128,emoji:"🦊🌙",badge:"新品"},
-    {id:"s3",name:"貓頭鷹・星際頭盔",desc:"貓頭鷹靈宇宙飛行員，探索未知的智慧",price:98,emoji:"🦉🪐",badge:null},
-    {id:"s4",name:"黑貓・蝙蝠披風",desc:"黑貓靈哥德暗夜造型，夜行者的守護",price:78,emoji:"🐱🦇",badge:"熱銷"},
-    {id:"s5",name:"龍靈・暗金翅膀",desc:"龍靈王者限定金翼，財運與榮耀加身",price:158,emoji:"🐉🪙",badge:"限定"},
-    {id:"s6",name:"狼靈・冰霜披風",desc:"狼靈冰雪女王系列，孤高卻炙熱的靈魂",price:108,emoji:"🐺❄️",badge:null},
-  ],
+  ],  
 };
 const SHOP_TABS=[["monthly","月費方案"],["tarot","塔羅牌"],["spirit","牌靈造型"],["theme","介面主題"]];
 
