@@ -122,7 +122,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
 
         {/* Card back selector (下拉) */}
     <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:"14px 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
-      <div style={{fontSize:12,color:C.gold,fontFamily:"'Cinzel',serif",letterSpacing:1.5,marginBottom:12}}>🃏 塔羅牌背</div>
+      <div style={{fontSize:12,color:C.gold,fontFamily:"'Cinzel',serif",letterSpacing:1.5,marginBottom:12}}>🃏 塔羅款式</div>
       {(()=>{
         const cb=CARD_BACKS[cardBackId]||Object.values(CARD_BACKS)[0];
         const open=openMenu==="cb";
@@ -130,7 +130,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
           <div style={{width:28,height:42,borderRadius:5,...(cb.bg&&cb.bg.startsWith("data:")?{backgroundColor:cb.isMonstera?"#f0f7f0":"#fff8f5",backgroundImage:"url("+cb.bg+")",backgroundSize:"cover",backgroundPosition:"center",backgroundRepeat:"no-repeat"}:{background:cb.bg}),border:cb.isMonstera?"none":`1px solid ${cb.border}`,flexShrink:0}}/>
           <div style={{flex:1}}>
             <div style={{fontSize:12,fontFamily:"'Cinzel',serif",color:C.accent,letterSpacing:.5}}>{cb.emoji} {cb.name}</div>
-            <div style={{fontSize:9.5,color:C.textFaint,marginTop:1}}>點擊{open?"收起":"展開"}選擇牌背</div>
+            <div style={{fontSize:9.5,color:C.textFaint,marginTop:1}}>點擊{open?"收起":"展開"}選擇款式</div>
           </div>
           <div style={{fontSize:11,color:C.gold,flexShrink:0,transform:open?"rotate(180deg)":"rotate(0)",transition:"transform .25s"}}>▼</div>
         </div>;
