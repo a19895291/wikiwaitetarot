@@ -322,7 +322,7 @@ export default function App(){
       {page==="online"&&<OnlinePage onStepChange={setOnlineStep}/>}
       {page==="history"&&<HistoryPage/>}
       {page==="spirit"&&<SpiritPage spirit={spirit} onSelect={setSpirit} costumes={costumes} setCostumes={setCostumes} activeC={activeC} setActiveC={setActiveC} themeId={themeId} switchTheme={switchTheme}/>}
-      {page==="shop"&&<ShopPage switchTheme={switchTheme} cardBackId={cardBackId} switchCardBack={switchCardBack}/>}
+      {page==="shop"&&<ShopPage switchTheme={switchTheme} cardBackId={cardBackId} switchCardBack={switchCardBack} costumes={costumes} setCostumes={setCostumes}/>}
       {page==="settings"&&<SettingsPage themeId={themeId} switchTheme={switchTheme} cardBackId={cardBackId} switchCardBack={switchCardBack} userEmail={session?.user?.email || null} onLogout={goToLogin}/>}
     </div>
 
