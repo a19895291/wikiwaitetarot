@@ -34,7 +34,21 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       <div style={{fontFamily:"'Cinzel',serif",fontSize:17,color:"#fff",textAlign:"center",letterSpacing:.3,lineHeight:1.2,textShadow:"0 1px 2px rgba(0,0,0,.9)"}}>{card.name}</div>
     </div>
   </div>;
-  const bought = load("shop_bought", []);
+    const bought = load("shop_bought", []);
+  const libBg=(()=>{
+    const grad=C.bgGrad||C.bg;
+    if(grad&&grad.startsWith("url(")){
+      const m=grad.match(/url\(['"]?(data:[^'")]+)['"]?\)/);
+      const dataUrl=m?m[1]:null;
+      if(dataUrl){
+        const lg=grad.lastIndexOf("linear-gradient(");
+        let gp="linear-gradient(160deg,rgba(255,248,244,.95),rgba(255,245,240,.95))";
+        if(lg>=0){let d=0,i=lg;for(;i<grad.length;i++){if(grad[i]==="(")d++;else if(grad[i]===")")if(--d===0){i++;break;}}gp=grad.slice(lg,i);}
+        return {backgroundColor:C.bg,backgroundImage:`url(${dataUrl}), ${gp}`,backgroundSize:"380px auto, cover",backgroundPosition:"center center, center center",backgroundRepeat:"repeat, no-repeat"};
+      }
+    }
+    return {background:grad};
+  })();
   const Toggle=({v,onT})=><div onClick={onT} style={{
     width:46,height:24,borderRadius:12,cursor:"pointer",
     background:v?`linear-gradient(135deg,${C.blue},${C.accent})`:C.bgPanel,
@@ -113,16 +127,18 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
     </div>
 
     {/* 牌庫總覽（全螢幕覆蓋）*/}
-    {libOpen&&createPortal(<div style={{position:"fixed",top:0,left:0,right:0,bottom:"calc(env(safe-area-inset-bottom,0px) + 56px)",zIndex:500,background:C.bg,maxWidth:390,margin:"0 auto",display:"flex",flexDirection:"column",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
-      <div style={{flexShrink:0,padding:"calc(env(safe-area-inset-top,0px) + 14px) 16px 12px",borderBottom:`1px solid ${C.gridBorder}`,background:C.navBg,backdropFilter:"blur(20px)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+    {libOpen&&createPortal(<div style={{position:"fixed",top:0,left:0,right:0,bottom:"calc(env(safe-area-inset-bottom,0px) + 56px)",zIndex:500,...libBg,maxWidth:390,margin:"0 auto",display:"flex",flexDirection:"column",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
+      <div style={{flexShrink:0,padding:"calc(env(safe-area-inset-top,0px) + 14px) 16px 12px",background:"transparent",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div>
-          <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:C.gold,letterSpacing:2}}>牌庫</div>
-          <div style={{fontSize:9.5,color:C.textFaint,marginTop:2}}>長按任一張牌查看牌義</div>
+          <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:21.38,color:C.gold,letterSpacing:3}}>牌庫</div>
+          <div style={{fontSize:10.69,color:C.goldDim,letterSpacing:1,marginTop:3}}>長按任一張牌查看牌義</div>
         </div>
           <button onClick={()=>{setLibOpen(false);setLibCard(null);}} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 14px",borderRadius:50,background:C.accentFaint,border:`1px solid ${C.accentDim}`,color:C.accent,fontSize:12.5,fontFamily:"'Noto Sans TC',sans-serif",cursor:"pointer",whiteSpace:"nowrap"}}>✕ 離開</button>
       </div>
-      <div style={{flexShrink:0,display:"flex",gap:8,padding:"12px 16px"}}>
-             {[["major","大阿爾克那"],["minor","小阿爾克那"]].map(([id,label])=><button key={id} onClick={()=>setLibTab(id)} style={{flex:1,padding:"10px 0",borderRadius:50,cursor:"pointer",background:libTab===id?`linear-gradient(135deg,${C.blue},${C.blue}cc)`:C.bgPanel,border:`1px solid ${libTab===id?C.accentDim:C.gridBorder}`,fontFamily:"'Cinzel',serif",fontSize:17.82,color:libTab===id?C.gold:C.textDim}}>{label}</button>)}
+            <div style={{flexShrink:0,padding:"4px 16px 12px"}}>
+        <div style={{display:"flex",gap:4,background:C.bgPanel,borderRadius:50,padding:4,border:`1px solid ${C.gridBorder}`,boxShadow:"inset 0 2px 10px rgba(0,0,0,.3)"}}>
+          {[["major","大阿爾克那"],["minor","小阿爾克那"]].map(([id,label])=><button key={id} onClick={()=>setLibTab(id)} style={{flex:1,padding:"7px 14px",borderRadius:50,border:"none",cursor:"pointer",background:libTab===id?`linear-gradient(135deg,${C.blue},${C.blue}cc)`:"transparent",fontFamily:"'Cinzel',serif",fontSize:11.88,color:libTab===id?C.gold:C.textFaint,transition:"all .25s",whiteSpace:"nowrap",boxShadow:libTab===id?`0 0 14px ${C.accentFaint}`:"none"}}>{label}</button>)}
+        </div>
       </div>
       <div style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",overscrollBehaviorY:"contain",padding:"4px 16px",paddingBottom:"16px"}}>
         {libTab==="major"&&<div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>{major.map(renderTile)}</div>}
