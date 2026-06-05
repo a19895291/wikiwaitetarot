@@ -136,7 +136,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       </div>
     </div>}
 
-    {/* 牌庫：單張牌義（正/逆位）*/}
+        {/* 牌庫：單張牌義（正/逆位）*/}
     {libCard&&<div onClick={()=>setLibCard(null)} style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
       <div onClick={e=>e.stopPropagation()} className="card-reveal-anim" style={{width:"100%",maxWidth:330,maxHeight:"86vh",overflowY:"auto",WebkitOverflowScrolling:"touch",background:C.bgModal,border:`1px solid ${C.accentDim}`,borderRadius:20,padding:20,boxShadow:"0 20px 60px rgba(0,0,0,.6)",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
         <div style={{display:"flex",gap:14,marginBottom:16}}>
@@ -144,25 +144,25 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
             ?<div style={{width:126,height:195,borderRadius:10,overflow:"hidden",flexShrink:0,border:`1px solid ${C.accentDim}`,boxShadow:`0 0 16px ${C.accentFaint}`}}><img src={libCard.img} alt={libCard.name} style={{width:"100%",height:"100%",objectFit:"cover"}}/></div>
             :<div style={{fontSize:72,flexShrink:0}}>{libCard.emoji}</div>}
           <div style={{flex:1,minWidth:0}}>
-            <div style={{fontFamily:"'Cinzel',serif",fontSize:36,color:C.accent,letterSpacing:.5,lineHeight:1.3}}>{libCard.name}</div>
-            {libCard.en&&<div style={{fontFamily:"'Cinzel',serif",fontStyle:"italic",fontSize:22,color:C.textFaint,marginTop:4,letterSpacing:.5,lineHeight:1.2}}>{libCard.en}</div>}
+            <div style={{fontFamily:"'Cinzel',serif",fontSize:27,color:C.accent,letterSpacing:.5,lineHeight:1.3}}>{libCard.name}</div>
+            {libCard.en&&<div style={{fontFamily:"'Cinzel',serif",fontStyle:"italic",fontSize:16.5,color:C.textFaint,marginTop:4,letterSpacing:.5,lineHeight:1.2}}>{libCard.en}</div>}
           </div>
         </div>
         <div style={{marginBottom:16}}>
-          <span style={{fontFamily:"'Cinzel',serif",fontSize:22,color:C.accent,letterSpacing:1,padding:"3px 12px",borderRadius:20,background:`${C.accent}18`,border:`1px solid ${C.accentDim}`}}>△ 正位</span>
-          <div style={{display:"flex",gap:6,flexWrap:"wrap",margin:"10px 0"}}>{(KEYWORDS[libCard.id]?.up||[]).map((kw,i)=><span key={i} style={{fontSize:19,padding:"3px 11px",borderRadius:20,background:"rgba(201,168,76,.07)",border:"1px solid rgba(201,168,76,.2)",color:"rgba(201,168,76,.8)",fontFamily:"'Cinzel',serif"}}>{kw}</span>)}</div>
-          <div style={{fontSize:26,color:C.textDim,lineHeight:1.75,fontWeight:300}}>{libCard.up||libCard.meaning}</div>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:16.5,color:C.accent,letterSpacing:1,padding:"3px 12px",borderRadius:20,background:`${C.accent}18`,border:`1px solid ${C.accentDim}`}}>△ 正位</span>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap",margin:"10px 0"}}>{(KEYWORDS[libCard.id]?.up||[]).map((kw,i)=><span key={i} style={{fontSize:14.25,padding:"3px 11px",borderRadius:20,background:"rgba(201,168,76,.07)",border:"1px solid rgba(201,168,76,.2)",color:"rgba(201,168,76,.8)",fontFamily:"'Cinzel',serif"}}>{kw}</span>)}</div>
+          <div style={{fontSize:19.5,color:C.textDim,lineHeight:1.75,fontWeight:300}}>{libCard.up||libCard.meaning}</div>
         </div>
         <div style={{height:1,background:`linear-gradient(90deg,transparent,${C.accentDim},transparent)`,marginBottom:16}}/>
         <div>
-          <span style={{fontFamily:"'Cinzel',serif",fontSize:22,color:C.purple,letterSpacing:1,padding:"3px 12px",borderRadius:20,background:"rgba(140,80,220,.12)",border:"1px solid rgba(140,80,220,.35)"}}>▽ 逆位</span>
-          <div style={{display:"flex",gap:6,flexWrap:"wrap",margin:"10px 0"}}>{(KEYWORDS[libCard.id]?.rev||[]).map((kw,i)=><span key={i} style={{fontSize:19,padding:"3px 11px",borderRadius:20,background:"rgba(140,80,220,.07)",border:"1px solid rgba(140,80,220,.22)",color:"rgba(180,120,255,.8)",fontFamily:"'Cinzel',serif"}}>{kw}</span>)}</div>
-          <div style={{fontSize:26,color:C.textDim,lineHeight:1.75,fontWeight:300}}>{libCard.rev||libCard.reverse}</div>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:16.5,color:C.purple,letterSpacing:1,padding:"3px 12px",borderRadius:20,background:"rgba(140,80,220,.12)",border:"1px solid rgba(140,80,220,.35)"}}>▽ 逆位</span>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap",margin:"10px 0"}}>{(KEYWORDS[libCard.id]?.rev||[]).map((kw,i)=><span key={i} style={{fontSize:14.25,padding:"3px 11px",borderRadius:20,background:"rgba(140,80,220,.07)",border:"1px solid rgba(140,80,220,.22)",color:"rgba(180,120,255,.8)",fontFamily:"'Cinzel',serif"}}>{kw}</span>)}</div>
+          <div style={{fontSize:19.5,color:C.textDim,lineHeight:1.75,fontWeight:300}}>{libCard.rev||libCard.reverse}</div>
         </div>
       </div>
     </div>}
 
-
+    
     {/* Theme selector (下拉) */}
 
         <div style={{background:C.bgPanel,border:"1px solid rgba(26,58,110,.32)",borderRadius:16,padding:"14px 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
