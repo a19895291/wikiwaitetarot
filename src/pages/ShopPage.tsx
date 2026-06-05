@@ -176,6 +176,7 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack}){
         const rows = await db.listPurchases();
         if (cancelled || !rows || !rows.length) return;
         const ids = rows.map(r => r.item_id);
+        save("shop_bought", Array.from(new Set([...load("shop_bought",[]), ...ids])));
         setBought(prev => new Set([...prev, ...ids]));
         setThemes(prev => prev.map(t => ids.includes(t.id) ? { ...t, owned: true } : t));
         setCardBacks(prev => prev.map(cb => ids.includes(cb.id) ? { ...cb, owned: true } : cb));
