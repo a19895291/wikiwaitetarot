@@ -76,6 +76,13 @@ export default function App(){
     })();
     return () => { cancelled = true; };
   }, [session]);
+    // 主題 / 牌背 → 寫回雲端
+  useEffect(() => {
+    if (session && hydrated) db.updateProfile({ active_theme: themeId }).catch(() => {});
+  }, [themeId]);
+  useEffect(() => {
+    if (session && hydrated) db.updateProfile({ active_card_back: cardBackId }).catch(() => {});
+  }, [cardBackId]);
   const [page,setPage]=useState("daily");
   const [spirit,setSpirit]=useState(SPIRITS[0]);
   const [costumes,setCostumes]=useState(COSTUMES);
