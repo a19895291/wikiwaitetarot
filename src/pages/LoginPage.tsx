@@ -196,6 +196,8 @@ export default function LoginPage({ onGuest }: any) {
           {/* 表單 */}
           <input
             type="email"
+            name="password"
+            autoComplete="current-password"
             inputMode="email"
             autoCapitalize="none"
             autoCorrect="off"
@@ -207,6 +209,8 @@ export default function LoginPage({ onGuest }: any) {
           />
           <input
             type="password"
+            name="password"
+            autoComplete="current-password"
             placeholder="密碼（至少 6 字元）"
             value={pw}
             onChange={(e) => setPw(e.target.value)}
