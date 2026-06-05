@@ -105,12 +105,13 @@ export default function App(){
     return curC?.emoji||spirit?.emoji;
   },[spirit,costumes,activeC]);
 
-  const drawDailyCard=useCallback(()=>{
+    const drawDailyCard=useCallback(()=>{
     if(drawnCards.length>=5)return;
     const card=dailyDeck[dailyPtr];
     if(!card)return;
     const next=[...drawnCards,card];
     setDrawnCards(next);save("daily_"+todayKey(),next);
+    if(session) db.saveDailyRecord(todayKey(), next, dailyDeck).catch(()=>{});
     // save timestamp on first draw of the day
     const tsKey="daily_ts_"+todayKey();
     if(!localStorage.getItem(tsKey)){
@@ -119,8 +120,7 @@ export default function App(){
       const ts=`${todayKey()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
       save(tsKey,ts);
     }
-  },[drawnCards,dailyDeck,dailyPtr]);
-
+  },[drawnCards,dailyDeck,dailyPtr,session]);
   const inSession=page==="online"&&onlineStep==="session";
   const NAV=[
     {id:"daily",label:"每日",emoji:"🌙"},
