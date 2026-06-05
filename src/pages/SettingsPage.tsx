@@ -108,7 +108,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
 
     {/* Card back selector */}
     <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:"14px 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
-      <div style={{fontSize:12,color:C.gold,fontFamily:"'Cinzel',serif",letterSpacing:1.5,marginBottom:12}}>🃏 塔羅牌背</div>
+      <div style={{fontSize:12,color:C.gold,fontFamily:"'Cinzel',serif",letterSpacing:1.5,marginBottom:12}}>🃏 塔羅牌款式</div>
       <div style={{display:"flex",flexDirection:"column",gap:8}}>
         {Object.values(CARD_BACKS).map(cb=>{
           const active=cardBackId===cb.id;
