@@ -1,6 +1,6 @@
 // 模組 13 — App（根組件：全域狀態、頁面路由、底部導航、星空背景、雙 <style> 注入）
 // 全域可變 C/CB 在 render 階段以 Object.assign 同步（與原單檔行為一致；ES module 單例保留此語意）。
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { C, THEMES, DEFAULT_THEME } from "./data/themes";
 import { CB, CARD_BACKS, DEFAULT_CARD_BACK } from "./data/cardBacks";
 import { DECK } from "./data/deck";
