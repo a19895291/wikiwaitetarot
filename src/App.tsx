@@ -340,29 +340,42 @@ export default function App(){
       paddingBottom:"env(safe-area-inset-bottom,0)",
       boxShadow:"0 -4px 24px rgba(0,0,0,.5)"
     }}>
-      {NAV.map((n,i)=><button key={n.id} onClick={()=>setPage(n.id)} style={{
+            {NAV.map((n,i)=>{
+        const wip=n.id==="online";
+        return <button key={n.id} onClick={()=>{if(!wip)setPage(n.id);}} style={{
         flex:1,padding:"10px 4px 8px",
-        background:"none",border:"none",cursor:"pointer",
+        background:"none",border:"none",cursor:wip?"default":"pointer",
         display:"flex",flexDirection:"column",alignItems:"center",gap:2,
         animation:`navItemIn .3s ease ${i*.04}s both`,
         position:"relative",
       }}>
-        {page===n.id&&<div style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:28,height:2,borderRadius:"0 0 2px 2px",background:`linear-gradient(90deg,transparent,${C.gold},transparent)`}}/>}
+        {page===n.id&&!wip&&<div style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:28,height:2,borderRadius:"0 0 2px 2px",background:`linear-gradient(90deg,transparent,${C.gold},transparent)`}}/>}
         <div style={{
           fontSize:20.79,lineHeight:1,
-          filter:page===n.id?`drop-shadow(0 0 8px rgba(212,168,67,.7))`:"none",
-          transform:page===n.id?"scale(1.18)":"scale(1)",
+          filter:wip?"grayscale(.7) opacity(.6)":page===n.id?`drop-shadow(0 0 8px rgba(212,168,67,.7))`:"none",
+          transform:page===n.id&&!wip?"scale(1.18)":"scale(1)",
           transition:"all .25s cubic-bezier(.34,1.56,.64,1)"
         }}>{n.emoji}</div>
         <div style={{
           fontSize:10.1,
           fontFamily:"'Cinzel',serif",
           letterSpacing:.5,
-          color:page===n.id?C.gold:C.textFaint,
+          color:page===n.id&&!wip?C.gold:C.textFaint,
           transition:"color .2s",
-          fontWeight:page===n.id?600:400,
+          fontWeight:page===n.id&&!wip?600:400,
+          opacity:wip?.6:1,
         }}>{n.label}</div>
-      </button>)}
+        {wip&&<div style={{
+          position:"absolute",top:9,left:"50%",transform:"translateX(-50%)",
+          background:"#fff",color:"#c0392b",
+          fontSize:7.5,fontWeight:700,letterSpacing:.5,
+          padding:"2px 5px",borderRadius:3,whiteSpace:"nowrap",
+          boxShadow:"0 1px 4px rgba(0,0,0,.3)",
+          fontFamily:"'Noto Sans TC',sans-serif",
+          pointerEvents:"none",zIndex:3,
+        }}>趕工中</div>}
+        </button>;
+      })}
     </div>}
   </div>;
 }
