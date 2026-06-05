@@ -5,6 +5,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { C } from "../data/themes";
 import { DECK } from "../data/deck";
 import { CardModal } from "../components/shared/CardModal";
+import * as db from "../lib/db";
 
 const DEMO_ONLINE_RECORDS=[
   {id:"demo1",date:"2026-05-25",time:"19:00",diviner:"月影師 Luna",divinerAvatar:"🌙",item:"感情專項",duration:"32分鐘",fee:300,rating:5,cat:"感情"},
