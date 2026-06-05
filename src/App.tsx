@@ -373,7 +373,7 @@ export default function App(){
           boxShadow:"0 1px 4px rgba(0,0,0,.3)",
           fontFamily:"'Noto Sans TC',sans-serif",
           pointerEvents:"none",zIndex:3,
-        }}>趕工中</div>}
+        }}>施工中</div>}
         </button>;
       })}
     </div>}
