@@ -169,6 +169,20 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack}){
   const [activeTheme,setActiveTheme]=useState("th_default");
   const [cardBacks,setCardBacks]=useState(()=>{const b=load("shop_bought",[]);return Object.values(CARD_BACKS).map(cb=>({...cb,owned:cb.owned||b.includes(cb.id)}));});
   const activeCardBack=cardBackId||DEFAULT_CARD_BACK;
+    useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const rows = await db.listPurchases();
+        if (cancelled || !rows || !rows.length) return;
+        const ids = rows.map(r => r.item_id);
+        setBought(prev => new Set([...prev, ...ids]));
+        setThemes(prev => prev.map(t => ids.includes(t.id) ? { ...t, owned: true } : t));
+        setCardBacks(prev => prev.map(cb => ids.includes(cb.id) ? { ...cb, owned: true } : cb));
+      } catch (e) { /* 未登入或失敗就用本機狀態 */ }
+    })();
+    return () => { cancelled = true; };
+  }, []);
   const items=SHOP[tab]||[];
   const persistBuy=(id)=>{const prev=load("shop_bought",[]);if(!prev.includes(id))save("shop_bought",[...prev,id]);db.addPurchase(id).catch(()=>{});};
   const buyTheme=t=>{
