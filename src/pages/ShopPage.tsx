@@ -1,11 +1,12 @@
 // 模組 15 — ShopPage（商城四分頁）
 // 同檔含 SHOP / SHOP_TABS / SHOP_THEMES 資料 + ThemePreview 子組件。
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { C, THEMES } from "../data/themes";
 import { CARD_BACKS, DEFAULT_CARD_BACK } from "../data/cardBacks";
 import { save, load } from "../utils/storage";
 import { GoldPayBtn } from "../components/shared/GoldPayBtn";
 import { Badge } from "../components/shared/Badge";
+import * as db from "../lib/db";
 
 const SHOP={
   monthly:[
