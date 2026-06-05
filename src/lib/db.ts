@@ -78,6 +78,18 @@ export async function saveDailyRecord(
   if (error) throw error;
   return data;
 }
+export async function listDailyRecords(): Promise<any[]> {
+  const id = await uid();
+  if (!id) return [];
+  const { data, error } = await supabase
+    .from("daily_records")
+    .select("*")
+    .eq("user_id", id)
+    .order("date", { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
 
 // ============================================================
 // spread_records（牌陣占卜，多筆）
