@@ -7,6 +7,8 @@ import { shuffle } from "../utils/deck";
 import { CardBack } from "../components/shared/CardBack";
 import { CardModal } from "../components/shared/CardModal";
 import { cbBgStyle } from "../components/shared/cbBgStyle";
+import * as db from "../lib/db";
+
 
 export function SpreadPage(){
   const [grid,setGrid]=useState(Array(36).fill(null));
