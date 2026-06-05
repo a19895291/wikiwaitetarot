@@ -37,7 +37,7 @@ export function HistoryPage(){
   const [zoomCard,setZoomCard]=useState(null);
 
   // 每日占卜：掃描所有 daily_YYYY-MM-DD key
-  const dailyRecords=useMemo(()=>{
+  const localDaily=useMemo(()=>{
     const records=[];
     try{
       for(let i=0;i<localStorage.length;i++){
@@ -83,7 +83,7 @@ export function HistoryPage(){
   },[]);
 
   // 牌陣紀錄：存在 localStorage "spread_records"
-  const spreadRecords=useMemo(()=>{
+  const localSpread=useMemo(()=>{
     try{
       const raw=JSON.parse(localStorage.getItem("spread_records")||"[]");
       const data=Array.isArray(raw)?raw.map(r=>({...r,cards:Array.isArray(r.cards)?r.cards:[]})):[];
@@ -112,6 +112,24 @@ export function HistoryPage(){
       return [...live,...DEMO_ONLINE_RECORDS].sort((a,b)=>b.date.localeCompare(a.date));
     }catch{return DEMO_ONLINE_RECORDS;}
   },[]);
+  // 登入者優先讀雲端，訪客或雲端失敗則用上面的本機資料
+  const [dailyRecords,setDailyRecords]=useState(localDaily);
+  const [spreadRecords,setSpreadRecords]=useState(localSpread);
+  useEffect(()=>{
+    let cancelled=false;
+    const pad=n=>String(n).padStart(2,"0");
+    const fmtTs=iso=>{try{const d=new Date(iso);return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;}catch{return "";}};
+    (async()=>{
+      try{
+        const [d,s]=await Promise.all([db.listDailyRecords(),db.listSpreadRecords()]);
+        if(cancelled)return;
+        if(d&&d.length)setDailyRecords(d.map(r=>({dateKey:r.date,ts:r.created_at?fmtTs(r.created_at):"",cards:Array.isArray(r.cards)?r.cards:[]})));
+        if(s&&s.length)setSpreadRecords(s.map(r=>({id:r.id,dateKey:r.date,ts:r.created_at?fmtTs(r.created_at):"",cards:Array.isArray(r.cards)?r.cards:[]})));
+      }catch(e){/* 未登入或失敗就用本機 */}
+    })();
+    return ()=>{cancelled=true;};
+  },[]);
+
 
   const TABS=[{id:"daily",label:"每日占卜",emoji:"🌙"},{id:"spread",label:"牌陣",emoji:"✦"},{id:"online",label:"線上占卜",emoji:"🔮"}];
 
