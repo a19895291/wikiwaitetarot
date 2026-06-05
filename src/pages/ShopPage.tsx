@@ -290,7 +290,7 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack}){
         購買主題套組後，整體介面配色與卡牌風格將全面更換。<span style={{color:C.gold}}>購買後永久保留，可隨時切換。</span>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
-        {themes.map(t=><ThemePreview key={t.id} theme={t} isActive={activeTheme===t.id} onSelect={t=>{setActiveTheme(t.id);const themeMap={"th_default":"midnight","th_crimson":"crimson","th_aurora":"aurora","th_skyblue":"skyblue","th_imperial":"imperial","th_summer2026":"summer2026","th_hibiscus":"hibiscus"};if(switchTheme&&themeMap[t.id])switchTheme(themeMap[t.id]);}} onBuy={t=>setConfirm(t)}/>)}
+        {themes.map(t=><ThemePreview key={t.id} theme={t} isActive={activeTheme===t.id} onSelect={t=>{setActiveTheme(t.id);const themeMap={"th_default":"midnight","th_crimson":"crimson","th_aurora":"aurora","th_skyblue":"skyblue","th_imperial":"imperial","th_summer2026":"summer2026","th_hibiscus":"hibiscus","th_monstera":"monstera"};if(switchTheme&&themeMap[t.id])switchTheme(themeMap[t.id]);}} onBuy={t=>setConfirm(t)}/>)}
       </div>
     </div>}
 
