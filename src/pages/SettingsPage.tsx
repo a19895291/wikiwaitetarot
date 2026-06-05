@@ -119,7 +119,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
           <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:C.gold,letterSpacing:2}}>牌庫</div>
           <div style={{fontSize:9.5,color:C.textFaint,marginTop:2}}>長按任一張牌查看牌義</div>
         </div>
-        <button onClick={()=>{setLibOpen(false);setLibCard(null);}} style={{width:30,height:30,borderRadius:"50%",background:C.accentFaint,border:`1px solid ${C.accentDim}`,color:C.accent,fontSize:14,cursor:"pointer"}}>✕</button>
+          <button onClick={()=>{setLibOpen(false);setLibCard(null);}} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 14px",borderRadius:50,background:C.accentFaint,border:`1px solid ${C.accentDim}`,color:C.accent,fontSize:12.5,fontFamily:"'Noto Sans TC',sans-serif",cursor:"pointer",whiteSpace:"nowrap"}}>✕ 離開</button>
       </div>
       <div style={{flexShrink:0,display:"flex",gap:8,padding:"12px 16px"}}>
              {[["major","大阿爾克那"],["minor","小阿爾克那"]].map(([id,label])=><button key={id} onClick={()=>setLibTab(id)} style={{flex:1,padding:"10px 0",borderRadius:50,cursor:"pointer",background:libTab===id?`linear-gradient(135deg,${C.blue},${C.blue}cc)`:C.bgPanel,border:`1px solid ${libTab===id?C.accentDim:C.gridBorder}`,fontFamily:"'Cinzel',serif",fontSize:17.82,color:libTab===id?C.gold:C.textDim}}>{label}</button>)}
