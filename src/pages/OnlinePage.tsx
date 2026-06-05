@@ -13,6 +13,7 @@ import { GoldPayBtn } from "../components/shared/GoldPayBtn";
 import { CardModal } from "../components/shared/CardModal";
 import { cbBgStyle } from "../components/shared/cbBgStyle";
 import { BookingCalendar } from "../components/booking/BookingCalendar";
+import { todayKey, dateKey } from "../utils/date";
 
 function DivinationRoom({matched,timer,onEnd,isDiviner:initIsDiviner=false}){
   const [grid,setGrid]=useState(Array(36).fill(null));
@@ -797,7 +798,7 @@ export function OnlinePage({onStepChange=()=>{}}){
   // 前日提醒：每次進入頁面檢查是否有明天的預約需要確認
   useEffect(()=>{
     const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
-    const tStr=tomorrow.toISOString().slice(0,10);
+    const tStr=dateKey(tomorrow);
     const pending=appointments.find(a=>a.date===tStr&&!a.reminderConfirmed&&!a.cancelled);
     if(pending)setReminderAppt(pending);
   },[appointments]);
@@ -983,8 +984,8 @@ export function OnlinePage({onStepChange=()=>{}}){
         :[...appointments].reverse().map(appt=>{
           if(appt.cancelled)return null;
           const div=DIVINERS.find(d=>d.id===appt.divId);
-          const isPast=appt.date<new Date().toISOString().slice(0,10);
-          const isTomorrow=appt.date===new Date(Date.now()+86400000).toISOString().slice(0,10);
+          const isPast=appt.date<todayKey();
+          const isTomorrow=appt.date===dateKey(new Date(Date.now()+86400000));
           return <div key={appt.id} style={{
             background:C.bgPanel,
             border:appt.paid?`1px solid ${C.accentDim}`:`1px solid ${C.gridBorder}`,
