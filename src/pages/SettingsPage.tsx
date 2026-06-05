@@ -113,8 +113,8 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
     </div>
 
     {/* 牌庫總覽（全螢幕覆蓋）*/}
-    {libOpen&&createPortal(<div style={{position:"fixed",top:0,left:0,right:0,bottom:"calc(env(safe-area-inset-bottom,0px) + 46px)",zIndex:500,background:C.bg,maxWidth:390,margin:"0 auto",display:"flex",flexDirection:"column",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
-      <div style={{flexShrink:0,padding:"16px 16px 12px",borderBottom:`1px solid ${C.gridBorder}`,background:C.navBg,backdropFilter:"blur(20px)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+    {libOpen&&createPortal(<div style={{position:"fixed",top:0,left:0,right:0,bottom:"calc(env(safe-area-inset-bottom,0px) + 56px)",zIndex:500,background:C.bg,maxWidth:390,margin:"0 auto",display:"flex",flexDirection:"column",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
+      <div style={{flexShrink:0,padding:"calc(env(safe-area-inset-top,0px) + 14px) 16px 12px",borderBottom:`1px solid ${C.gridBorder}`,background:C.navBg,backdropFilter:"blur(20px)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div>
           <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:C.gold,letterSpacing:2}}>牌庫</div>
           <div style={{fontSize:9.5,color:C.textFaint,marginTop:2}}>長按任一張牌查看牌義</div>
