@@ -113,7 +113,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
     </div>
 
     {/* 牌庫總覽（全螢幕覆蓋）*/}
-    {libOpen&&createPortal(<div style={{position:"fixed",inset:0,zIndex:500,background:C.bg,maxWidth:390,margin:"0 auto",display:"flex",flexDirection:"column",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
+    {libOpen&&createPortal(<div style={{position:"fixed",top:0,left:0,right:0,bottom:"calc(env(safe-area-inset-bottom,0px) + 46px)",zIndex:500,background:C.bg,maxWidth:390,margin:"0 auto",display:"flex",flexDirection:"column",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
       <div style={{flexShrink:0,padding:"16px 16px 12px",borderBottom:`1px solid ${C.gridBorder}`,background:C.navBg,backdropFilter:"blur(20px)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div>
           <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:C.gold,letterSpacing:2}}>牌庫</div>
@@ -124,7 +124,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       <div style={{flexShrink:0,display:"flex",gap:8,padding:"12px 16px"}}>
              {[["major","大阿爾克那"],["minor","小阿爾克那"]].map(([id,label])=><button key={id} onClick={()=>setLibTab(id)} style={{flex:1,padding:"10px 0",borderRadius:50,cursor:"pointer",background:libTab===id?`linear-gradient(135deg,${C.blue},${C.blue}cc)`:C.bgPanel,border:`1px solid ${libTab===id?C.accentDim:C.gridBorder}`,fontFamily:"'Cinzel',serif",fontSize:17.82,color:libTab===id?C.gold:C.textDim}}>{label}</button>)}
       </div>
-      <div style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",overscrollBehaviorY:"contain",padding:"4px 16px",paddingBottom:"calc(env(safe-area-inset-bottom,0px) + 40px)"}}>
+      <div style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",overscrollBehaviorY:"contain",padding:"4px 16px",paddingBottom:"16px"}}>
         {libTab==="major"&&<div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>{major.map(renderTile)}</div>}
         {libTab==="minor"&&suits.map(suit=><div key={suit} style={{marginBottom:18}}>
           <div style={{display:"flex",alignItems:"center",gap:6,margin:"8px 0 10px"}}>
