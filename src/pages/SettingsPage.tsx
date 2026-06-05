@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { C, THEMES, THEME_IDS } from "../data/themes";
 import { CARD_BACKS } from "../data/cardBacks";
+import { DECK, KEYWORDS } from "../data/deck";
 import { load } from "../utils/storage";
 
 export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,userEmail,onLogout}){
