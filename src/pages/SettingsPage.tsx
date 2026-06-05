@@ -99,14 +99,78 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       </div>)}
     </div>
 
+        {/* 牌庫入口（關於應用 與 介面主題 之間）*/}
+    <div onClick={()=>{setLibOpen(true);setLibTab("major");}} style={{display:"flex",alignItems:"center",justifyContent:"space-between",background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:"16px",marginBottom:14,cursor:"pointer",backdropFilter:"blur(10px)"}}>
+      <div style={{display:"flex",alignItems:"center",gap:10}}>
+        <div style={{fontSize:20}}>📚</div>
+        <div>
+          <div style={{fontSize:15.44,color:C.text}}>牌庫</div>
+          <div style={{fontSize:11.88,color:C.textFaint,marginTop:2}}>78 張塔羅牌義大全</div>
+        </div>
+      </div>
+      <div style={{color:C.goldDim,fontSize:16}}>›</div>
+    </div>
+
+    {/* 牌庫總覽（全螢幕覆蓋）*/}
+    {libOpen&&<div style={{position:"fixed",inset:0,zIndex:500,background:C.bg,maxWidth:390,margin:"0 auto",display:"flex",flexDirection:"column"}}>
+      <div style={{flexShrink:0,padding:"16px 16px 12px",borderBottom:`1px solid ${C.gridBorder}`,background:C.navBg,backdropFilter:"blur(20px)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+        <div>
+          <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:C.gold,letterSpacing:2}}>牌庫</div>
+          <div style={{fontSize:9.5,color:C.textFaint,marginTop:2}}>長按任一張牌查看牌義</div>
+        </div>
+        <button onClick={()=>{setLibOpen(false);setLibCard(null);}} style={{width:30,height:30,borderRadius:"50%",background:C.accentFaint,border:`1px solid ${C.accentDim}`,color:C.accent,fontSize:14,cursor:"pointer"}}>✕</button>
+      </div>
+      <div style={{flexShrink:0,display:"flex",gap:8,padding:"12px 16px"}}>
+        {[["major","大阿爾克那"],["minor","小阿爾克那"]].map(([id,label])=><button key={id} onClick={()=>setLibTab(id)} style={{flex:1,padding:"9px 0",borderRadius:50,cursor:"pointer",background:libTab===id?`linear-gradient(135deg,${C.blue},${C.blue}cc)`:C.bgPanel,border:`1px solid ${libTab===id?C.accentDim:C.gridBorder}`,fontFamily:"'Cinzel',serif",fontSize:11.88,color:libTab===id?C.gold:C.textDim}}>{label}</button>)}
+      </div>
+      <div style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",padding:"4px 16px 40px"}}>
+        {libTab==="major"&&<div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>{major.map(renderTile)}</div>}
+        {libTab==="minor"&&suits.map(suit=><div key={suit} style={{marginBottom:18}}>
+          <div style={{display:"flex",alignItems:"center",gap:6,margin:"8px 0 10px"}}>
+            <span style={{fontSize:14}}>{SUIT_EMOJI[suit]||"✦"}</span>
+            <span style={{fontFamily:"'Cinzel',serif",fontSize:13,color:C.gold,letterSpacing:1}}>{suit}</span>
+            <div style={{flex:1,height:1,background:`linear-gradient(90deg,${C.accentDim},transparent)`}}/>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>{minor.filter(c=>c.suit===suit).map(renderTile)}</div>
+        </div>)}
+      </div>
+    </div>}
+
+    {/* 牌庫：單張牌義（正/逆位）*/}
+    {libCard&&<div onClick={()=>setLibCard(null)} style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+      <div onClick={e=>e.stopPropagation()} className="card-reveal-anim" style={{width:"100%",maxWidth:330,maxHeight:"86vh",overflowY:"auto",WebkitOverflowScrolling:"touch",background:C.bgModal,border:`1px solid ${C.accentDim}`,borderRadius:20,padding:20,boxShadow:"0 20px 60px rgba(0,0,0,.6)"}}>
+        <div style={{display:"flex",gap:14,marginBottom:14}}>
+          {libCard.img
+            ?<div style={{width:84,height:130,borderRadius:9,overflow:"hidden",flexShrink:0,border:`1px solid ${C.accentDim}`,boxShadow:`0 0 16px ${C.accentFaint}`}}><img src={libCard.img} alt={libCard.name} style={{width:"100%",height:"100%",objectFit:"cover"}}/></div>
+            :<div style={{fontSize:48,flexShrink:0}}>{libCard.emoji}</div>}
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontFamily:"'Cinzel',serif",fontSize:18,color:C.accent,letterSpacing:.5,lineHeight:1.3}}>{libCard.name}</div>
+            {libCard.en&&<div style={{fontFamily:"'Cinzel',serif",fontStyle:"italic",fontSize:11,color:C.textFaint,marginTop:3,letterSpacing:.5}}>{libCard.en}</div>}
+          </div>
+        </div>
+        <div style={{marginBottom:14}}>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:11,color:C.accent,letterSpacing:1,padding:"2px 9px",borderRadius:20,background:`${C.accent}18`,border:`1px solid ${C.accentDim}`}}>△ 正位</span>
+          <div style={{display:"flex",gap:5,flexWrap:"wrap",margin:"7px 0"}}>{(KEYWORDS[libCard.id]?.up||[]).map((kw,i)=><span key={i} style={{fontSize:9.5,padding:"2px 8px",borderRadius:20,background:"rgba(201,168,76,.07)",border:"1px solid rgba(201,168,76,.2)",color:"rgba(201,168,76,.8)",fontFamily:"'Cinzel',serif"}}>{kw}</span>)}</div>
+          <div style={{fontSize:13,color:C.textDim,lineHeight:1.8,fontWeight:300}}>{libCard.up||libCard.meaning}</div>
+        </div>
+        <div style={{height:1,background:`linear-gradient(90deg,transparent,${C.accentDim},transparent)`,marginBottom:14}}/>
+        <div>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:11,color:C.purple,letterSpacing:1,padding:"2px 9px",borderRadius:20,background:"rgba(140,80,220,.12)",border:"1px solid rgba(140,80,220,.35)"}}>▽ 逆位</span>
+          <div style={{display:"flex",gap:5,flexWrap:"wrap",margin:"7px 0"}}>{(KEYWORDS[libCard.id]?.rev||[]).map((kw,i)=><span key={i} style={{fontSize:9.5,padding:"2px 8px",borderRadius:20,background:"rgba(140,80,220,.07)",border:"1px solid rgba(140,80,220,.22)",color:"rgba(180,120,255,.8)",fontFamily:"'Cinzel',serif"}}>{kw}</span>)}</div>
+          <div style={{fontSize:13,color:C.textDim,lineHeight:1.8,fontWeight:300}}>{libCard.rev||libCard.reverse}</div>
+        </div>
+      </div>
+    </div>}
+
     {/* Theme selector (下拉) */}
+
         <div style={{background:C.bgPanel,border:"1px solid rgba(26,58,110,.32)",borderRadius:16,padding:"14px 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
          <div style={{fontSize:12,color:C.gold,fontFamily:"'Cinzel',serif",letterSpacing:1.5,marginBottom:12}}>✦ 介面主題</div>
          {(()=>{
            const t=THEMES[themeId]||THEMES[THEME_IDS[0]];
            const open=openMenu==="theme";
            return <div onClick={()=>setOpenMenu(m=>m==="theme"?null:"theme")} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 12px",borderRadius:12,cursor:"pointer",background:`linear-gradient(135deg,${t.accent}14,${t.blue}0a)`,border:`1px solid ${t.accent}55`,transition:"all .25s"}}>
-             <div style={{display:"flex",gap:4,flexShrink:0}}>。 
+             <div style={{display:"flex",gap:4,flexShrink:0}}> 
                {t.preview.map((c,i)=><div key={i} style={{width:12,height:12,borderRadius:"50%",background:c,border:"1px solid rgba(255,255,255,.15)"}}/>)}
              </div>
              <div style={{flex:1}}>
