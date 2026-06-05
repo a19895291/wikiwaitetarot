@@ -3,7 +3,6 @@
 // 注意：此為靜態 CSS 字串，不含主題變數。含主題的動態 CSS 留在 App.tsx 的第二個 <style> 注入。
 
 export const GLOBAL_CSS = `
-  @import url('https://cdn.jsdelivr.net/gh/justfont/open-fonts@main/fonts/jf-openfont-粉圓/css/jf-openfont-粉圓.css');
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@1,300;1,400;1,500;1,700&family=Zhi+Mang+Xing&family=Noto+Sans+TC:wght@300;400;500&display=swap');
