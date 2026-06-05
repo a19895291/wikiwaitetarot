@@ -4,6 +4,8 @@ import { useState } from "react";
 import { C } from "../data/themes";
 import { SPIRITS } from "../data/spirits";
 import { GoldPayBtn } from "../components/shared/GoldPayBtn";
+import { save, load } from "../utils/storage";
+import * as db from "../lib/db";
 
 function StoryModal({spirit,onClose}){
   const [curChapter,setCurChapter]=useState(0);
