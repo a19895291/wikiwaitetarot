@@ -223,13 +223,13 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack,costumes,setCost
               <div style={{flexShrink:0}}>
                 <div style={{
                   width:54,height:82,borderRadius:9,
-                  ...(cb.bg&&cb.bg.startsWith("data:")?{backgroundColor:cb.isMonstera?"#f0f7f0":"#fff8f5",backgroundImage:"url("+cb.bg+")",backgroundSize:"cover",backgroundPosition:"center",backgroundRepeat:"no-repeat"}:{background:cb.bg}),
-                  border:cb.isMonstera?"none":`1px solid ${cb.border}`,
+                  ...((cb.isImage||(cb.bg&&/^(data:|https?:|\/)/.test(cb.bg)))?{backgroundColor:cb.bgColor||(cb.isMonstera?"#f0f7f0":"#fff8f5"),backgroundImage:"url("+(cb.image||cb.bg)+")",backgroundSize:"cover",backgroundPosition:"center",backgroundRepeat:"no-repeat"}:{background:cb.bg}),
+                  border:cb.isImage?"none":`1px solid ${cb.border}`,
                   display:"flex",alignItems:"center",justifyContent:"center",
                   position:"relative",overflow:"hidden",
                   boxShadow:isActive?`0 0 16px ${cb.liftShadow}`:"0 4px 12px rgba(0,0,0,.3)",
                 }}>
-                  <div style={{position:"absolute",inset:4,border:`1px solid ${cb.isHibiscus?"rgba(210,55,25,0.4)":cb.isMonstera?"rgba(0,0,0,0)":cb.strokeDim}`,borderRadius:5}}/>
+                  {!cb.isImage&&<div style={{position:"absolute",inset:4,border:`1px solid ${cb.isHibiscus?"rgba(210,55,25,0.4)":cb.isMonstera?"rgba(0,0,0,0)":cb.strokeDim}`,borderRadius:5}}/>}
                   {cb.isHibiscus
                     ?<svg viewBox="0 0 60 70" width="32" height="38" fill="none">
                       <path d="M30,35 C27,30 26,22 27.5,17 C28.5,14 30,13.5 30,13.5 C30,13.5 31.5,14 32.5,17 C34,22 33,30 30,35 Z" fill="rgba(210,40,20,0.82)"/>
