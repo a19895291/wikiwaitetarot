@@ -1,6 +1,6 @@
 // 模組 11 — CardBack（牌背面組件）
-// 圖片型牌背（CB.isImage）：不畫外框、六芒星圖騰、底部 ✦ 文字，只鋪圖片＋光影。
-// hibiscusCard / monsteraCard 另有專屬「冷光光影系統」與專屬掃光動畫（保留 isHibiscus/isMonstera 判斷）。
+// 圖片型牌背（CB.isImage）：不畫外框、六芒星、底部 ✦，只鋪圖片。
+// 通用金屬光影：牌背若帶 CB.glow={light,dark,shimmer,edge}，就疊冷光光影層 + 青/綠/紅可調掃光（沿用龜背芋那套，顏色由資料決定）。
 // 一般漸層牌背走六芒星圖騰；silverMoon 走 isLight 的白底掃光。
 import { CB } from "../../data/cardBacks";
 import { cbBgStyle } from "./cbBgStyle";
@@ -8,11 +8,17 @@ import { cbBgStyle } from "./cbBgStyle";
 export function CardBack({w=48,h=72,style={},lifting=false}){
   const sc=w/68;
   const isLight=CB.id==="silverMoon";
-  const isHibiscus=CB.id==="hibiscusCard";
-  const isMonstera=CB.id==="monsteraCard";
-  // 圖片型牌背的單一判斷來源（旗標優先，bg 來源為輔）
   const isImage=!!CB.isImage || !!CB.image
     || (typeof CB.bg==="string" && (/^(data:|https?:|\/)/).test(CB.bg));
+  const g=CB.glow; // 通用光影設定（有才畫光影層）
+
+  const boxShadow = g
+    ? (lifting
+        ? `inset 0 2px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.2),0 14px 35px rgba(0,0,0,.45),0 0 28px rgba(${g.edge},.5),0 0 0 1px rgba(${g.edge},.2)`
+        : `inset 0 2px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(0,0,0,.15),0 6px 20px rgba(0,0,0,.3),0 0 18px rgba(${g.edge},.35),0 0 0 1px rgba(${g.edge},.18)`)
+    : (lifting
+        ? `inset 0 1px 0 rgba(255,255,255,.${isLight?"6":"07"}),0 12px 30px rgba(0,0,0,.${isLight?"3":"7"}),0 0 24px ${CB.liftShadow}`
+        : `inset 0 1px 0 rgba(255,255,255,.${isLight?"5":"07"}),0 4px 16px rgba(0,0,0,.${isLight?"2":"6"}),0 0 14px ${CB.idleShadow}`);
 
   return <div style={{
     width:w, height:h, borderRadius:9,
@@ -22,74 +28,43 @@ export function CardBack({w=48,h=72,style={},lifting=false}){
     position:"relative",flexShrink:0,overflow:"hidden",
     transition:"transform .3s ease, box-shadow .3s ease",
     transform:lifting?"translateY(-6px) scale(1.05)":"none",
-    boxShadow:lifting
-      ?isHibiscus
-        ?`inset 0 2px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.12),0 14px 35px rgba(0,0,0,.3),0 0 28px rgba(210,55,25,.4),0 0 0 1px rgba(210,55,25,.15)`
-        :isMonstera
-        ?`inset 0 2px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.2),0 14px 35px rgba(0,0,0,.45),0 0 28px rgba(46,125,50,.5),0 0 0 1px rgba(46,125,50,.2)`
-        :`inset 0 1px 0 rgba(255,255,255,.${isLight?"6":"07"}),0 12px 30px rgba(0,0,0,.${isLight?"3":"7"}),0 0 24px ${CB.liftShadow}`
-      :isHibiscus
-        ?`inset 0 2px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(0,0,0,.1),0 6px 20px rgba(0,0,0,.2),0 0 18px rgba(210,55,25,.25),0 0 0 1px rgba(210,55,25,.12)`
-        :isMonstera
-        ?`inset 0 2px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(0,0,0,.15),0 6px 20px rgba(0,0,0,.3),0 0 18px rgba(46,125,50,.35),0 0 0 1px rgba(46,125,50,.18)`
-        :`inset 0 1px 0 rgba(255,255,255,.${isLight?"5":"07"}),0 4px 16px rgba(0,0,0,.${isLight?"2":"6"}),0 0 14px ${CB.idleShadow}`,
+    boxShadow,
     ...style
   }}>
-    {/* 扶桑花光影系統 */}
-    {/* 1. 頂部冷陽光：上方20% 冷藍光照 */}
-    {isHibiscus&&<div style={{position:"absolute",top:0,left:0,right:0,height:"20%",
-      background:"linear-gradient(180deg,rgba(180,210,255,.28) 0%,rgba(180,210,255,.10) 60%,transparent 100%)",
-      pointerEvents:"none",zIndex:4,borderRadius:"9px 9px 0 0"}}/>}
-    {/* 2. 左側受光邊：左緣18% 細緻側光 */}
-    {isHibiscus&&<div style={{position:"absolute",top:"8%",left:0,bottom:"8%",width:"18%",
-      background:"linear-gradient(90deg,rgba(210,225,255,.20) 0%,rgba(210,225,255,.08) 55%,transparent 100%)",
-      pointerEvents:"none",zIndex:4}}/>}
-    {/* 3. 右下暗角：左上透明往右下壓暗 */}
-    {isHibiscus&&<div style={{position:"absolute",inset:0,
-      background:"linear-gradient(135deg,transparent 40%,rgba(60,10,5,.18) 100%)",
-      pointerEvents:"none",zIndex:4,borderRadius:9}}/>}
-    {/* 4. 斜面光影：145°金屬板面，左上冷白、右下微暗 */}
-    {isHibiscus&&<div style={{position:"absolute",inset:0,
-      background:"linear-gradient(145deg,rgba(220,235,255,.16) 0%,rgba(220,235,255,.05) 30%,transparent 55%,rgba(40,8,4,.07) 100%)",
-      pointerEvents:"none",zIndex:4,borderRadius:9}}/>}
-    {/* 5. 底部陰影：底端13% 自然陰影 */}
-    {isHibiscus&&<div style={{position:"absolute",bottom:0,left:0,right:0,height:"13%",
-      background:"linear-gradient(0deg,rgba(60,10,5,.16) 0%,transparent 100%)",
-      pointerEvents:"none",zIndex:4}}/>}
-    {/* 龜背芋光影系統 */}
-    {/* 1. 頂部冷陽光：上方20% 冷藍光照 */}
-    {isMonstera&&<div style={{position:"absolute",top:0,left:0,right:0,height:"20%",
-      background:"linear-gradient(180deg,rgba(180,220,200,.28) 0%,rgba(180,220,200,.10) 60%,transparent 100%)",
-      pointerEvents:"none",zIndex:4,borderRadius:"9px 9px 0 0"}}/>}
-    {/* 2. 左側受光邊：左緣18% 細緻側光 */}
-    {isMonstera&&<div style={{position:"absolute",top:"8%",left:0,bottom:"8%",width:"18%",
-      background:"linear-gradient(90deg,rgba(200,235,215,.20) 0%,rgba(200,235,215,.08) 55%,transparent 100%)",
-      pointerEvents:"none",zIndex:4}}/>}
-    {/* 3. 右下暗角：左上透明往右下壓暗 */}
-    {isMonstera&&<div style={{position:"absolute",inset:0,
-      background:"linear-gradient(135deg,transparent 40%,rgba(10,40,15,.20) 100%)",
-      pointerEvents:"none",zIndex:4,borderRadius:9}}/>}
-    {/* 4. 斜面光影：145°金屬板面，左上冷白、右下微暗 */}
-    {isMonstera&&<div style={{position:"absolute",inset:0,
-      background:"linear-gradient(145deg,rgba(220,245,230,.16) 0%,rgba(220,245,230,.05) 30%,transparent 55%,rgba(5,30,10,.08) 100%)",
-      pointerEvents:"none",zIndex:4,borderRadius:9}}/>}
-    {/* 5. 底部陰影：底端13% 自然陰影 */}
-    {isMonstera&&<div style={{position:"absolute",bottom:0,left:0,right:0,height:"13%",
-      background:"linear-gradient(0deg,rgba(10,40,15,.18) 0%,transparent 100%)",
-      pointerEvents:"none",zIndex:4}}/>}
+    {/* 通用金屬光影（glow） */}
+    {g&&<>
+      {/* 頂部冷光 */}
+      <div style={{position:"absolute",top:0,left:0,right:0,height:"20%",
+        background:`linear-gradient(180deg,rgba(${g.light},.28) 0%,rgba(${g.light},.10) 60%,transparent 100%)`,
+        pointerEvents:"none",zIndex:4,borderRadius:"9px 9px 0 0"}}/>
+      {/* 左側受光 */}
+      <div style={{position:"absolute",top:"8%",left:0,bottom:"8%",width:"18%",
+        background:`linear-gradient(90deg,rgba(${g.light},.20) 0%,rgba(${g.light},.08) 55%,transparent 100%)`,
+        pointerEvents:"none",zIndex:4}}/>
+      {/* 右下暗角 */}
+      <div style={{position:"absolute",inset:0,
+        background:`linear-gradient(135deg,transparent 40%,rgba(${g.dark},.18) 100%)`,
+        pointerEvents:"none",zIndex:4,borderRadius:9}}/>
+      {/* 斜面光影 */}
+      <div style={{position:"absolute",inset:0,
+        background:`linear-gradient(145deg,rgba(${g.light},.16) 0%,rgba(${g.light},.05) 30%,transparent 55%,rgba(${g.dark},.08) 100%)`,
+        pointerEvents:"none",zIndex:4,borderRadius:9}}/>
+      {/* 底部陰影 */}
+      <div style={{position:"absolute",bottom:0,left:0,right:0,height:"13%",
+        background:`linear-gradient(0deg,rgba(${g.dark},.17) 0%,transparent 100%)`,
+        pointerEvents:"none",zIndex:4}}/>
+    </>}
     {/* 外框 - 圖片型牌背不顯示 */}
     {!isImage&&<div style={{position:"absolute",inset:Math.round(4*sc),
       border:`1px solid ${CB.strokeDim}`,
       borderRadius:5,pointerEvents:"none",zIndex:3}}/>}
-    {/* 金屬掃光 */}
+    {/* 掃光 */}
     <div style={{position:"absolute",top:"-40%",left:"-35%",width:"45%",height:"180%",
-      background:isMonstera
-        ?"linear-gradient(105deg,transparent 0%,transparent 28%,rgba(210,240,225,0.45) 43%,rgba(180,230,205,0.68) 50%,rgba(210,240,225,0.45) 57%,transparent 72%,transparent 100%)"
-        :isHibiscus
-        ?"linear-gradient(105deg,transparent 0%,transparent 28%,rgba(230,240,255,0.45) 43%,rgba(210,225,255,0.65) 50%,rgba(230,240,255,0.45) 57%,transparent 72%,transparent 100%)"
+      background:g
+        ?`linear-gradient(105deg,transparent 0%,transparent 28%,rgba(${g.shimmer},0.45) 43%,rgba(${g.shimmer},0.68) 50%,rgba(${g.shimmer},0.45) 57%,transparent 72%,transparent 100%)`
         :CB.shimmer,
       transform:"skewX(-12deg)",pointerEvents:"none",zIndex:6,
-      animation:isMonstera?"monsteraShimmer 2.8s ease-in-out infinite":isHibiscus?"hibiscusShimmer 2.8s ease-in-out infinite":isLight?"silverShimmer 3s ease-in-out infinite":"none"}}/>
+      animation:g?"monsteraShimmer 2.8s ease-in-out infinite":isLight?"silverShimmer 3s ease-in-out infinite":"none"}}/>
     {/* 非圖片型：六芒星圖騰 */}
     {!isImage&&<svg viewBox="0 0 60 70" width={Math.round(36*sc)} height={Math.round(42*sc)} fill="none" style={{position:"relative",zIndex:2}}>
       <polygon points="30,3 57,18 57,52 30,67 3,52 3,18" stroke={CB.stroke} strokeWidth="1.2" fill="none"/>
