@@ -31,7 +31,8 @@ export const CARD_BACKS: Record<string, any> = {
     id:"imperialGold", name:"帝王金箔",
     desc:"極黑宮廷底色，22K金箔紋路，奢華收藏級質感",
     emoji:"👑", price:398, owned:false,
-    bg:"linear-gradient(145deg,rgba(201,168,76,0.08) 0%,transparent 15%,rgba(180,140,40,0.06) 30%,transparent 45%,rgba(201,168,76,0.09) 60%,transparent 75%,rgba(180,140,40,0.07) 90%,transparent 100%),linear-gradient(200deg,#110900 0%,#060400 25%,#0e0800 45%,#050300 65%,#0a0600 80%,#040200 100%)",
+    bg:"/backs/imperial.jpg",
+    isImage:true,
     border:"rgba(201,168,76,0.85)",
     shimmer:"linear-gradient(118deg,transparent 0%,transparent 28%,rgba(201,168,76,0.08) 35%,rgba(255,230,120,0.35) 45%,rgba(255,240,160,0.5) 50%,rgba(255,230,120,0.35) 55%,rgba(201,168,76,0.08) 62%,transparent 68%,transparent 100%)",
     stroke:"rgba(201,168,76,0.85)", strokeDim:"rgba(201,168,76,0.45)", strokeFaint:"rgba(201,168,76,0.2)",
@@ -66,6 +67,7 @@ export const CARD_BACKS: Record<string, any> = {
     liftShadow:"rgba(210,55,25,.38)", idleShadow:"rgba(180,40,15,.16)",
     preview: ["#ffffff","#e63c1e","#f8f5f3"],
     isHibiscus: true,
+    isImage: true,
   },
   monsteraCard: {
     id:"monsteraCard", name:"龜背芋秘境",
@@ -80,6 +82,8 @@ export const CARD_BACKS: Record<string, any> = {
     liftShadow:"rgba(46,125,50,.38)", idleShadow:"rgba(27,94,32,.16)",
     preview: ["#0f2814","#2e7d32","#1a3d1c"],
     isMonstera: true,
+    isImage: true,
+    bgColor: "#f0f7f0",
   },
 };
 export const CARD_BACK_IDS = Object.keys(CARD_BACKS);
