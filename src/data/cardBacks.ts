@@ -19,7 +19,10 @@ export const CARD_BACKS: Record<string, any> = {
     id:"silverMoon", name:"月光銀曜",
     desc:"純白底色，銀色金屬光澤，現代典雅質感",
     emoji:"🌕", price:198, owned:false,
-    bg:"linear-gradient(145deg,rgba(255,255,255,0.95) 0%,rgba(230,235,245,0.9) 20%,rgba(215,220,235,0.85) 35%,rgba(240,242,248,0.92) 50%,rgba(220,225,240,0.88) 65%,rgba(245,246,250,0.95) 80%,rgba(255,255,255,0.98) 100%)",
+        bg:"/backs/coral.jpg",
+    isImage:true,
+    bgColor:"#eaf8f6",
+    glow:{ light:"212,242,238", dark:"12,74,68", shimmer:"215,248,245", edge:"0,168,150" },
     border:"rgba(180,185,210,0.8)",
     shimmer:"linear-gradient(115deg,transparent 0%,rgba(255,255,255,0.0) 25%,rgba(255,255,255,0.9) 42%,rgba(220,225,255,0.7) 50%,rgba(255,255,255,0.0) 58%,transparent 80%)",
     stroke:"rgba(160,165,195,0.7)", strokeDim:"rgba(160,165,195,0.35)", strokeFaint:"rgba(160,165,195,0.18)",
@@ -68,6 +71,7 @@ export const CARD_BACKS: Record<string, any> = {
     preview: ["#ffffff","#e63c1e","#f8f5f3"],
     isHibiscus: true,
     isImage: true,
+    glow:{ light:"210,225,255", dark:"60,10,5", shimmer:"220,232,255", edge:"210,55,25" },
   },
   monsteraCard: {
     id:"monsteraCard", name:"龜背芋秘境",
@@ -84,6 +88,7 @@ export const CARD_BACKS: Record<string, any> = {
     isMonstera: true,
     isImage: true,
     bgColor: "#f0f7f0",
+    glow:{ light:"200,235,215", dark:"10,40,15", shimmer:"195,235,212", edge:"46,125,50" },
   },
 };
 export const CARD_BACK_IDS = Object.keys(CARD_BACKS);
