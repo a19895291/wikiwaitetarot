@@ -1,7 +1,7 @@
 // 模組 11 — CardBack（牌背面組件）
-// 注意：CardBack 以 data-cb attribute 觸發 GLOBAL_CSS 中的動畫選擇器，
-// 並內部呼叫 cbBgStyle() 處理 base64 圖片 vs CSS gradient 兩種牌背。
-// silverMoon/hibiscusCard/monsteraCard 需特判 isLight/isHibiscus/isMonstera。
+// 圖片型牌背（CB.isImage）：不畫外框、六芒星圖騰、底部 ✦ 文字，只鋪圖片＋光影。
+// hibiscusCard / monsteraCard 另有專屬「冷光光影系統」與專屬掃光動畫（保留 isHibiscus/isMonstera 判斷）。
+// 一般漸層牌背走六芒星圖騰；silverMoon 走 isLight 的白底掃光。
 import { CB } from "../../data/cardBacks";
 import { cbBgStyle } from "./cbBgStyle";
 
@@ -10,11 +10,14 @@ export function CardBack({w=48,h=72,style={},lifting=false}){
   const isLight=CB.id==="silverMoon";
   const isHibiscus=CB.id==="hibiscusCard";
   const isMonstera=CB.id==="monsteraCard";
+  // 圖片型牌背的單一判斷來源（旗標優先，bg 來源為輔）
+  const isImage=!!CB.isImage || !!CB.image
+    || (typeof CB.bg==="string" && (/^(data:|https?:|\/)/).test(CB.bg));
 
   return <div style={{
     width:w, height:h, borderRadius:9,
     ...cbBgStyle(),
-    border:(isMonstera||isHibiscus)?`none`:`1px solid ${CB.border}`,
+    border:isImage?`none`:`1px solid ${CB.border}`,
     display:"flex",alignItems:"center",justifyContent:"center",
     position:"relative",flexShrink:0,overflow:"hidden",
     transition:"transform .3s ease, box-shadow .3s ease",
@@ -53,7 +56,7 @@ export function CardBack({w=48,h=72,style={},lifting=false}){
     {isHibiscus&&<div style={{position:"absolute",bottom:0,left:0,right:0,height:"13%",
       background:"linear-gradient(0deg,rgba(60,10,5,.16) 0%,transparent 100%)",
       pointerEvents:"none",zIndex:4}}/>}
-        {/* 龜背芋光影系統 */}
+    {/* 龜背芋光影系統 */}
     {/* 1. 頂部冷陽光：上方20% 冷藍光照 */}
     {isMonstera&&<div style={{position:"absolute",top:0,left:0,right:0,height:"20%",
       background:"linear-gradient(180deg,rgba(180,220,200,.28) 0%,rgba(180,220,200,.10) 60%,transparent 100%)",
@@ -75,7 +78,7 @@ export function CardBack({w=48,h=72,style={},lifting=false}){
       background:"linear-gradient(0deg,rgba(10,40,15,.18) 0%,transparent 100%)",
       pointerEvents:"none",zIndex:4}}/>}
     {/* 外框 - 圖片型牌背不顯示 */}
-    {!isHibiscus&&!isMonstera&&<div style={{position:"absolute",inset:Math.round(4*sc),
+    {!isImage&&<div style={{position:"absolute",inset:Math.round(4*sc),
       border:`1px solid ${CB.strokeDim}`,
       borderRadius:5,pointerEvents:"none",zIndex:3}}/>}
     {/* 金屬掃光 */}
@@ -88,7 +91,7 @@ export function CardBack({w=48,h=72,style={},lifting=false}){
       transform:"skewX(-12deg)",pointerEvents:"none",zIndex:6,
       animation:isMonstera?"monsteraShimmer 2.8s ease-in-out infinite":isHibiscus?"hibiscusShimmer 2.8s ease-in-out infinite":isLight?"silverShimmer 3s ease-in-out infinite":"none"}}/>
     {/* 非圖片型：六芒星圖騰 */}
-    {!isHibiscus&&!isMonstera&&<svg viewBox="0 0 60 70" width={Math.round(36*sc)} height={Math.round(42*sc)} fill="none" style={{position:"relative",zIndex:2}}>
+    {!isImage&&<svg viewBox="0 0 60 70" width={Math.round(36*sc)} height={Math.round(42*sc)} fill="none" style={{position:"relative",zIndex:2}}>
       <polygon points="30,3 57,18 57,52 30,67 3,52 3,18" stroke={CB.stroke} strokeWidth="1.2" fill="none"/>
       <polygon points="30,13 47,23 47,47 30,57 13,47 13,23" stroke={CB.strokeDim} strokeWidth="0.8" fill="none"/>
       <line x1="30" y1="3"  x2="30" y2="67" stroke={CB.strokeFaint} strokeWidth="0.5"/>
@@ -107,8 +110,7 @@ export function CardBack({w=48,h=72,style={},lifting=false}){
     <div style={{position:"absolute",bottom:Math.round(10*sc),fontFamily:"'Cinzel',serif",
       fontSize:Math.round(6*sc),letterSpacing:3,
       color:CB.footnote,zIndex:4}}>
-      {(isHibiscus||isMonstera)?"":"✦ ✦ ✦"}
+      {isImage?"":"✦ ✦ ✦"}
     </div>
   </div>;
 }
-
