@@ -26,15 +26,16 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
   // 每次 CB 改變時直接更新 .daily-card-back 的 DOM style
   useEffect(()=>{
     const els=document.querySelectorAll('.daily-card-back');
-    const isImg=CB.bg&&CB.bg.startsWith("data:");
     const isMCB=CB.id==="monsteraCard";
     const isHCB=CB.id==="hibiscusCard";
-    const isImgCB=isMCB||isHCB;
+    const isImgCB=!!CB.isImage;
+    const imgSrc=CB.image||CB.bg||"";
+    const isImg=!!CB.isImage||/^(data:|https?:|\/)/.test(imgSrc);
     els.forEach(el=>{
       if(isImg){
         el.style.background="";
-        el.style.backgroundColor=isMCB?"#f0f7f0":"#fff8f5";
-        el.style.backgroundImage=`url(${CB.bg})`;
+        el.style.backgroundColor=CB.bgColor||(isMCB?"#f0f7f0":"#fff8f5");
+        el.style.backgroundImage=`url(${imgSrc})`;
         el.style.backgroundSize="cover";
         el.style.backgroundPosition="center center";
         el.style.backgroundRepeat="no-repeat";
@@ -144,9 +145,8 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
 
   const isHibiscusCB=CB.id==="hibiscusCard";
   const isMonsteraCB=CB.id==="monsteraCard";
-  const backSVG=()=>isHibiscusCB
-    ?``
-    :isMonsteraCB
+  const isImageCB=!!CB.isImage;
+  const backSVG=()=>isImageCB
     ?``
     :`<svg viewBox="0 0 60 70" width="36" height="42" fill="none">
     <polygon points="30,3 57,18 57,52 30,67 3,52 3,18" stroke="${CB.stroke}" stroke-width="1.2" fill="none"/>
@@ -330,7 +330,7 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
               {/* Back */}
               <div className="daily-card-back" data-cb="1">
                 <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:5}}
-                  dangerouslySetInnerHTML={{__html:backSVG()+`<div style="font-family:'Cinzel',serif;font-size:6px;letter-spacing:3px;color:${CB.footnote}">${isHibiscusCB?"✿ ✦ ✿":isMonsteraCB?"":"✦ ✦ ✦"}</div>`}}/>
+                  dangerouslySetInnerHTML={{__html:backSVG()+`<div style="font-family:'Cinzel',serif;font-size:6px;letter-spacing:3px;color:${CB.footnote}">${isImageCB?"":"✦ ✦ ✦"}</div>`}}/>
               </div>
               {/* Face */}
               {card&&<div className={`daily-card-face ${posClass}`}>
