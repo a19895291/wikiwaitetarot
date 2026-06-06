@@ -45,10 +45,8 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
         el.style.backgroundImage="";
       }
       el.style.border=isImgCB?"none":`1px solid ${CB.border}`;
-      el.style.boxShadow=isHCB
-        ?`inset 0 2px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(0,0,0,.1),0 6px 20px rgba(0,0,0,.2),0 0 18px rgba(210,55,25,.25),0 0 0 1px rgba(210,55,25,.12)`
-        :isMCB
-        ?`inset 0 2px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(0,0,0,.15),0 6px 20px rgba(0,0,0,.3),0 0 18px rgba(46,125,50,.35),0 0 0 1px rgba(46,125,50,.18)`
+      el.style.boxShadow=CB.glow
+        ?`inset 0 2px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(0,0,0,.15),0 6px 20px rgba(0,0,0,.3),0 0 18px rgba(${CB.glow.edge},.35),0 0 0 1px rgba(${CB.glow.edge},.18)`
         :`inset 0 1px 0 rgba(255,255,255,.07),inset 0 -1px 0 rgba(0,0,0,.5),0 4px 16px rgba(0,0,0,.5),0 0 14px ${CB.idleShadow}`;
     });
   });
@@ -233,46 +231,30 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
     }}>
       {/* Deck Stack */}
       <div style={{position:"relative",width:134,height:207,marginBottom:28,cursor:"pointer"}} onClick={handleStart}>
-        <div style={{position:"absolute",width:123,height:190,borderRadius:12,border:(isMonsteraCB||isHibiscusCB)?"none":`1px solid ${CB.border}`,top:11,left:6,...cbBgStyle(),transform:"rotate(-5deg)"}}/>
-        <div style={{position:"absolute",width:123,height:190,borderRadius:12,border:(isMonsteraCB||isHibiscusCB)?"none":`1px solid ${CB.border}`,top:6,left:3,...cbBgStyle(),transform:"rotate(-2.5deg)"}}/>
+        <div style={{position:"absolute",width:123,height:190,borderRadius:12,border:isImageCB?"none":`1px solid ${CB.border}`,top:11,left:6,...cbBgStyle(),transform:"rotate(-5deg)"}}/>
+        <div style={{position:"absolute",width:123,height:190,borderRadius:12,border:isImageCB?"none":`1px solid ${CB.border}`,top:6,left:3,...cbBgStyle(),transform:"rotate(-2.5deg)"}}/>
         {/* Deck top */}
         <div style={{
           width:126,height:193,borderRadius:12,
           ...cbBgStyle(),
-          border:(isMonsteraCB||isHibiscusCB)?"none":`1px solid ${CB.border}`,
-          boxShadow:isMonsteraCB?`inset 0 2px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(0,0,0,.15),0 8px 32px rgba(0,0,0,.4),0 0 20px rgba(46,125,50,.4),0 0 0 1px rgba(46,125,50,.15)`:`inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.6), 0 0 20px ${CB.idleShadow}`,
+          border:isImageCB?"none":`1px solid ${CB.border}`,
+          boxShadow:CB.glow?`inset 0 2px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(0,0,0,.15),0 8px 32px rgba(0,0,0,.4),0 0 20px rgba(${CB.glow.edge},.4),0 0 0 1px rgba(${CB.glow.edge},.15)`:`inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.6), 0 0 20px ${CB.idleShadow}`,
           display:"flex",alignItems:"center",justifyContent:"center",
           position:"absolute",top:0,left:0,overflow:"hidden",
           animation:"none",
         }}>
-          <div style={{position:"absolute",inset:6,border:`1px solid ${isHibiscusCB?"rgba(0,0,0,0)":isMonsteraCB?"rgba(0,0,0,0)":CB.strokeDim}`,borderRadius:6}}/>
-          {/* 扶桑花金屬質感 */}
-          {isHibiscusCB&&<div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.15) 100%)",pointerEvents:"none",zIndex:4,borderRadius:10}}/>}
-          {isHibiscusCB&&<div style={{position:"absolute",inset:0,background:"linear-gradient(145deg,rgba(255,255,255,.15) 0%,transparent 35%,transparent 65%,rgba(0,0,0,.07) 100%)",pointerEvents:"none",zIndex:4,borderRadius:10}}/>}
-          {/* 扶桑花光影 */}
-          {isHibiscusCB&&<div style={{position:"absolute",top:0,left:0,right:0,height:"20%",background:"linear-gradient(180deg,rgba(180,210,255,.28) 0%,rgba(180,210,255,.10) 60%,transparent 100%)",pointerEvents:"none",zIndex:4,borderRadius:"10px 10px 0 0"}}/>}
-          {isHibiscusCB&&<div style={{position:"absolute",top:"8%",left:0,bottom:"8%",width:"18%",background:"linear-gradient(90deg,rgba(210,225,255,.20) 0%,rgba(210,225,255,.08) 55%,transparent 100%)",pointerEvents:"none",zIndex:4}}/>}
-          {isHibiscusCB&&<div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,transparent 40%,rgba(60,10,5,.18) 100%)",pointerEvents:"none",zIndex:4,borderRadius:10}}/>}
-          {isHibiscusCB&&<div style={{position:"absolute",inset:0,background:"linear-gradient(145deg,rgba(220,235,255,.16) 0%,rgba(220,235,255,.05) 30%,transparent 55%,rgba(40,8,4,.07) 100%)",pointerEvents:"none",zIndex:4,borderRadius:10}}/>}
-          {isHibiscusCB&&<div style={{position:"absolute",bottom:0,left:0,right:0,height:"13%",background:"linear-gradient(0deg,rgba(60,10,5,.16) 0%,transparent 100%)",pointerEvents:"none",zIndex:4}}/>}
-          {/* 龜背芋光影 */}
-          {isMonsteraCB&&<div style={{position:"absolute",top:0,left:0,right:0,height:"20%",background:"linear-gradient(180deg,rgba(180,220,200,.28) 0%,rgba(180,220,200,.10) 60%,transparent 100%)",pointerEvents:"none",zIndex:4,borderRadius:"10px 10px 0 0"}}/>}
-          {isMonsteraCB&&<div style={{position:"absolute",top:"8%",left:0,bottom:"8%",width:"18%",background:"linear-gradient(90deg,rgba(200,235,215,.20) 0%,rgba(200,235,215,.08) 55%,transparent 100%)",pointerEvents:"none",zIndex:4}}/>}
-          {isMonsteraCB&&<div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,transparent 40%,rgba(10,40,15,.20) 100%)",pointerEvents:"none",zIndex:4,borderRadius:10}}/>}
-          {isMonsteraCB&&<div style={{position:"absolute",inset:0,background:"linear-gradient(145deg,rgba(220,245,230,.16) 0%,rgba(220,245,230,.05) 30%,transparent 55%,rgba(5,30,10,.08) 100%)",pointerEvents:"none",zIndex:4,borderRadius:10}}/>}
-          {isMonsteraCB&&<div style={{position:"absolute",bottom:0,left:0,right:0,height:"13%",background:"linear-gradient(0deg,rgba(10,40,15,.18) 0%,transparent 100%)",pointerEvents:"none",zIndex:4}}/>}
-          {!isHibiscusCB&&!isMonsteraCB&&<div style={{position:"absolute",top:"-30%",left:"-20%",width:"60%",height:"160%",
+          <div style={{position:"absolute",inset:6,border:`1px solid ${isImageCB?"rgba(0,0,0,0)":CB.strokeDim}`,borderRadius:6}}/>
+          {/* 通用金屬光影（glow，沿用龜背芋那套，顏色由 CB.glow 提供）*/}
+          {CB.glow&&<>
+            <div style={{position:"absolute",top:0,left:0,right:0,height:"20%",background:`linear-gradient(180deg,rgba(${CB.glow.light},.28) 0%,rgba(${CB.glow.light},.10) 60%,transparent 100%)`,pointerEvents:"none",zIndex:4,borderRadius:"10px 10px 0 0"}}/>
+            <div style={{position:"absolute",top:"8%",left:0,bottom:"8%",width:"18%",background:`linear-gradient(90deg,rgba(${CB.glow.light},.20) 0%,rgba(${CB.glow.light},.08) 55%,transparent 100%)`,pointerEvents:"none",zIndex:4}}/>
+            <div style={{position:"absolute",inset:0,background:`linear-gradient(135deg,transparent 40%,rgba(${CB.glow.dark},.18) 100%)`,pointerEvents:"none",zIndex:4,borderRadius:10}}/>
+            <div style={{position:"absolute",inset:0,background:`linear-gradient(145deg,rgba(${CB.glow.light},.16) 0%,rgba(${CB.glow.light},.05) 30%,transparent 55%,rgba(${CB.glow.dark},.08) 100%)`,pointerEvents:"none",zIndex:4,borderRadius:10}}/>
+            <div style={{position:"absolute",bottom:0,left:0,right:0,height:"13%",background:`linear-gradient(0deg,rgba(${CB.glow.dark},.17) 0%,transparent 100%)`,pointerEvents:"none",zIndex:4}}/>
+            <div style={{position:"absolute",top:"-40%",left:"-55%",width:"45%",height:"180%",background:`linear-gradient(105deg,transparent 0%,transparent 28%,rgba(${CB.glow.shimmer},0.45) 43%,rgba(${CB.glow.shimmer},0.68) 50%,rgba(${CB.glow.shimmer},0.45) 57%,transparent 72%,transparent 100%)`,transform:"skewX(-12deg)",pointerEvents:"none",zIndex:6,animation:"monsteraShimmer 2.8s ease-in-out infinite"}}/>
+          </>}
+          {!CB.glow&&<div style={{position:"absolute",top:"-30%",left:"-20%",width:"60%",height:"160%",
             background:CB.shimmer,transform:"skewX(-10deg)",pointerEvents:"none"}}/>}
-          {/* 扶桑花銀光掃過 */}
-          {isHibiscusCB&&<div style={{position:"absolute",top:"-40%",left:"-55%",width:"45%",height:"180%",
-            background:"linear-gradient(105deg,transparent 0%,transparent 28%,rgba(230,240,255,.45) 43%,rgba(210,225,255,.65) 50%,rgba(230,240,255,.45) 57%,transparent 72%,transparent 100%)",
-            transform:"skewX(-12deg)",pointerEvents:"none",zIndex:6,
-            animation:"hibiscusShimmer 2.8s ease-in-out infinite"}}/>}
-          {/* 龜背芋銀光掃過 */}
-          {isMonsteraCB&&<div style={{position:"absolute",top:"-40%",left:"-55%",width:"45%",height:"180%",
-            background:"linear-gradient(105deg,transparent 0%,transparent 28%,rgba(210,240,225,.45) 43%,rgba(180,230,205,.68) 50%,rgba(210,240,225,.45) 57%,transparent 72%,transparent 100%)",
-            transform:"skewX(-12deg)",pointerEvents:"none",zIndex:6,
-            animation:"monsteraShimmer 2.8s ease-in-out infinite"}}/>}
           <div style={{position:"relative",zIndex:2,display:"flex",flexDirection:"column",alignItems:"center",gap:8}}
             dangerouslySetInnerHTML={{__html:backSVG()}}/>
         </div>
@@ -433,5 +415,3 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
     </div>}
   </div>;
 }
-
-// ── Spread Page ───────────────────────────────────────────────────────────────
