@@ -178,6 +178,20 @@ export default function App(){
     return {background:grad};
   })();
 
+  // 牌背動態樣式（通用 glow；圖片型走 url()）
+  const _cbImg = CB.isImage || /^(data:|https?:|\/)/.test(CB.bg||"");
+  const _g = CB.glow;
+  const cbBgCss = _cbImg ? "url("+(CB.image||CB.bg)+") center center / cover no-repeat" : CB.bg;
+  const cbBorderCss = _cbImg ? "none" : "1px solid "+CB.border;
+  const cbBoxShadow = _g
+    ? "inset 0 2px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(0,0,0,.15),0 6px 20px rgba(0,0,0,.3),0 0 18px rgba("+_g.edge+",.35),0 0 0 1px rgba("+_g.edge+",.18)"
+    : "inset 0 1px 0 rgba(255,255,255,.07),inset 0 -1px 0 rgba(0,0,0,.5),0 4px 16px rgba(0,0,0,.5),0 0 14px "+CB.idleShadow;
+  const cbBefore = _g ? "linear-gradient(135deg,transparent 40%,rgba("+_g.dark+",.18) 100%)" : "none";
+  const cbAfter = _g
+    ? "linear-gradient(105deg,transparent 0%,transparent 28%,rgba("+_g.shimmer+",0.45) 43%,rgba("+_g.shimmer+",0.68) 50%,rgba("+_g.shimmer+",0.45) 57%,transparent 72%,transparent 100%)"
+    : CB.shimmer;
+  const cbAfterAnim = _g ? "monsteraShimmer 2.8s ease-in-out infinite" : "none";
+
   if (loading) return (
   <div style={{minHeight:"100vh",display:"flex",alignItems:"center",
     justifyContent:"center",background:C.bg,color:C.accent,
@@ -203,34 +217,22 @@ export default function App(){
     --accent-faint:${C.accentFaint};
     --cb-stroke-dim:${CB.strokeDim};
   }
-  .daily-card-back[data-cb] {
-    background:${CB.bg.startsWith("data:") ? "url("+CB.bg+") center center / cover no-repeat" : CB.bg};
-    border:${(CB.id==="monsteraCard"||CB.id==="hibiscusCard")?"none":`1px solid ${CB.border}`};
-    box-shadow:${CB.id==="hibiscusCard"
-      ?"inset 0 2px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(0,0,0,.1),0 6px 20px rgba(0,0,0,.2),0 0 18px rgba(210,55,25,.25),0 0 0 1px rgba(210,55,25,.12)"
-      :CB.id==="monsteraCard"
-      ?"inset 0 2px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(0,0,0,.15),0 6px 20px rgba(0,0,0,.3),0 0 18px rgba(46,125,50,.35),0 0 0 1px rgba(46,125,50,.18)"
-      :`inset 0 1px 0 rgba(255,255,255,.07),inset 0 -1px 0 rgba(0,0,0,.5),0 4px 16px rgba(0,0,0,.5),0 0 14px ${CB.idleShadow}`};
+    .daily-card-back[data-cb] {
+    background:${cbBgCss};
+    border:${cbBorderCss};
+    box-shadow:${cbBoxShadow};
   }
   .daily-card-back[data-cb]::before {
     content:'';position:absolute;inset:0;
-    background:${CB.id==="hibiscusCard"
-      ?"linear-gradient(135deg,transparent 40%,rgba(60,10,5,.18) 100%)"
-      :CB.id==="monsteraCard"
-      ?"linear-gradient(135deg,transparent 40%,rgba(10,40,15,.20) 100%)"
-      :"none"};
+    background:${cbBefore};
     pointer-events:none;z-index:4;border-radius:9px;
   }
   .daily-card-back[data-cb]::after {
     content:'';position:absolute;top:-40%;left:-55%;
     width:45%;height:180%;
-    background:${CB.id==="monsteraCard"
-      ?"linear-gradient(105deg,transparent 0%,transparent 28%,rgba(210,240,225,0.45) 43%,rgba(180,230,205,0.68) 50%,rgba(210,240,225,0.45) 57%,transparent 72%,transparent 100%)"
-      :CB.id==="hibiscusCard"
-      ?"linear-gradient(105deg,transparent 0%,transparent 28%,rgba(230,240,255,0.45) 43%,rgba(210,225,255,0.65) 50%,rgba(230,240,255,0.45) 57%,transparent 72%,transparent 100%)"
-      :CB.shimmer};
+    background:${cbAfter};
     transform:skewX(-12deg);pointer-events:none;z-index:6;
-    animation:${CB.id==="monsteraCard"?"monsteraShimmer 2.8s ease-in-out infinite":CB.id==="hibiscusCard"?"hibiscusShimmer 2.8s ease-in-out infinite":"none"};
+    animation:${cbAfterAnim};
   }
   @keyframes deckPulse {
     0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,0.06),0 8px 32px rgba(0,0,0,0.6),0 0 20px ${CB.idleShadow};}
