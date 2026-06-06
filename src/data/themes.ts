@@ -206,7 +206,7 @@ export const THEMES: Record<string, any> = {
     desc: "2026流行色｜Teal青｜Fuchsia桃｜清爽明亮仲夏感",
     preview: ["#e8f8f6","#00a896","#e8406a"],
     bg: "#eaf8f6",
-    bgGrad: "linear-gradient(rgba(234,248,246,0.88),rgba(238,250,249,0.92)), url(/themes/seawave.jpg) center/cover no-repeat",
+    bgGrad: "linear-gradient(rgba(234,248,246,0.6),rgba(238,250,249,0.75)), url(/themes/seawave.jpg) center/cover no-repeat",
     bgCard: "linear-gradient(160deg,#ffffff,#edfaf8)",
     bgPanel: "rgba(255,255,255,.88)",
     bgModal: "linear-gradient(170deg,#ffffff,#edfaf8)",
