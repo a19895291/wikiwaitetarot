@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { C } from "../../data/themes";
 
-export function SpiritPet({spirit,activeSpiritEmoji}){
+export function SpiritPet({spirit,activeSpiritEmoji,uiScale=1}){
   const [action,setAction]=useState("float");
   const [msg,setMsg]=useState(null);
   const [pos,setPos]=useState({x:window.innerWidth-80,y:window.innerHeight-150});
@@ -54,17 +54,17 @@ export function SpiritPet({spirit,activeSpiritEmoji}){
       animation:"bubblePop .4s cubic-bezier(.34,1.56,.64,1) forwards",
       background:C.bgPanel,
       border:`1px solid ${C.accentDim}`,
-      borderRadius:14,padding:"9px 13px",
-      fontSize:13.07,color:C.text,
-      maxWidth:190,lineHeight:1.65,whiteSpace:"pre-wrap",
+      borderRadius:14*uiScale,padding:`${9*uiScale}px ${13*uiScale}px`,
+      fontSize:13.07*uiScale,color:C.text,
+      maxWidth:190*uiScale,lineHeight:1.65,whiteSpace:"pre-wrap",
       boxShadow:`0 6px 24px rgba(0,0,0,.4), 0 0 14px ${C.accentFaint}`,
       width:"max-content",pointerEvents:"none",
     }}>
       {msg}
-      <div style={{position:"absolute",bottom:-7,left:"50%",transform:"translateX(-50%)",width:0,height:0,borderLeft:"7px solid transparent",borderRight:"7px solid transparent",borderTop:`7px solid ${C.accentDim}`}}/>
+      <div style={{position:"absolute",bottom:-7*uiScale,left:"50%",transform:"translateX(-50%)",width:0,height:0,borderLeft:`${7*uiScale}px solid transparent`,borderRight:`${7*uiScale}px solid transparent`,borderTop:`${7*uiScale}px solid ${C.accentDim}`}}/>
     </div>}
     <div style={{
-      fontSize:42.77,lineHeight:1,
+      fontSize:42.77*uiScale,lineHeight:1,
       filter:`drop-shadow(0 0 14px ${spirit.color}99)`,
       ...(animStyles[action]||animStyles.float),
       transition:"all .4s cubic-bezier(.34,1.56,.64,1)",
