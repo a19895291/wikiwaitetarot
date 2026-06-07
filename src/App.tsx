@@ -116,8 +116,7 @@ export default function App(){
   const dailyPtr=drawnCards.length; // 下一張要取的位置
   const remaining=5-drawnCards.length;
 
-  // 螢幕等比縮放：以 390 設計寬為基準，下限 0.82(窄機防溢出)、封頂 1.7(達平板後停止放大)。
-  // 只縮放此 root div(整個可見 app)；彈窗/牌庫 portal 到 body、在外層，維持真實螢幕尺寸。
+  // 螢幕等比縮放：以 390 設計寬為基準，下限 0.82、封頂 1.7。傳給牌靈與設定頁(牌庫)同步縮放。
   const [uiScale,setUiScale]=useState(1);
   useEffect(()=>{
     const calc=()=>{const w=window.innerWidth||390;setUiScale(Math.min(Math.max(w/390,0.82),1.7));};
@@ -214,7 +213,8 @@ export default function App(){
   <LoginPage onGuest={() => { save("guest_mode", true); setGuest(true); }} />
 );
 
-  return <div className={`theme-root theme-${theme.id}${theme.isLight?" theme-light":""}${theme.id==="skyblue"?" theme-skyblue":""}`} style={{
+  return <>
+  <div className={`theme-root theme-${theme.id}${theme.isLight?" theme-light":""}${theme.id==="skyblue"?" theme-skyblue":""}`} style={{
     zoom:uiScale,
     minHeight:`calc(100vh / ${uiScale})`,maxWidth:390,margin:"0 auto",
     position:"relative",...appBgStyle,
@@ -337,11 +337,9 @@ export default function App(){
       {page==="history"&&<HistoryPage/>}
       {page==="spirit"&&<SpiritPage spirit={spirit} onSelect={setSpirit} costumes={costumes} setCostumes={setCostumes} activeC={activeC} setActiveC={setActiveC} themeId={themeId} switchTheme={switchTheme}/>}
       {page==="shop"&&<ShopPage switchTheme={switchTheme} cardBackId={cardBackId} switchCardBack={switchCardBack} costumes={costumes} setCostumes={setCostumes}/>}
-      {page==="settings"&&<SettingsPage themeId={themeId} switchTheme={switchTheme} cardBackId={cardBackId} switchCardBack={switchCardBack} userEmail={session?.user?.email || null} onLogout={goToLogin}/>}
+      {page==="settings"&&<SettingsPage themeId={themeId} switchTheme={switchTheme} cardBackId={cardBackId} switchCardBack={switchCardBack} userEmail={session?.user?.email || null} onLogout={goToLogin} uiScale={uiScale}/>}
     </div>
 
-    {/* Spirit Pet */}
-    {!inSession&&<SpiritPet spirit={spirit} activeSpiritEmoji={activeSpiritEmoji}/>}
 
     {/* Bottom Nav */}
     {!inSession&&<div style={{
@@ -391,5 +389,8 @@ export default function App(){
         </button>;
       })}
     </div>}
-  </div>;
+  </div>
+  {/* Spirit Pet — 置於縮放層外，座標用真實視窗，再由 uiScale 放大體積 */}
+  {!inSession&&<SpiritPet spirit={spirit} activeSpiritEmoji={activeSpiritEmoji} uiScale={uiScale}/>}
+  </>;
 }
