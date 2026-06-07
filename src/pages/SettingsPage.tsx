@@ -6,7 +6,7 @@ import { CARD_BACKS } from "../data/cardBacks";
 import { DECK, KEYWORDS } from "../data/deck";
 import { load } from "../utils/storage";
 
-export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,userEmail,onLogout}){
+export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,userEmail,onLogout,uiScale=1}){
   const [notif,setNotif]=useState(true);
   const [sound,setSound]=useState(false);
   const [dark,setDark]=useState(true);
@@ -127,7 +127,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
     </div>
 
     {/* 牌庫總覽（全螢幕覆蓋）*/}
-    {libOpen&&createPortal(<div style={{position:"fixed",top:0,left:0,right:0,bottom:"calc(env(safe-area-inset-bottom,0px) + 56px)",zIndex:500,...libBg,maxWidth:390,margin:"0 auto",display:"flex",flexDirection:"column",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
+    {libOpen&&createPortal(<div style={{zoom:uiScale,position:"fixed",top:0,left:0,right:0,bottom:"calc(env(safe-area-inset-bottom,0px) + 56px)",zIndex:500,...libBg,maxWidth:390,margin:"0 auto",display:"flex",flexDirection:"column",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
       <div style={{flexShrink:0,padding:"calc(env(safe-area-inset-top,0px) + 14px) 16px 12px",background:"transparent",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div>
           <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:21.38,color:C.gold,letterSpacing:3}}>牌庫</div>
