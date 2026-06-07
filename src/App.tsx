@@ -341,10 +341,11 @@ export default function App(){
     </div>
 
 
+  </div>
     {/* Bottom Nav */}
     {!inSession&&<div style={{
       position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",
-      width:"100%",maxWidth:390,
+      width:"100%",maxWidth:390*uiScale,
       background:C.navBg||"rgba(4,6,13,.97)",
       borderTop:"1px solid rgba(26,58,110,.45)",
       backdropFilter:"blur(24px)",
@@ -389,7 +390,6 @@ export default function App(){
         </button>;
       })}
     </div>}
-  </div>
   {/* Spirit Pet — 置於縮放層外，座標用真實視窗，再由 uiScale 放大體積 */}
   {!inSession&&<SpiritPet spirit={spirit} activeSpiritEmoji={activeSpiritEmoji} uiScale={uiScale}/>}
   </>;
