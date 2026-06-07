@@ -148,6 +148,8 @@ export function SpreadPage(){
     document.addEventListener("pointermove",onMove);document.addEventListener("pointerup",onUp);
   },[]);
 
+  const isImageCB=!!CB.isImage;
+  const g=CB.glow;
   return <div style={{padding:"16px 16px 100px",animation:"fadeInUp .5s ease"}}>
     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
       <div>
@@ -176,7 +178,7 @@ export function SpreadPage(){
         <div onClick={drawCard} style={{
           width:52,height:78,
           ...cbBgStyle(),
-          border:CB.id==="monsteraCard"?"none":`1px solid ${CB.border}`,borderRadius:10,
+          border:isImageCB?"none":`1px solid ${CB.border}`,borderRadius:10,
           cursor:(deck.length-deckPtr.current)>0?"pointer":"not-allowed",
           display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
           flexShrink:0,overflow:"hidden",
@@ -184,45 +186,22 @@ export function SpreadPage(){
           position:"relative",opacity:(deck.length-deckPtr.current)>0?1:.4,
           transition:"transform .2s, box-shadow .2s",
         }}>
-          <div style={{position:"absolute",inset:4,border:`1px solid ${(CB.id==="hibiscusCard"||CB.id==="monsteraCard")?"rgba(0,0,0,0)":CB.strokeDim}`,borderRadius:5,pointerEvents:"none"}}/>
-          {CB.id==="hibiscusCard"&&<div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.12) 100%)",pointerEvents:"none",zIndex:4,borderRadius:10}}/>}
-          {/* 龜背芋光影 */}
-          {CB.id==="monsteraCard"&&<div style={{position:"absolute",top:0,left:0,right:0,height:"20%",background:"linear-gradient(180deg,rgba(180,220,200,.28) 0%,rgba(180,220,200,.10) 60%,transparent 100%)",pointerEvents:"none",zIndex:4,borderRadius:"10px 10px 0 0"}}/>}
-          {CB.id==="monsteraCard"&&<div style={{position:"absolute",top:"8%",left:0,bottom:"8%",width:"18%",background:"linear-gradient(90deg,rgba(200,235,215,.20) 0%,rgba(200,235,215,.08) 55%,transparent 100%)",pointerEvents:"none",zIndex:4}}/>}
-          {CB.id==="monsteraCard"&&<div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,transparent 40%,rgba(10,40,15,.20) 100%)",pointerEvents:"none",zIndex:4,borderRadius:10}}/>}
-          {CB.id==="monsteraCard"&&<div style={{position:"absolute",inset:0,background:"linear-gradient(145deg,rgba(220,245,230,.16) 0%,rgba(220,245,230,.05) 30%,transparent 55%,rgba(5,30,10,.08) 100%)",pointerEvents:"none",zIndex:4,borderRadius:10}}/>}
-          {CB.id==="monsteraCard"&&<div style={{position:"absolute",bottom:0,left:0,right:0,height:"13%",background:"linear-gradient(0deg,rgba(10,40,15,.18) 0%,transparent 100%)",pointerEvents:"none",zIndex:4}}/>}
-          {CB.id==="hibiscusCard"&&<div style={{position:"absolute",top:0,left:0,right:0,height:"20%",background:"linear-gradient(180deg,rgba(180,210,255,.28) 0%,rgba(180,210,255,.10) 60%,transparent 100%)",pointerEvents:"none",zIndex:4,borderRadius:"10px 10px 0 0"}}/>}
-          {CB.id==="hibiscusCard"&&<div style={{position:"absolute",top:"8%",left:0,bottom:"8%",width:"18%",background:"linear-gradient(90deg,rgba(210,225,255,.20) 0%,rgba(210,225,255,.08) 55%,transparent 100%)",pointerEvents:"none",zIndex:4}}/>}
-          {CB.id==="hibiscusCard"&&<div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,transparent 40%,rgba(60,10,5,.18) 100%)",pointerEvents:"none",zIndex:4,borderRadius:10}}/>}
-          {CB.id==="hibiscusCard"&&<div style={{position:"absolute",inset:0,background:"linear-gradient(145deg,rgba(220,235,255,.16) 0%,rgba(220,235,255,.05) 30%,transparent 55%,rgba(40,8,4,.07) 100%)",pointerEvents:"none",zIndex:4,borderRadius:10}}/>}
-          {CB.id==="hibiscusCard"&&<div style={{position:"absolute",bottom:0,left:0,right:0,height:"13%",background:"linear-gradient(0deg,rgba(60,10,5,.16) 0%,transparent 100%)",pointerEvents:"none",zIndex:4}}/>}
-          {CB.id!=="hibiscusCard"&&CB.id!=="monsteraCard"&&<div style={{position:"absolute",top:"-30%",left:"-20%",width:"60%",height:"160%",background:CB.shimmer,transform:"skewX(-10deg)",pointerEvents:"none"}}/>}
-          {(CB.id==="hibiscusCard"||CB.id==="monsteraCard")&&<div style={{position:"absolute",top:"-40%",left:"-55%",width:"45%",height:"180%",
-            background:CB.id==="hibiscusCard"
-              ?"linear-gradient(105deg,transparent 0%,transparent 28%,rgba(230,240,255,.45) 43%,rgba(210,225,255,.65) 50%,rgba(230,240,255,.45) 57%,transparent 72%,transparent 100%)"
-              :"linear-gradient(105deg,transparent 0%,transparent 28%,rgba(210,240,225,.45) 43%,rgba(180,230,205,.68) 50%,rgba(210,240,225,.45) 57%,transparent 72%,transparent 100%)",
-            transform:"skewX(-12deg)",pointerEvents:"none",zIndex:6,
-            animation:CB.id==="hibiscusCard"?"hibiscusShimmer 2.8s ease-in-out infinite":"monsteraShimmer 2.8s ease-in-out infinite"}}/>}
-          {CB.id==="hibiscusCard"
-            ?<svg viewBox="0 0 60 70" width={20} height={23} fill="none" style={{position:"relative",zIndex:2}}>
-              <path d="M30,35 C27,30 26,22 27.5,17 C28.5,14 30,13.5 30,13.5 C30,13.5 31.5,14 32.5,17 C34,22 33,30 30,35 Z" fill="rgba(210,40,20,0.82)"/>
-              <path d="M30,35 C34.5,32.5 39,31.5 42.5,33.5 C44,35 44,39 40,38.5 C36,36.5 32.5,35.5 30,35 Z" fill="rgba(215,45,22,0.8)"/>
-              <path d="M30,35 C32,39 32.5,45 30,48.5 C29,50.5 27.5,51 26.5,50 C27,44.5 30,35 30,35 Z" fill="rgba(205,38,18,0.8)"/>
-              <path d="M30,35 C26,37 22,38.5 19.5,37 C18,36 18.5,33 24,32.5 C27,33.5 30,35 30,35 Z" fill="rgba(210,42,20,0.78)"/>
-              <path d="M30,35 C27.5,31 25,27 23,23 C22,20.5 24.5,18 29,22 C30,25 30,35 30,35 Z" fill="rgba(218,48,24,0.8)"/>
-              <circle cx="30" cy="35" r="3.5" fill="rgba(220,140,20,0.9)"/>
-              <circle cx="30" cy="35" r="1.8" fill="rgba(250,200,40,0.95)"/>
-            </svg>
-            :CB.id==="monsteraCard"
-            ?null
-            :<svg viewBox="0 0 60 70" width={20} height={23} fill="none" style={{position:"relative",zIndex:2}}>
+          <div style={{position:"absolute",inset:4,border:`1px solid ${isImageCB?"rgba(0,0,0,0)":CB.strokeDim}`,borderRadius:5,pointerEvents:"none"}}/>
+          {g&&<>
+            <div style={{position:"absolute",top:0,left:0,right:0,height:"20%",background:`linear-gradient(180deg,rgba(${g.light},.28) 0%,rgba(${g.light},.10) 60%,transparent 100%)`,pointerEvents:"none",zIndex:4,borderRadius:"10px 10px 0 0"}}/>
+            <div style={{position:"absolute",top:"8%",left:0,bottom:"8%",width:"18%",background:`linear-gradient(90deg,rgba(${g.light},.20) 0%,rgba(${g.light},.08) 55%,transparent 100%)`,pointerEvents:"none",zIndex:4}}/>
+            <div style={{position:"absolute",inset:0,background:`linear-gradient(135deg,transparent 40%,rgba(${g.dark},.18) 100%)`,pointerEvents:"none",zIndex:4,borderRadius:10}}/>
+            <div style={{position:"absolute",inset:0,background:`linear-gradient(145deg,rgba(${g.light},.16) 0%,rgba(${g.light},.05) 30%,transparent 55%,rgba(${g.dark},.08) 100%)`,pointerEvents:"none",zIndex:4,borderRadius:10}}/>
+            <div style={{position:"absolute",bottom:0,left:0,right:0,height:"13%",background:`linear-gradient(0deg,rgba(${g.dark},.17) 0%,transparent 100%)`,pointerEvents:"none",zIndex:4}}/>
+            <div style={{position:"absolute",top:"-40%",left:"-55%",width:"45%",height:"180%",background:`linear-gradient(105deg,transparent 0%,transparent 28%,rgba(${g.shimmer},0.45) 43%,rgba(${g.shimmer},0.68) 50%,rgba(${g.shimmer},0.45) 57%,transparent 72%,transparent 100%)`,transform:"skewX(-12deg)",pointerEvents:"none",zIndex:6,animation:"monsteraShimmer 2.8s ease-in-out infinite"}}/>
+          </>}
+          {!g&&<div style={{position:"absolute",top:"-30%",left:"-20%",width:"60%",height:"160%",background:CB.shimmer,transform:"skewX(-10deg)",pointerEvents:"none"}}/>}
+          {!isImageCB&&<svg viewBox="0 0 60 70" width={20} height={23} fill="none" style={{position:"relative",zIndex:2}}>
               <polygon points="30,3 57,18 57,52 30,67 3,52 3,18" stroke={CB.stroke} strokeWidth="1.2" fill="none"/>
               <polygon points="30,13 47,23 47,47 30,57 13,47 13,23" stroke={CB.strokeDim} strokeWidth="0.8" fill="none"/>
               <circle cx="30" cy="35" r="7" stroke={CB.strokeDim} strokeWidth="0.8" fill="none"/>
               <circle cx="30" cy="35" r="2.5" fill={CB.centerDot}/>
-            </svg>
-          }
+            </svg>}
           <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginTop:3,position:"relative",zIndex:2,gap:1}}>
             <div style={{fontSize:10,color:CB.centerDot,fontFamily:"'Cinzel',serif",fontWeight:700,lineHeight:1}}>{deck.length-deckPtr.current}</div>
             <div style={{fontSize:6.5,color:CB.footnote,fontFamily:"'Cinzel',serif",letterSpacing:.5,lineHeight:1}}>剩餘</div>
