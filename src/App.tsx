@@ -1,6 +1,7 @@
 // 模組 13 — App（根組件：全域狀態、頁面路由、底部導航、星空背景、雙 <style> 注入）
 // 全域可變 C/CB 在 render 階段以 Object.assign 同步（與原單檔行為一致；ES module 單例保留此語意）。
 import { useState, useMemo, useCallback, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { C, THEMES, DEFAULT_THEME } from "./data/themes";
 import { CB, CARD_BACKS, DEFAULT_CARD_BACK } from "./data/cardBacks";
 import { DECK } from "./data/deck";
@@ -342,8 +343,8 @@ export default function App(){
 
 
   </div>
-    {/* Bottom Nav */}
-    {!inSession&&<div style={{
+    {/* Bottom Nav — portal 到 document.body，徹底脫離縮放層，bottom:0 永遠對齊真實視窗底部 */}
+    {!inSession&&createPortal(<div style={{
       position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",
       width:"100%",maxWidth:390*uiScale,
       background:C.navBg||"rgba(4,6,13,.97)",
@@ -356,21 +357,21 @@ export default function App(){
             {NAV.map((n,i)=>{
         const wip=n.id==="online";
         return <button key={n.id} onClick={()=>{if(!wip)setPage(n.id);}} style={{
-        flex:1,padding:"10px 4px 8px",
+        flex:1,padding:`${10*uiScale}px ${4*uiScale}px ${8*uiScale}px`,
         background:"none",border:"none",cursor:wip?"default":"pointer",
-        display:"flex",flexDirection:"column",alignItems:"center",gap:2,
+        display:"flex",flexDirection:"column",alignItems:"center",gap:2*uiScale,
         animation:`navItemIn .3s ease ${i*.04}s both`,
         position:"relative",
       }}>
-        {page===n.id&&!wip&&<div style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:28,height:2,borderRadius:"0 0 2px 2px",background:`linear-gradient(90deg,transparent,${C.gold},transparent)`}}/>}
+        {page===n.id&&!wip&&<div style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:28*uiScale,height:2*uiScale,borderRadius:"0 0 2px 2px",background:`linear-gradient(90deg,transparent,${C.gold},transparent)`}}/>}
         <div style={{
-          fontSize:20.79,lineHeight:1,
+          fontSize:20.79*uiScale,lineHeight:1,
           filter:wip?"grayscale(.7) opacity(.6)":page===n.id?`drop-shadow(0 0 8px rgba(212,168,67,.7))`:"none",
           transform:page===n.id&&!wip?"scale(1.18)":"scale(1)",
           transition:"all .25s cubic-bezier(.34,1.56,.64,1)"
         }}>{n.emoji}</div>
         <div style={{
-          fontSize:10.1,
+          fontSize:10.1*uiScale,
           fontFamily:"'Cinzel',serif",
           letterSpacing:.5,
           color:page===n.id&&!wip?C.gold:C.textFaint,
@@ -379,18 +380,18 @@ export default function App(){
           opacity:wip?.6:1,
         }}>{n.label}</div>
         {wip&&<div style={{
-          position:"absolute",top:9,left:"50%",transform:"translateX(-50%)",
+          position:"absolute",top:9*uiScale,left:"50%",transform:"translateX(-50%)",
           background:"#fff",color:"#c0392b",
-          fontSize:7.5,fontWeight:700,letterSpacing:.5,
-          padding:"2px 5px",borderRadius:3,whiteSpace:"nowrap",
+          fontSize:7.5*uiScale,fontWeight:700,letterSpacing:.5,
+          padding:`${2*uiScale}px ${5*uiScale}px`,borderRadius:3*uiScale,whiteSpace:"nowrap",
           boxShadow:"0 1px 4px rgba(0,0,0,.3)",
           fontFamily:"'Noto Sans TC',sans-serif",
           pointerEvents:"none",zIndex:3,
         }}>施工中</div>}
         </button>;
       })}
-    </div>}
+    </div>, document.body)}
   {/* Spirit Pet — 置於縮放層外，座標用真實視窗，再由 uiScale 放大體積 */}
-  {!inSession&&<SpiritPet spirit={spirit} activeSpiritEmoji={activeSpiritEmoji} uiScale={uiScale}/>}
+  {!inSession&&createPortal(<SpiritPet spirit={spirit} activeSpiritEmoji={activeSpiritEmoji} uiScale={uiScale}/>, document.body)}
   </>;
 }
