@@ -54,6 +54,10 @@ export function CardBack({w=48,h=72,style={},lifting=false}){
         background:`linear-gradient(0deg,rgba(${g.dark},.17) 0%,transparent 100%)`,
         pointerEvents:"none",zIndex:4}}/>
     </>}
+    {/* silverMoon：0.2 冷白薄膜遮層（疊在光影之上、掃光之下） */}
+    {isLight&&<div style={{position:"absolute",inset:0,
+      background:"rgba(236,240,248,0.2)",
+      pointerEvents:"none",zIndex:5,borderRadius:9}}/>}
     {/* 外框 - 圖片型牌背不顯示 */}
     {!isImage&&<div style={{position:"absolute",inset:Math.round(4*sc),
       border:`1px solid ${CB.strokeDim}`,
