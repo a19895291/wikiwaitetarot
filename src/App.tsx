@@ -217,7 +217,7 @@ export default function App(){
   return <>
   <div className={`theme-root theme-${theme.id}${theme.isLight?" theme-light":""}${theme.id==="skyblue"?" theme-skyblue":""}`} style={{
     zoom:uiScale,
-    minHeight:`calc(100vh / ${uiScale})`,maxWidth:390,margin:"0 auto",
+    minHeight:`calc((100vh + 1px) / ${uiScale})`,maxWidth:390,margin:"0 auto",
     position:"relative",...appBgStyle,
     fontFamily:"'Noto Sans TC',sans-serif",color:C.text
   }}>
