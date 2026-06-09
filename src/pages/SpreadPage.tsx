@@ -76,7 +76,7 @@ export function SpreadPage(){
       if(gridRef.current){
         const cells=gridRef.current.querySelectorAll("[data-cell]");
         let found=-1;
-        cells.forEach((cell,i)=>{const r=cell.getBoundingClientRect();if(ev.clientX>=r.left&&ev.clientX<=r.right&&ev.clientY>=r.top&&ev.clientY<=r.bottom)found=i;});
+        const _el=document.elementFromPoint(ev.clientX,ev.clientY);const _c=_el&&_el.closest?_el.closest("[data-cell]"):null;if(_c)found=Array.prototype.indexOf.call(cells,_c);
         if(found!==hovered.current){if(hovered.current>=0)setCellHL(hovered.current,false);hovered.current=found;if(found>=0)setCellHL(found,true);}
       }
     };
@@ -123,7 +123,7 @@ export function SpreadPage(){
         ghost.style.left=`${ev.clientX-28}px`;ghost.style.top=`${ev.clientY-44}px`;
         if(gridRef.current){
           const cells=gridRef.current.querySelectorAll("[data-cell]");let found=-1;
-          cells.forEach((cell,i)=>{const r=cell.getBoundingClientRect();if(ev.clientX>=r.left&&ev.clientX<=r.right&&ev.clientY>=r.top&&ev.clientY<=r.bottom)found=i;});
+          const _el=document.elementFromPoint(ev.clientX,ev.clientY);const _c=_el&&_el.closest?_el.closest("[data-cell]"):null;if(_c)found=Array.prototype.indexOf.call(cells,_c);
           if(found!==hovered.current){if(hovered.current>=0)setCellHL(hovered.current,false);hovered.current=found;if(found>=0)setCellHL(found,true);}
         }
       }
