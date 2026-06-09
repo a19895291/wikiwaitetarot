@@ -17,9 +17,9 @@ export const CARD_BACKS: Record<string, any> = {
   },
   silverMoon: {
     id:"silverMoon", name:"月光銀曜",
-    desc:"純白底色，銀色金屬光澤，現代典雅質感",
+    desc:"透明玻璃質感，銀色金屬光澤，現代典雅風格",
     emoji:"🌕", price:198, owned:false,
-    bg:"rgba(236,240,248,0.2)",
+    bg:"rgba(236,240,248,0.05)",
     glow:{ light:"236,240,248", dark:"120,135,165", shimmer:"245,248,255", edge:"168,180,210" },
     border:"rgba(180,185,210,0.8)",
     shimmer:"linear-gradient(115deg,transparent 0%,rgba(255,255,255,0.0) 25%,rgba(255,255,255,0.9) 42%,rgba(220,225,255,0.7) 50%,rgba(255,255,255,0.0) 58%,transparent 80%)",
