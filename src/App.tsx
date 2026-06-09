@@ -120,7 +120,7 @@ export default function App(){
   // 螢幕等比縮放：以 390 設計寬為基準，下限 0.82、封頂 1.7。傳給牌靈與設定頁(牌庫)同步縮放。
   const [uiScale,setUiScale]=useState(1);
   useEffect(()=>{
-    const calc=()=>{const w=window.innerWidth||390;setUiScale(Math.min(Math.max(w/390,0.82),1.7)*0.8);}; // 選項2：自動縮放再 ×0.8（整體縮小為現在的80%，平板仍等比放大）
+    const calc=()=>{const w=window.innerWidth||390;setUiScale(Math.min(Math.max(w/390,0.82),1.7));};
     calc();
     window.addEventListener("resize",calc);
     window.addEventListener("orientationchange",calc);
@@ -217,8 +217,7 @@ export default function App(){
   return <>
   <div className={`theme-root theme-${theme.id}${theme.isLight?" theme-light":""}${theme.id==="skyblue"?" theme-skyblue":""}`} style={{
     zoom:uiScale,
-    height:`calc(100dvh / ${uiScale})`,maxWidth:390,margin:"0 auto",
-    display:"flex",flexDirection:"column",overflow:"hidden",
+    minHeight:`calc(100vh / ${uiScale})`,maxWidth:390,margin:"0 auto",
     position:"relative",...appBgStyle,
     fontFamily:"'Noto Sans TC',sans-serif",color:C.text
   }}>
@@ -300,9 +299,9 @@ export default function App(){
 
     {/* Header */}
     {!inSession&&<div style={{
-      height:46,flexShrink:0,
+      height:46,
       background:C.navBg,
-      position:"relative",zIndex:100,
+      position:"sticky",top:0,zIndex:100,
       display:"flex",alignItems:"center",justifyContent:"center",
       borderBottom:`1px solid ${C.navBorder}`,
       backdropFilter:"blur(20px)",
@@ -312,7 +311,7 @@ export default function App(){
     </div>}
 
     {/* Page content */}
-    <div style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",position:"relative",zIndex:1,animation:"fadeInUp .45s ease"}} key={page}>
+    <div style={{position:"relative",zIndex:1,animation:"fadeInUp .45s ease"}} key={page}>
     {!session && (
       <div
       onClick={goToLogin}
@@ -342,9 +341,12 @@ export default function App(){
       {page==="settings"&&<SettingsPage themeId={themeId} switchTheme={switchTheme} cardBackId={cardBackId} switchCardBack={switchCardBack} userEmail={session?.user?.email || null} onLogout={goToLogin} uiScale={uiScale}/>}
     </div>
 
-    {/* Bottom Nav — flex 直欄最底項（不用 fixed，standalone/Safari 完全一致；在縮放層內隨 uiScale 等比縮放） */}
-    {!inSession&&<div style={{
-      flexShrink:0,position:"relative",
+
+  </div>
+    {/* Bottom Nav — portal 到 document.body，徹底脫離縮放層，bottom:0 永遠對齊真實視窗底部 */}
+    {!inSession&&createPortal(<div style={{
+      position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",
+      width:"100%",maxWidth:390*uiScale,
       background:C.navBg||"rgba(4,6,13,.97)",
       borderTop:"1px solid rgba(26,58,110,.45)",
       backdropFilter:"blur(24px)",
@@ -355,21 +357,21 @@ export default function App(){
             {NAV.map((n,i)=>{
         const wip=n.id==="online";
         return <button key={n.id} onClick={()=>{if(!wip)setPage(n.id);}} style={{
-        flex:1,padding:"10px 4px 8px",
+        flex:1,padding:`${10*uiScale}px ${4*uiScale}px ${8*uiScale}px`,
         background:"none",border:"none",cursor:wip?"default":"pointer",
-        display:"flex",flexDirection:"column",alignItems:"center",gap:2,
+        display:"flex",flexDirection:"column",alignItems:"center",gap:2*uiScale,
         animation:`navItemIn .3s ease ${i*.04}s both`,
         position:"relative",
       }}>
-        {page===n.id&&!wip&&<div style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:28,height:2,borderRadius:"0 0 2px 2px",background:`linear-gradient(90deg,transparent,${C.gold},transparent)`}}/>}
+        {page===n.id&&!wip&&<div style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:28*uiScale,height:2*uiScale,borderRadius:"0 0 2px 2px",background:`linear-gradient(90deg,transparent,${C.gold},transparent)`}}/>}
         <div style={{
-          fontSize:20.79,lineHeight:1,
+          fontSize:20.79*uiScale,lineHeight:1,
           filter:wip?"grayscale(.7) opacity(.6)":page===n.id?`drop-shadow(0 0 8px rgba(212,168,67,.7))`:"none",
           transform:page===n.id&&!wip?"scale(1.18)":"scale(1)",
           transition:"all .25s cubic-bezier(.34,1.56,.64,1)"
         }}>{n.emoji}</div>
         <div style={{
-          fontSize:10.1,
+          fontSize:10.1*uiScale,
           fontFamily:"'Cinzel',serif",
           letterSpacing:.5,
           color:page===n.id&&!wip?C.gold:C.textFaint,
@@ -378,18 +380,17 @@ export default function App(){
           opacity:wip?.6:1,
         }}>{n.label}</div>
         {wip&&<div style={{
-          position:"absolute",top:9,left:"50%",transform:"translateX(-50%)",
+          position:"absolute",top:9*uiScale,left:"50%",transform:"translateX(-50%)",
           background:"#fff",color:"#c0392b",
-          fontSize:7.5,fontWeight:700,letterSpacing:.5,
-          padding:"2px 5px",borderRadius:3,whiteSpace:"nowrap",
+          fontSize:7.5*uiScale,fontWeight:700,letterSpacing:.5,
+          padding:`${2*uiScale}px ${5*uiScale}px`,borderRadius:3*uiScale,whiteSpace:"nowrap",
           boxShadow:"0 1px 4px rgba(0,0,0,.3)",
           fontFamily:"'Noto Sans TC',sans-serif",
           pointerEvents:"none",zIndex:3,
         }}>施工中</div>}
         </button>;
       })}
-    </div>}
-  </div>
+    </div>, document.body)}
   {/* Spirit Pet — 置於縮放層外，座標用真實視窗，再由 uiScale 放大體積 */}
   {!inSession&&createPortal(<SpiritPet spirit={spirit} activeSpiritEmoji={activeSpiritEmoji} uiScale={uiScale}/>, document.body)}
   </>;
