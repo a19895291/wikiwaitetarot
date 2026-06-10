@@ -6,6 +6,7 @@ import { CARD_BACKS, DEFAULT_CARD_BACK } from "../data/cardBacks";
 import { save, load } from "../utils/storage";
 import { GoldPayBtn } from "../components/shared/GoldPayBtn";
 import { Badge } from "../components/shared/Badge";
+import { CardBack } from "../components/shared/CardBack";
 import * as db from "../lib/db";
 
 const SHOP={
@@ -219,31 +220,9 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack,costumes,setCost
           }}>
             {isActive&&<div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,transparent,${C.accent},transparent)`}}/>}
             <div style={{display:"flex",gap:16,alignItems:"center",padding:"16px"}}>
-              {/* 牌背預覽 */}
+              {/* 牌背預覽 — 用真正的 CardBack，與牌堆/牌背完全一致 */}
               <div style={{flexShrink:0}}>
-                <div style={{
-                  width:54,height:82,borderRadius:9,
-                  ...((cb.isImage||(cb.bg&&/^(data:|https?:|\/)/.test(cb.bg)))?{backgroundColor:cb.bgColor||(cb.isMonstera?"#f0f7f0":"#fff8f5"),backgroundImage:"url("+(cb.image||cb.bg)+")",backgroundSize:"cover",backgroundPosition:"center",backgroundRepeat:"no-repeat"}:{background:cb.bg}),
-                  border:cb.isImage?"none":`1px solid ${cb.border}`,
-                  display:"flex",alignItems:"center",justifyContent:"center",
-                  position:"relative",overflow:"hidden",
-                  boxShadow:isActive?`0 0 16px ${cb.liftShadow}`:"0 4px 12px rgba(0,0,0,.3)",
-                }}>
-                  {!cb.isImage&&<div style={{position:"absolute",inset:4,border:`1px solid ${cb.isHibiscus?"rgba(210,55,25,0.4)":cb.isMonstera?"rgba(0,0,0,0)":cb.strokeDim}`,borderRadius:5}}/>}
-                  {cb.isHibiscus
-                    ?<svg viewBox="0 0 60 70" width="32" height="38" fill="none">
-                      <path d="M30,35 C27,30 26,22 27.5,17 C28.5,14 30,13.5 30,13.5 C30,13.5 31.5,14 32.5,17 C34,22 33,30 30,35 Z" fill="rgba(210,40,20,0.82)"/>
-                      <path d="M30,35 C34.5,32.5 39,31.5 42.5,33.5 C44.5,34.5 45,36 44.5,37.5 C44,39 42,39.5 40,38.5 C36,36.5 32.5,35.5 30,35 Z" fill="rgba(215,45,22,0.8)"/>
-                      <path d="M30,35 C32,39 32.5,45 30,48.5 C29,50.5 27.5,51 26.5,50 C25.5,49 25.5,47 27,44.5 C28.5,41.5 29.5,38 30,35 Z" fill="rgba(205,38,18,0.8)"/>
-                      <path d="M30,35 C26,37 22,38.5 19.5,37 C18,36 17.5,34.5 18.5,33 C19.5,31.5 21.5,31.5 24,32.5 C27,33.5 29,34.5 30,35 Z" fill="rgba(210,42,20,0.78)"/>
-                      <path d="M30,35 C27.5,31 25,27 23,23 C22,20.5 22.5,18.5 24.5,18 C26.5,17.5 28,19 29,22 C30,25 30,31 30,35 Z" fill="rgba(218,48,24,0.8)"/>
-                      <circle cx="30" cy="35" r="4" fill="rgba(220,140,20,0.88)" stroke="rgba(200,110,10,0.4)" strokeWidth="0.6"/>
-                      <circle cx="30" cy="35" r="2" fill="rgba(250,200,40,0.95)"/>
-                    </svg>
-                    :null
-                  }
-                  <div style={{position:"absolute",bottom:5,fontSize:5,fontFamily:"'Cinzel',serif",letterSpacing:2,color:cb.footnote}}>{cb.isHibiscus?"✿ ✦ ✿":""}</div>
-                </div>
+                <CardBack cb={cb} w={54} h={82} lifting={isActive}/>
               </div>
               {/* 文字 */}
               <div style={{flex:1}}>
