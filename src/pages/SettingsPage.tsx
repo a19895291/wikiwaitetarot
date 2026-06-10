@@ -5,6 +5,7 @@ import { C, THEMES, THEME_IDS } from "../data/themes";
 import { CARD_BACKS } from "../data/cardBacks";
 import { DECK, KEYWORDS } from "../data/deck";
 import { load } from "../utils/storage";
+import { CardBack } from "../components/shared/CardBack";
 
 export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,userEmail,onLogout,uiScale=1}){
   const [notif,setNotif]=useState(true);
@@ -233,7 +234,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
         const cb=CARD_BACKS[cardBackId]||Object.values(CARD_BACKS)[0];
         const open=openMenu==="cb";
         return <div onClick={()=>setOpenMenu(m=>m==="cb"?null:"cb")} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 12px",borderRadius:12,cursor:"pointer",background:`linear-gradient(135deg,${C.blue}14,${C.accent}0a)`,border:`1px solid ${C.accentDim}`,transition:"all .25s"}}>
-          <div style={{width:28,height:42,borderRadius:5,...((cb.isImage||(cb.bg&&/^(data:|https?:|\/)/.test(cb.bg)))?{backgroundColor:cb.bgColor||(cb.isMonstera?"#f0f7f0":"#fff8f5"),backgroundImage:"url("+(cb.image||cb.bg)+")",backgroundSize:"cover",backgroundPosition:"center",backgroundRepeat:"no-repeat"}:{background:cb.bg}),border:cb.isImage?"none":`1px solid ${cb.border}`,flexShrink:0}}/>
+          <CardBack cb={cb} w={28} h={42}/>
           <div style={{flex:1}}>
             <div style={{fontSize:12,fontFamily:"'Cinzel',serif",color:C.accent,letterSpacing:.5}}>{cb.emoji} {cb.name}</div>
             <div style={{fontSize:9.5,color:C.textFaint,marginTop:1}}>點擊{open?"收起":"展開"}選擇款式</div>
@@ -252,25 +253,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
             border:`1px solid ${active?C.accentDim:C.gridBorder}`,
             opacity:ownedCb?1:.5,transition:"all .25s",
           }}>
-            <div style={{width:28,height:42,borderRadius:5,...((cb.isImage||(cb.bg&&/^(data:|https?:|\/)/.test(cb.bg)))?{backgroundColor:cb.bgColor||(cb.isMonstera?"#f0f7f0":"#fff8f5"),backgroundImage:"url("+(cb.image||cb.bg)+")",backgroundSize:"cover",backgroundPosition:"center",backgroundRepeat:"no-repeat"}:{background:cb.bg}),border:cb.isImage?"none":`1px solid ${cb.border}`,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
-              {cb.isHibiscus
-                ?<svg viewBox="0 0 60 70" width="16" height="20" fill="none">
-                  <path d="M30,35 C27,30 26,22 27.5,17 C28.5,14 30,13.5 30,13.5 C30,13.5 31.5,14 32.5,17 C34,22 33,30 30,35 Z" fill="rgba(210,40,20,0.82)"/>
-                  <path d="M30,35 C34.5,32.5 39,31.5 42.5,33.5 C44.5,35 44,39 40,38.5 C36,36.5 32.5,35.5 30,35 Z" fill="rgba(215,45,22,0.8)"/>
-                  <path d="M30,35 C32,39 32.5,45 30,48.5 C29,50.5 27.5,51 26.5,50 C25.5,49 27,44.5 30,35 Z" fill="rgba(205,38,18,0.8)"/>
-                  <path d="M30,35 C26,37 22,38.5 19.5,37 C18,36 18.5,33 24,32.5 C27,33.5 30,35 30,35 Z" fill="rgba(210,42,20,0.78)"/>
-                  <path d="M30,35 C27.5,31 25,27 23,23 C22,20.5 24.5,18 29,22 C30,25 30,31 30,35 Z" fill="rgba(218,48,24,0.8)"/>
-                  <circle cx="30" cy="35" r="3.5" fill="rgba(220,140,20,0.9)"/>
-                  <circle cx="30" cy="35" r="1.8" fill="rgba(250,200,40,0.95)"/>
-                </svg>
-                :(cb.isMonstera||cb.isImage)
-                ?null
-                :<svg viewBox="0 0 60 70" width="18" height="22" fill="none">
-                  <polygon points="30,3 57,18 57,52 30,67 3,52 3,18" stroke={cb.stroke} strokeWidth="1.5" fill="none"/>
-                  <circle cx="30" cy="35" r="2.5" fill={cb.centerDot}/>
-                </svg>
-              }
-            </div>
+            <CardBack cb={cb} w={28} h={42}/>
             <div style={{flex:1}}>
               <div style={{fontSize:12,fontFamily:"'Cinzel',serif",color:active?C.accent:C.text,letterSpacing:.5}}>{cb.emoji} {cb.name}</div>
               <div style={{fontSize:9.5,color:C.textFaint,marginTop:1}}>{cb.price===0?"免費":(cb.owned||bought.includes(cb.id))?"已購買":`NT$${cb.price} — 前往商城購買`}</div>
