@@ -65,6 +65,7 @@ export default function App(){
           if (p.active_costumes && typeof p.active_costumes === "object") {
             setActiveC(p.active_costumes);
           }
+          if (typeof p.show_meaning === "boolean") save("show_meaning", p.show_meaning);
         }
         // 載入雲端今日占卜紀錄（雲端優先）
         const dk = todayKey();
