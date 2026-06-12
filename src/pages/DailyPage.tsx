@@ -6,7 +6,7 @@ import { CB } from "../data/cardBacks";
 import { kwUp, kwRev, meaningUp, meaningRev, isMeaningShown } from "../utils/overrides";
 import { GoldPayBtn } from "../components/shared/GoldPayBtn";
 import { cbBgStyle } from "../components/shared/cbBgStyle";
-import { playFlip, playDraw, playShuffle } from "../utils/sfx";
+import { playFlip, playDraw, playChime } from "../utils/sfx";
 
 export function DailyPage({drawnCards,onDraw,remaining,onReset}){
   const [started,setStarted]=useState(drawnCards.length>0);
@@ -84,7 +84,7 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
   const handleStart=()=>{
     if(started)return;
     setStarted(true);
-    playShuffle();
+    playChime();
     onDraw();
     setFanVisible(true);
     // deal animation: first card
