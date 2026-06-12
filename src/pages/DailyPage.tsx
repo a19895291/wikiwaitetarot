@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { C } from "../data/themes";
 import { CB } from "../data/cardBacks";
-import { kwUp, kwRev, meaningUp, meaningRev } from "../utils/overrides";
+import { kwUp, kwRev, meaningUp, meaningRev, isMeaningShown } from "../utils/overrides";
 import { GoldPayBtn } from "../components/shared/GoldPayBtn";
 import { cbBgStyle } from "../components/shared/cbBgStyle";
 import { playFlip, playDraw, playShuffle } from "../utils/sfx";
@@ -388,6 +388,7 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
                   }}>{panelCard.reversed?"▽ 逆位":"△ 正位"}</div>
                 </div>
               </div>
+              {isMeaningShown()?<>
               {/* Keywords */}
               <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
                 {(panelCard.reversed?kwRev(panelCard.id):kwUp(panelCard.id)).map((kw,i)=><span key={i} style={{
@@ -402,6 +403,7 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
               <div style={{fontSize:14.26,color:C.textDim,lineHeight:1.85,fontWeight:300}}>
                 {panelCard.reversed?meaningRev(panelCard):meaningUp(panelCard)}
               </div>
+              </>:<div style={{fontSize:13,color:C.textFaint,lineHeight:1.85,padding:"8px 0"}}>（牌義已隱藏，可於設定開啟）</div>}
             </>
             :<div style={{textAlign:"center",padding:"8px 0"}}>
               <div style={{fontSize:33.26,opacity:.3,marginBottom:8}}>✦</div>

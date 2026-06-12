@@ -6,13 +6,14 @@ import { CARD_BACKS } from "../data/cardBacks";
 import { DECK } from "../data/deck";
 import { load } from "../utils/storage";
 import { CardBack } from "../components/shared/CardBack";
-import { meaningUp, meaningRev, kwUp, kwRev, hasOverride, setOverride, clearOverride } from "../utils/overrides";
+import { meaningUp, meaningRev, kwUp, kwRev, hasOverride, setOverride, clearOverride, isMeaningShown, setMeaningShown } from "../utils/overrides";
 import { isSoundOn, setSoundOn, playFlip } from "../utils/sfx";
 
 export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,userEmail,onLogout,uiScale=1}){
   const [notif,setNotif]=useState(true);
   const [sound,setSound]=useState(isSoundOn());
   const [dark,setDark]=useState(true);
+  const [showMeaning,setShowMeaning]=useState(isMeaningShown());
   const [openMenu,setOpenMenu]=useState(null);
   const [libOpen,setLibOpen]=useState(false);
   const [libTab,setLibTab]=useState("major");
@@ -108,7 +109,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
 </div>
 
     <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:"0 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
-      {[["推播通知","每日抽牌提醒",notif,()=>setNotif(v=>!v)],["音效","翻牌與環境音",sound,()=>setSound(v=>{const nv=!v;setSoundOn(nv);if(nv)playFlip();return nv;})],["深色模式","",dark,()=>setDark(v=>!v)]].map(([label,sub,val,onT],i,arr)=><div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none"}}>
+      {[["推播通知","每日抽牌提醒",notif,()=>setNotif(v=>!v)],["音效","翻牌與環境音",sound,()=>setSound(v=>{const nv=!v;setSoundOn(nv);if(nv)playFlip();return nv;})],["深色模式","",dark,()=>setDark(v=>!v)],["顯示牌義","牌面解讀與關鍵詞",showMeaning,()=>setShowMeaning(v=>{const nv=!v;setMeaningShown(nv);return nv;})]].map(([label,sub,val,onT],i,arr)=><div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none"}}>
         <div>
           <div style={{fontSize:15.44,color:C.text,fontWeight:400}}>{label}</div>
           {sub&&<div style={{fontSize:11.88,color:C.textFaint,marginTop:2}}>{sub}</div>}
@@ -187,10 +188,10 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
               </div>
               <textarea value={dUp} onChange={e=>setDUp(e.target.value)} rows={3} style={{width:"100%",fontSize:16,lineHeight:1.7,color:C.text,background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:10,padding:10,resize:"vertical",outline:"none",fontFamily:"inherit"}}/>
             </>
-            :<>
+            :isMeaningShown()?<>
               <div style={{display:"flex",gap:6,flexWrap:"wrap",margin:"10px 0"}}>{kwUp(libCard.id).map((kw,i)=><span key={i} style={{fontSize:14.25,padding:"3px 11px",borderRadius:20,background:"rgba(201,168,76,.07)",border:"1px solid rgba(201,168,76,.2)",color:"rgba(201,168,76,.8)",fontFamily:"'Cinzel',serif"}}>{kw}</span>)}</div>
               <div style={{fontSize:19.5,color:C.textDim,lineHeight:1.75,fontWeight:300}}>{meaningUp(libCard)}</div>
-            </>}
+            </>:<div style={{fontSize:16,color:C.textFaint,lineHeight:1.75,margin:"10px 0"}}>（牌義已隱藏，可於設定開啟）</div>}
         </div>
         <div style={{height:1,background:`linear-gradient(90deg,transparent,${C.accentDim},transparent)`,marginBottom:16}}/>
         <div style={{marginBottom:18}}>
@@ -204,10 +205,10 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
               </div>
               <textarea value={dRev} onChange={e=>setDRev(e.target.value)} rows={3} style={{width:"100%",fontSize:16,lineHeight:1.7,color:C.text,background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:10,padding:10,resize:"vertical",outline:"none",fontFamily:"inherit"}}/>
             </>
-            :<>
+            :isMeaningShown()?<>
               <div style={{display:"flex",gap:6,flexWrap:"wrap",margin:"10px 0"}}>{kwRev(libCard.id).map((kw,i)=><span key={i} style={{fontSize:14.25,padding:"3px 11px",borderRadius:20,background:"rgba(140,80,220,.07)",border:"1px solid rgba(140,80,220,.22)",color:"rgba(180,120,255,.8)",fontFamily:"'Cinzel',serif"}}>{kw}</span>)}</div>
               <div style={{fontSize:19.5,color:C.textDim,lineHeight:1.75,fontWeight:300}}>{meaningRev(libCard)}</div>
-            </>}
+            </>:<div style={{fontSize:16,color:C.textFaint,lineHeight:1.75,margin:"10px 0"}}>（牌義已隱藏，可於設定開啟）</div>}
         </div>
         {editing
           ?<div style={{display:"flex",gap:10}}>
@@ -215,7 +216,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
             <button onClick={()=>setEditing(false)} style={{padding:"12px 18px",borderRadius:50,cursor:"pointer",background:"transparent",border:`1px solid ${C.gridBorder}`,color:C.textDim,fontFamily:"'Cinzel',serif",fontSize:14}}>取消</button>
             {hasOverride(libCard.id)&&<button onClick={()=>{clearOverride(libCard.id);setEditing(false);setLibCard({...libCard});}} style={{padding:"12px 14px",borderRadius:50,cursor:"pointer",background:"transparent",border:"1px solid rgba(140,80,220,.4)",color:"#b478ff",fontFamily:"'Cinzel',serif",fontSize:13}}>↺ 還原</button>}
           </div>
-          :<button onClick={()=>{setDUp(meaningUp(libCard));setDRev(meaningRev(libCard));setDKwUp(kwUp(libCard.id));setDKwRev(kwRev(libCard.id));setKwInU("");setKwInR("");setEditing(true);}} style={{width:"100%",padding:"12px",borderRadius:50,cursor:"pointer",background:"transparent",border:`1px solid ${C.accentDim}`,color:C.accent,fontFamily:"'Cinzel',serif",fontSize:15,letterSpacing:1}}>✎ 編輯牌意</button>}
+          :<button onClick={()=>{setDUp(meaningUp(libCard));setDRev(meaningRev(libCard));setDKwUp(kwUp(libCard.id));setDKwRev(kwRev(libCard.id));setKwInU("");setKwInR("");setEditing(true);}} style={{width:"100%",padding:"12px",borderRadius:50,cursor:"pointer",background:"transparent",border:`1px solid ${C.accentDim}`,color:C.accent,fontFamily:"'Cinzel',serif",fontSize:15,letterSpacing:1}}>✎ 編輯牌義</button>}
       </div>
     </div>, document.body)}
 
