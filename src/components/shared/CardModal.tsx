@@ -1,11 +1,12 @@
 // 模組 11 — CardModal（長按/點擊牌後的詳細說明 Modal）
-// 注意：CardModal 內部呼叫 GoldPayBtn（共用 import，不是全域）。
-// card.up/rev 直接顯示，不引用 KEYWORDS（KEYWORDS 在 pages 層需要時再 import）。
 import { C } from "../../data/themes";
 import { GoldPayBtn } from "./GoldPayBtn";
+import { meaningUp, meaningRev } from "../../utils/overrides";
 
 export function CardModal({card,onClose}){
   if(!card)return null;
+  const up=meaningUp(card)||card.meaning;
+  const rev=meaningRev(card)||card.reverse;
   return <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.9)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:20,backdropFilter:"blur(8px)",userSelect:"none",WebkitUserSelect:"none"}}>
     <div onClick={e=>e.stopPropagation()} className="card-reveal-anim" style={{
       background:C.bgModal,
@@ -33,7 +34,7 @@ export function CardModal({card,onClose}){
           <span style={{color:card.reversed?"#c084fc":C.gold}}>✦</span>
           {card.reversed?"逆位牌義":"正位牌義"}
         </div>
-        <div style={{fontSize:15.44,color:C.text,lineHeight:2,letterSpacing:.3,fontWeight:300}}>{card.reversed?(card.rev||card.reverse):(card.up||card.meaning)}</div>
+        <div style={{fontSize:15.44,color:C.text,lineHeight:2,letterSpacing:.3,fontWeight:300}}>{card.reversed?rev:up}</div>
       </div>
 
       {/* 參考另一方向 */}
@@ -41,12 +42,10 @@ export function CardModal({card,onClose}){
         <div style={{fontSize:10.69,color:C.textFaint,letterSpacing:2,marginBottom:6,fontFamily:"'Cinzel',serif"}}>
           ○ {card.reversed?"正位參考":"逆位參考"}
         </div>
-        <div style={{fontSize:13.07,color:C.textDim,lineHeight:1.9}}>{card.reversed?(card.up||card.meaning):(card.rev||card.reverse)}</div>
+        <div style={{fontSize:13.07,color:C.textDim,lineHeight:1.9}}>{card.reversed?up:rev}</div>
       </div>
 
       <GoldPayBtn onClick={onClose} style={{width:"100%",textAlign:"center"}}>關閉</GoldPayBtn>
     </div>
   </div>;
 }
-
-// ── Spirit Pet ────────────────────────────────────────────────────────────────
