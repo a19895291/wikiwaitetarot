@@ -413,7 +413,7 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
         </div>
         {/* Draw more / complete CTA */}
         {remaining>0&&started&&<div style={{marginTop:12,textAlign:"center"}}>
-          <GoldPayBtn onClick={onDraw} disabled={remaining===0} style={{padding:"11px 28px",fontSize:10}}>
+          <GoldPayBtn onClick={()=>{playDraw();onDraw();}} disabled={remaining===0} style={{padding:"11px 28px",fontSize:10}}>
             ✦ 再抽一張（剩餘 {remaining}）
           </GoldPayBtn>
         </div>}
