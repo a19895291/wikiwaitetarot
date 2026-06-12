@@ -3,9 +3,10 @@ import { useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { C, THEMES, THEME_IDS } from "../data/themes";
 import { CARD_BACKS } from "../data/cardBacks";
-import { DECK, KEYWORDS } from "../data/deck";
+import { DECK } from "../data/deck";
 import { load } from "../utils/storage";
 import { CardBack } from "../components/shared/CardBack";
+import { meaningUp, meaningRev, kwUp, kwRev, hasOverride, setOverride, clearOverride } from "../utils/overrides";
 import { isSoundOn, setSoundOn, playFlip } from "../utils/sfx";
 
 export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,userEmail,onLogout,uiScale=1}){
@@ -16,6 +17,13 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
   const [libOpen,setLibOpen]=useState(false);
   const [libTab,setLibTab]=useState("major");
   const [libCard,setLibCard]=useState(null);
+  const [editing,setEditing]=useState(false);
+  const [dUp,setDUp]=useState("");
+  const [dRev,setDRev]=useState("");
+  const [dKwUp,setDKwUp]=useState([]);
+  const [dKwRev,setDKwRev]=useState([]);
+  const [kwInU,setKwInU]=useState("");
+  const [kwInR,setKwInR]=useState("");
   const lpTimer=useRef(null);
   const lpPos=useRef({x:0,y:0});
   const startLP=(card)=>(e)=>{lpPos.current={x:e.clientX,y:e.clientY};clearTimeout(lpTimer.current);lpTimer.current=setTimeout(()=>setLibCard(card),420);};
@@ -156,8 +164,8 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
     </div>, document.body)}
 
         {/* 牌庫：單張牌義（正/逆位）*/}
-    {libCard&&createPortal(<div onClick={()=>setLibCard(null)} style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
-      <div onClick={e=>e.stopPropagation()} className="card-reveal-anim" style={{width:"100%",maxWidth:330,maxHeight:"86vh",overflowY:"auto",WebkitOverflowScrolling:"touch",background:C.bgModal,border:`1px solid ${C.accentDim}`,borderRadius:20,padding:20,boxShadow:"0 20px 60px rgba(0,0,0,.6)",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}>
+    {libCard&&createPortal(<div onClick={()=>{setLibCard(null);setEditing(false);}} style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+      <div onClick={e=>e.stopPropagation()} className="card-reveal-anim" style={{width:"100%",maxWidth:330,maxHeight:"86vh",overflowY:"auto",WebkitOverflowScrolling:"touch",background:C.bgModal,border:`1px solid ${C.accentDim}`,borderRadius:20,padding:20,boxShadow:"0 20px 60px rgba(0,0,0,.6)",userSelect:editing?"auto":"none",WebkitUserSelect:editing?"auto":"none",WebkitTouchCallout:"none"}}>
         <div style={{display:"flex",gap:14,marginBottom:16}}>
           {libCard.img
             ?<div style={{width:126,height:195,borderRadius:10,overflow:"hidden",flexShrink:0,border:`1px solid ${C.accentDim}`,boxShadow:`0 0 16px ${C.accentFaint}`}}><img src={libCard.img} alt={libCard.name} style={{width:"100%",height:"100%",objectFit:"cover"}}/></div>
@@ -165,19 +173,49 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
           <div style={{flex:1,minWidth:0}}>
             <div style={{fontFamily:"'Cinzel',serif",fontSize:27,color:C.accent,letterSpacing:.5,lineHeight:1.3}}>{libCard.name}</div>
             {libCard.en&&<div style={{fontFamily:"'Cinzel',serif",fontStyle:"italic",fontSize:16.5,color:C.textFaint,marginTop:4,letterSpacing:.5,lineHeight:1.2}}>{libCard.en}</div>}
+            {hasOverride(libCard.id)&&!editing&&<div style={{display:"inline-block",marginTop:8,fontSize:11,color:C.accent,letterSpacing:1,padding:"2px 10px",borderRadius:20,background:`${C.accent}14`,border:`1px solid ${C.accentDim}`,fontFamily:"'Cinzel',serif"}}>✦ 已自訂</div>}
           </div>
         </div>
         <div style={{marginBottom:16}}>
           <span style={{fontFamily:"'Cinzel',serif",fontSize:16.5,color:C.accent,letterSpacing:1,padding:"3px 12px",borderRadius:20,background:`${C.accent}18`,border:`1px solid ${C.accentDim}`}}>△ 正位</span>
-          <div style={{display:"flex",gap:6,flexWrap:"wrap",margin:"10px 0"}}>{(KEYWORDS[libCard.id]?.up||[]).map((kw,i)=><span key={i} style={{fontSize:14.25,padding:"3px 11px",borderRadius:20,background:"rgba(201,168,76,.07)",border:"1px solid rgba(201,168,76,.2)",color:"rgba(201,168,76,.8)",fontFamily:"'Cinzel',serif"}}>{kw}</span>)}</div>
-          <div style={{fontSize:19.5,color:C.textDim,lineHeight:1.75,fontWeight:300}}>{libCard.up||libCard.meaning}</div>
+          {editing
+            ?<>
+              <div style={{display:"flex",gap:6,flexWrap:"wrap",margin:"10px 0",alignItems:"center"}}>
+                {dKwUp.map((kw,i)=><span key={i} style={{fontSize:14.25,padding:"3px 8px 3px 11px",borderRadius:20,background:"rgba(201,168,76,.07)",border:"1px solid rgba(201,168,76,.2)",color:"rgba(201,168,76,.9)",fontFamily:"'Cinzel',serif",display:"inline-flex",alignItems:"center",gap:4}}>{kw}<span onClick={()=>setDKwUp(dKwUp.filter((_,j)=>j!==i))} style={{cursor:"pointer",color:C.textFaint,fontSize:16,lineHeight:1}}>×</span></span>)}
+                <input value={kwInU} onChange={e=>setKwInU(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&kwInU.trim()){setDKwUp([...dKwUp,kwInU.trim()]);setKwInU("");}}} placeholder="新增…" style={{width:80,fontSize:14,padding:"4px 8px",borderRadius:20,background:C.bgPanel,border:`1px solid ${C.gridBorder}`,color:C.text,outline:"none"}}/>
+                <span onClick={()=>{if(kwInU.trim()){setDKwUp([...dKwUp,kwInU.trim()]);setKwInU("");}}} style={{cursor:"pointer",fontSize:18,color:C.accent,padding:"0 4px"}}>＋</span>
+              </div>
+              <textarea value={dUp} onChange={e=>setDUp(e.target.value)} rows={3} style={{width:"100%",fontSize:16,lineHeight:1.7,color:C.text,background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:10,padding:10,resize:"vertical",outline:"none",fontFamily:"inherit"}}/>
+            </>
+            :<>
+              <div style={{display:"flex",gap:6,flexWrap:"wrap",margin:"10px 0"}}>{kwUp(libCard.id).map((kw,i)=><span key={i} style={{fontSize:14.25,padding:"3px 11px",borderRadius:20,background:"rgba(201,168,76,.07)",border:"1px solid rgba(201,168,76,.2)",color:"rgba(201,168,76,.8)",fontFamily:"'Cinzel',serif"}}>{kw}</span>)}</div>
+              <div style={{fontSize:19.5,color:C.textDim,lineHeight:1.75,fontWeight:300}}>{meaningUp(libCard)}</div>
+            </>}
         </div>
         <div style={{height:1,background:`linear-gradient(90deg,transparent,${C.accentDim},transparent)`,marginBottom:16}}/>
-        <div>
+        <div style={{marginBottom:18}}>
           <span style={{fontFamily:"'Cinzel',serif",fontSize:16.5,color:C.purple,letterSpacing:1,padding:"3px 12px",borderRadius:20,background:"rgba(140,80,220,.12)",border:"1px solid rgba(140,80,220,.35)"}}>▽ 逆位</span>
-          <div style={{display:"flex",gap:6,flexWrap:"wrap",margin:"10px 0"}}>{(KEYWORDS[libCard.id]?.rev||[]).map((kw,i)=><span key={i} style={{fontSize:14.25,padding:"3px 11px",borderRadius:20,background:"rgba(140,80,220,.07)",border:"1px solid rgba(140,80,220,.22)",color:"rgba(180,120,255,.8)",fontFamily:"'Cinzel',serif"}}>{kw}</span>)}</div>
-          <div style={{fontSize:19.5,color:C.textDim,lineHeight:1.75,fontWeight:300}}>{libCard.rev||libCard.reverse}</div>
+          {editing
+            ?<>
+              <div style={{display:"flex",gap:6,flexWrap:"wrap",margin:"10px 0",alignItems:"center"}}>
+                {dKwRev.map((kw,i)=><span key={i} style={{fontSize:14.25,padding:"3px 8px 3px 11px",borderRadius:20,background:"rgba(140,80,220,.07)",border:"1px solid rgba(140,80,220,.22)",color:"rgba(180,120,255,.9)",fontFamily:"'Cinzel',serif",display:"inline-flex",alignItems:"center",gap:4}}>{kw}<span onClick={()=>setDKwRev(dKwRev.filter((_,j)=>j!==i))} style={{cursor:"pointer",color:C.textFaint,fontSize:16,lineHeight:1}}>×</span></span>)}
+                <input value={kwInR} onChange={e=>setKwInR(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&kwInR.trim()){setDKwRev([...dKwRev,kwInR.trim()]);setKwInR("");}}} placeholder="新增…" style={{width:80,fontSize:14,padding:"4px 8px",borderRadius:20,background:C.bgPanel,border:`1px solid ${C.gridBorder}`,color:C.text,outline:"none"}}/>
+                <span onClick={()=>{if(kwInR.trim()){setDKwRev([...dKwRev,kwInR.trim()]);setKwInR("");}}} style={{cursor:"pointer",fontSize:18,color:C.purple,padding:"0 4px"}}>＋</span>
+              </div>
+              <textarea value={dRev} onChange={e=>setDRev(e.target.value)} rows={3} style={{width:"100%",fontSize:16,lineHeight:1.7,color:C.text,background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:10,padding:10,resize:"vertical",outline:"none",fontFamily:"inherit"}}/>
+            </>
+            :<>
+              <div style={{display:"flex",gap:6,flexWrap:"wrap",margin:"10px 0"}}>{kwRev(libCard.id).map((kw,i)=><span key={i} style={{fontSize:14.25,padding:"3px 11px",borderRadius:20,background:"rgba(140,80,220,.07)",border:"1px solid rgba(140,80,220,.22)",color:"rgba(180,120,255,.8)",fontFamily:"'Cinzel',serif"}}>{kw}</span>)}</div>
+              <div style={{fontSize:19.5,color:C.textDim,lineHeight:1.75,fontWeight:300}}>{meaningRev(libCard)}</div>
+            </>}
         </div>
+        {editing
+          ?<div style={{display:"flex",gap:10}}>
+            <button onClick={()=>{setOverride(libCard.id,{up:dUp.trim(),rev:dRev.trim(),kwUp:dKwUp,kwRev:dKwRev});setEditing(false);setLibCard({...libCard});}} style={{flex:1,padding:"12px",borderRadius:50,border:"none",cursor:"pointer",background:`linear-gradient(135deg,${C.accent},${C.accentDim})`,color:"#1a1205",fontFamily:"'Cinzel',serif",fontSize:15,letterSpacing:1}}>儲存</button>
+            <button onClick={()=>setEditing(false)} style={{padding:"12px 18px",borderRadius:50,cursor:"pointer",background:"transparent",border:`1px solid ${C.gridBorder}`,color:C.textDim,fontFamily:"'Cinzel',serif",fontSize:14}}>取消</button>
+            {hasOverride(libCard.id)&&<button onClick={()=>{clearOverride(libCard.id);setEditing(false);setLibCard({...libCard});}} style={{padding:"12px 14px",borderRadius:50,cursor:"pointer",background:"transparent",border:"1px solid rgba(140,80,220,.4)",color:"#b478ff",fontFamily:"'Cinzel',serif",fontSize:13}}>↺ 還原</button>}
+          </div>
+          :<button onClick={()=>{setDUp(meaningUp(libCard));setDRev(meaningRev(libCard));setDKwUp(kwUp(libCard.id));setDKwRev(kwRev(libCard.id));setKwInU("");setKwInR("");setEditing(true);}} style={{width:"100%",padding:"12px",borderRadius:50,cursor:"pointer",background:"transparent",border:`1px solid ${C.accentDim}`,color:C.accent,fontFamily:"'Cinzel',serif",fontSize:15,letterSpacing:1}}>✎ 編輯牌意</button>}
       </div>
     </div>, document.body)}
 

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { C } from "../data/themes";
 import { CB } from "../data/cardBacks";
-import { KEYWORDS } from "../data/deck";
+import { kwUp, kwRev, meaningUp, meaningRev } from "../utils/overrides";
 import { GoldPayBtn } from "../components/shared/GoldPayBtn";
 import { cbBgStyle } from "../components/shared/cbBgStyle";
 import { playFlip, playDraw, playShuffle } from "../utils/sfx";
@@ -390,7 +390,7 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
               </div>
               {/* Keywords */}
               <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
-                {(KEYWORDS[panelCard.id]?.[panelCard.reversed?"rev":"up"]||[]).map((kw,i)=><span key={i} style={{
+                {(panelCard.reversed?kwRev(panelCard.id):kwUp(panelCard.id)).map((kw,i)=><span key={i} style={{
                   fontSize:10.69,padding:"3px 10px",borderRadius:20,
                   background:panelCard.reversed?"rgba(140,80,220,0.07)":"rgba(201,168,76,0.07)",
                   border:panelCard.reversed?"1px solid rgba(140,80,220,0.22)":"1px solid rgba(201,168,76,0.2)",
@@ -400,7 +400,7 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
               </div>
               <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(201,168,76,0.2),transparent)",marginBottom:12}}/>
               <div style={{fontSize:14.26,color:C.textDim,lineHeight:1.85,fontWeight:300}}>
-                {panelCard.reversed?(panelCard.rev||panelCard.reverse):(panelCard.up||panelCard.meaning)}
+                {panelCard.reversed?meaningRev(panelCard):meaningUp(panelCard)}
               </div>
             </>
             :<div style={{textAlign:"center",padding:"8px 0"}}>
