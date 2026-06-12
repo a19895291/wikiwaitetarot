@@ -66,6 +66,9 @@ export default function App(){
             setActiveC(p.active_costumes);
           }
           if (typeof p.show_meaning === "boolean") save("show_meaning", p.show_meaning);
+          if (typeof p.nickname === "string") save("profile_nick", p.nickname);
+          if (typeof p.gender === "string") save("profile_gender", p.gender);
+          if (typeof p.zodiac === "string") save("profile_zodiac", p.zodiac);
         }
         // 載入雲端今日占卜紀錄（雲端優先）
         const dk = todayKey();
