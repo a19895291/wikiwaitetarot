@@ -31,9 +31,25 @@ export default function App(){
   const { session, loading, signOut } = useAuth();
   const [guest, setGuest] = useState(() => load("guest_mode", false));
   const goToLogin = async () => {
-  await signOut();
-  save("guest_mode", false);
-  setGuest(false);
+    const wasLoggedIn = !!session;
+    await signOut();
+    // 登出（曾登入者）：清掉從帳號水合下來的本機快取，避免殘留上一位使用者的主題/牌背/購買/個資。
+    // 訪客按「登入/註冊」時 wasLoggedIn 為 false → 不清，保留待遷移上雲的訪客資料。
+    if (wasLoggedIn) {
+      try {
+        ["shop_bought", "profile_nick", "profile_gender", "profile_zodiac", "card_overrides",
+         "active_theme", "active_card_back", "active_spirit", "active_costumes", "show_meaning",
+         "spread_history", "online_history", "spread_working", "friend_order", "appointments"]
+          .forEach(k => localStorage.removeItem(k));
+        Object.keys(localStorage).forEach(k => {
+          if (k.startsWith("active_costume_") || k.startsWith("daily_") ||
+              k.startsWith("friend_notes_") || k.startsWith("story_unlock_")) localStorage.removeItem(k);
+        });
+      } catch {}
+    }
+    save("guest_mode", false);
+    setGuest(false);
+    if (wasLoggedIn) { try { window.location.reload(); } catch {} }
   };
   const [cardBackId,setCardBackId]=useState(()=>{
     try{const s=localStorage.getItem("active_card_back");return(s&&CARD_BACKS[s])?s:DEFAULT_CARD_BACK;}catch{return DEFAULT_CARD_BACK;}
