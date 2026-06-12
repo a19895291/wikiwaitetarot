@@ -98,9 +98,9 @@ export function playShuffle(): void {
   if (!isSoundOn() || !ensure() || !ctx) return;
   const t0 = ctx.currentTime + 0.04;
   for (let i = 0; i < 3; i++) {
-    tex(t0 + i * 0.20, 0.18, { hp:430, lp:4000, peak:1500, peakG:1.6, vol:0.22, grain:2.7, rough:0.30 });
+    tex(t0 + i * 0.20, 0.18, { hp:430, lp:4000, peak:1500, peakG:1.6, vol:0.045, grain:2.7, rough:0.30 });
   }
-  tex(t0 + 3 * 0.20, 0.15, { hp:410, lp:3700, peak:1400, vol:0.15, grain:2.9, rough:0.26 });
+  tex(t0 + 3 * 0.20, 0.15, { hp:410, lp:3700, peak:1400, vol:0.03, grain:2.9, rough:0.26 });
 }
 
 // 風鈴：更飄渺「叮」（很軟起音、弱金屬泛音、三層微解諧、極長尾），音量很輕
