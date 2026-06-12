@@ -4,16 +4,17 @@ import { createPortal } from "react-dom";
 import { C, THEMES, THEME_IDS } from "../data/themes";
 import { CARD_BACKS } from "../data/cardBacks";
 import { DECK } from "../data/deck";
-import { load } from "../utils/storage";
+import { load, save } from "../utils/storage";
 import { CardBack } from "../components/shared/CardBack";
 import { meaningUp, meaningRev, kwUp, kwRev, hasOverride, setOverride, clearOverride, isMeaningShown, setMeaningShown } from "../utils/overrides";
 import { isSoundOn, setSoundOn, playFlip } from "../utils/sfx";
 
 export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,userEmail,onLogout,uiScale=1}){
-  const [notif,setNotif]=useState(true);
+  const [notif,setNotif]=useState(()=>{try{return typeof Notification!=="undefined"&&Notification.permission==="granted"&&load("notif_enabled",true)!==false;}catch{return false;}});
   const [sound,setSound]=useState(isSoundOn());
-  const [dark,setDark]=useState(true);
   const [showMeaning,setShowMeaning]=useState(isMeaningShown());
+  const [about,setAbout]=useState(false);
+  const SUPPORT_EMAIL="support@example.com"; // ← 換成你的聯絡信箱
   const [openMenu,setOpenMenu]=useState(null);
   const [libOpen,setLibOpen]=useState(false);
   const [libTab,setLibTab]=useState("major");
@@ -109,7 +110,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
 </div>
 
     <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:"0 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
-      {[["推播通知","每日抽牌提醒",notif,()=>setNotif(v=>!v)],["音效","翻牌與環境音",sound,()=>setSound(v=>{const nv=!v;setSoundOn(nv);if(nv)playFlip();return nv;})],["深色模式","",dark,()=>setDark(v=>!v)],["顯示牌義","牌面解讀與關鍵詞",showMeaning,()=>setShowMeaning(v=>{const nv=!v;setMeaningShown(nv);return nv;})]].map(([label,sub,val,onT],i,arr)=><div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none"}}>
+      {[["推播通知","每日抽牌提醒",notif,()=>{if(notif){setNotif(false);save("notif_enabled",false);return;}if(typeof Notification==="undefined"){return;}Notification.requestPermission().then(p=>{const ok=p==="granted";setNotif(ok);save("notif_enabled",ok);});}],["音效","翻牌與環境音",sound,()=>setSound(v=>{const nv=!v;setSoundOn(nv);if(nv)playFlip();return nv;})],["顯示牌義","牌面解讀與關鍵詞",showMeaning,()=>setShowMeaning(v=>{const nv=!v;setMeaningShown(nv);return nv;})]].map(([label,sub,val,onT],i,arr)=><div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none"}}>
         <div>
           <div style={{fontSize:15.44,color:C.text,fontWeight:400}}>{label}</div>
           {sub&&<div style={{fontSize:11.88,color:C.textFaint,marginTop:2}}>{sub}</div>}
@@ -119,8 +120,8 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
     </div>
 
     <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:"0 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
-      {["帳戶管理","隱私設定","付款方式","聯絡支援","關於應用"].map((item,i,arr)=><div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none",cursor:"pointer"}}>
-        <div style={{fontSize:15.44,color:C.text}}>{item}</div>
+      {[{t:"帳戶管理",fn:null},{t:"隱私權政策",fn:()=>window.open("/privacy.html","_blank")},{t:"服務條款",fn:()=>window.open("/terms.html","_blank")},{t:"付款方式",fn:null},{t:"聯絡支援",fn:()=>{window.location.href="mailto:"+SUPPORT_EMAIL;}},{t:"關於應用",fn:()=>setAbout(true)}].map((it,i,arr)=><div key={i} onClick={it.fn||undefined} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none",cursor:it.fn?"pointer":"default"}}>
+        <div style={{fontSize:15.44,color:C.text}}>{it.t}</div>
         <div style={{color:C.goldDim,fontSize:16}}>›</div>
       </div>)}
     </div>
@@ -305,6 +306,20 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
     </div>
 
 
-    <div style={{textAlign:"center",fontSize:11.88,color:C.textFaint}}>Mystic Tarot v2.0.0</div>
+    {about&&createPortal(<div onClick={()=>setAbout(false)} style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:320,background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:20,padding:"26px 22px",textAlign:"center",boxShadow:"0 20px 60px rgba(0,0,0,.5)"}}>
+        <div style={{fontFamily:"'Cinzel',serif",fontSize:13,letterSpacing:2,color:C.accent,marginBottom:6}}>✦ MYSTIC TAROT ✦</div>
+        <div style={{fontSize:22,color:C.text,fontWeight:500,marginBottom:4}}>星啟塔羅</div>
+        <div style={{fontSize:12,color:C.textFaint,marginBottom:16}}>版本 v2.0.0</div>
+        <div style={{fontSize:13,lineHeight:1.7,color:C.text,marginBottom:18}}>結合每日抽牌、牌陣占卜與牌靈陪伴的塔羅應用，願星光為你指引方向。</div>
+        <div style={{display:"flex",gap:10,justifyContent:"center",marginBottom:14}}>
+          <button onClick={()=>window.open("/privacy.html","_blank")} style={{flex:1,padding:"9px 0",fontSize:12,color:C.accent,background:"transparent",border:`1px solid ${C.accentDim}`,borderRadius:50,cursor:"pointer"}}>隱私權政策</button>
+          <button onClick={()=>window.open("/terms.html","_blank")} style={{flex:1,padding:"9px 0",fontSize:12,color:C.accent,background:"transparent",border:`1px solid ${C.accentDim}`,borderRadius:50,cursor:"pointer"}}>服務條款</button>
+        </div>
+        <button onClick={()=>setAbout(false)} style={{width:"100%",padding:"11px 0",fontSize:13,color:C.text,background:`${C.accent}18`,border:`1px solid ${C.accentDim}`,borderRadius:50,cursor:"pointer"}}>關閉</button>
+      </div>
+    </div>, document.body)}
+
+    <div style={{textAlign:"center",fontSize:11.88,color:C.textFaint}}>星啟塔羅 · Mystic Tarot　v2.0.0</div>
   </div>;
 }
