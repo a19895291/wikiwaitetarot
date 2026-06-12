@@ -86,4 +86,5 @@ export function isMeaningShown(): boolean {
 }
 export function setMeaningShown(on: boolean): void {
   try { save(SHOW_KEY, !!on); } catch {}
+  db.updateProfile({ show_meaning: !!on }).catch(() => {});
 }
