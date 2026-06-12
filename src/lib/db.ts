@@ -144,3 +144,16 @@ export async function deleteOverride(cardId: number): Promise<void> {
     .from("card_overrides").delete().eq("user_id", id).eq("card_id", cardId);
   if (error) throw error;
 }
+
+// ============================================================
+// announcements（公布欄；公開讀取，不需登入）
+// ============================================================
+export async function listAnnouncements(): Promise<any[]> {
+  try {
+    const { data, error } = await supabase
+      .from("announcements").select("*").eq("active", true)
+      .order("published_at", { ascending: false }).limit(20);
+    if (error) return [];
+    return data || [];
+  } catch { return []; }
+}
