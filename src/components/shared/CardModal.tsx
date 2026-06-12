@@ -1,7 +1,7 @@
 // 模組 11 — CardModal（長按/點擊牌後的詳細說明 Modal）
 import { C } from "../../data/themes";
 import { GoldPayBtn } from "./GoldPayBtn";
-import { meaningUp, meaningRev } from "../../utils/overrides";
+import { meaningUp, meaningRev, isMeaningShown } from "../../utils/overrides";
 
 export function CardModal({card,onClose}){
   if(!card)return null;
@@ -34,7 +34,7 @@ export function CardModal({card,onClose}){
           <span style={{color:card.reversed?"#c084fc":C.gold}}>✦</span>
           {card.reversed?"逆位牌義":"正位牌義"}
         </div>
-        <div style={{fontSize:15.44,color:C.text,lineHeight:2,letterSpacing:.3,fontWeight:300}}>{card.reversed?rev:up}</div>
+        <div style={{fontSize:15.44,color:C.text,lineHeight:2,letterSpacing:.3,fontWeight:300}}>{isMeaningShown()?(card.reversed?rev:up):"（牌義已隱藏，可於設定開啟）"}</div>
       </div>
 
       {/* 參考另一方向 */}
@@ -42,7 +42,7 @@ export function CardModal({card,onClose}){
         <div style={{fontSize:10.69,color:C.textFaint,letterSpacing:2,marginBottom:6,fontFamily:"'Cinzel',serif"}}>
           ○ {card.reversed?"正位參考":"逆位參考"}
         </div>
-        <div style={{fontSize:13.07,color:C.textDim,lineHeight:1.9}}>{card.reversed?up:rev}</div>
+        <div style={{fontSize:13.07,color:C.textDim,lineHeight:1.9}}>{isMeaningShown()?(card.reversed?up:rev):"—"}</div>
       </div>
 
       <GoldPayBtn onClick={onClose} style={{width:"100%",textAlign:"center"}}>關閉</GoldPayBtn>
