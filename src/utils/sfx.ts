@@ -102,3 +102,30 @@ export function playShuffle(): void {
   }
   tex(t0 + 3 * 0.20, 0.15, { hp:410, lp:3700, peak:1400, vol:0.15, grain:2.9, rough:0.26 });
 }
+
+// 風鈴：更飄渺「叮」（很軟起音、弱金屬泛音、三層微解諧、極長尾），音量很輕
+function bell(t0: number, freq: number, vol: number, dur: number): void {
+  if (!ctx || !master) return;
+  const o = ctx.createOscillator();  o.type = "sine"; o.frequency.value = freq;
+  const o2 = ctx.createOscillator(); o2.type = "sine"; o2.frequency.value = freq * 2.76;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(vol, t0 + 0.035);          // 很軟的起音（漸入）
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  const g2 = ctx.createGain();
+  g2.gain.setValueAtTime(0.0001, t0);
+  g2.gain.exponentialRampToValueAtTime(vol * 0.12, t0 + 0.035);  // 金屬泛音減弱 → 更純更空靈
+  g2.gain.exponentialRampToValueAtTime(0.0001, t0 + dur * 0.4);
+  o.connect(g); g.connect(master);
+  o2.connect(g2); g2.connect(master);
+  o.start(t0); o.stop(t0 + dur + 0.05);
+  o2.start(t0); o2.stop(t0 + dur * 0.4 + 0.05);
+}
+
+export function playChime(): void {
+  if (!isSoundOn() || !ensure() || !ctx) return;
+  const t0 = ctx.currentTime + 0.01;
+  bell(t0, 2093, 0.032, 3.0);  // 主音
+  bell(t0, 2096, 0.013, 3.0);  // 單層輕微解諧（少拍頻＝少共振）
+  bell(t0, 3136, 0.007, 2.2);  // 五度微光（同時、極輕，無延遲＝不像回聲）
+}
