@@ -78,3 +78,12 @@ export async function hydrateOverridesFromCloud(): Promise<void> {
     save(KEY, all);
   } catch { /* 忽略雲端失敗，維持本機 */ }
 }
+
+// ── 顯示/隱藏牌義開關（全 App，localStorage，預設顯示）──
+const SHOW_KEY = "show_meaning";
+export function isMeaningShown(): boolean {
+  try { return load(SHOW_KEY, true) !== false; } catch { return true; }
+}
+export function setMeaningShown(on: boolean): void {
+  try { save(SHOW_KEY, !!on); } catch {}
+}
