@@ -198,7 +198,7 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack,costumes,setCost
     </div>
 
     {/* Tab bar */}
-    <div style={{display:"flex",gap:4,marginBottom:20,background:C.bgPanel,borderRadius:50,padding:4,overflowX:"auto",border:`1px solid ${C.gridBorder}`,boxShadow:"inset 0 2px 10px rgba(0,0,0,.3)"}}>
+    <div style={{display:"flex",gap:4,marginBottom:20,background:C.bgPanel,borderRadius:50,padding:"4px 12px",overflowX:"auto",border:`1px solid ${C.gridBorder}`,boxShadow:"inset 0 2px 8px rgba(0,0,0,.18)"}}>
       {SHOP_TABS.map(([id,label])=><button key={id} onClick={()=>setTab(id)} style={{flex:"0 0 auto",padding:"7px 14px",borderRadius:50,border:"none",cursor:"pointer",background:tab===id?`linear-gradient(135deg,${C.blue},${C.blue}cc)`:"transparent",fontFamily:"'Cinzel',serif",fontSize:11.88,color:tab===id?C.gold:C.textFaint,transition:"all .25s",whiteSpace:"nowrap",boxShadow:tab===id?`0 0 14px ${C.accentFaint}`:"none"}}>{label}</button>)}
     </div>
 
