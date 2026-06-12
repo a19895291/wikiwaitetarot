@@ -23,6 +23,7 @@ import { SettingsPage } from "./pages/SettingsPage";
 import { useAuth } from "./hooks/useAuth";
 import LoginPage from "./pages/LoginPage";
 import * as db from "./lib/db";
+import { hydrateOverridesFromCloud } from "./utils/overrides";
 
 export default function App(){
   const {theme,themeId,switchTheme}=useTheme();
@@ -79,6 +80,8 @@ export default function App(){
           save("shop_bought", Array.from(new Set([...load("shop_bought", []), ...ids])));
           setCostumes(prev => { const m = {}; for (const k in prev) { m[k] = prev[k].map(c => ids.includes(c.id) ? { ...c, owned: true } : c); } return m; });
         }
+        // 載入雲端自訂牌意 → 合併本機
+        await hydrateOverridesFromCloud();
       } catch (e) { /* 雲端載入失敗就維持本機設定 */ }
       if (!cancelled) setHydrated(true);
     })();
