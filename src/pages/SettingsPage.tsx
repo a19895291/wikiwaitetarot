@@ -8,12 +8,17 @@ import { load, save } from "../utils/storage";
 import { CardBack } from "../components/shared/CardBack";
 import { meaningUp, meaningRev, kwUp, kwRev, hasOverride, setOverride, clearOverride, isMeaningShown, setMeaningShown } from "../utils/overrides";
 import { isSoundOn, setSoundOn, playFlip } from "../utils/sfx";
+import * as db from "../lib/db";
 
 export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,userEmail,onLogout,uiScale=1}){
   const [notif,setNotif]=useState(()=>{try{return typeof Notification!=="undefined"&&Notification.permission==="granted"&&load("notif_enabled",true)!==false;}catch{return false;}});
   const [sound,setSound]=useState(isSoundOn());
   const [showMeaning,setShowMeaning]=useState(isMeaningShown());
   const [about,setAbout]=useState(false);
+  const [acctOpen,setAcctOpen]=useState(false);
+  const [nick,setNick]=useState(()=>load("profile_nick",""));
+  const [gender,setGender]=useState(()=>load("profile_gender",""));
+  const [zodiac,setZodiac]=useState(()=>load("profile_zodiac",""));
   const SUPPORT_EMAIL="support@example.com"; // ← 換成你的聯絡信箱
   const [openMenu,setOpenMenu]=useState(null);
   const [libOpen,setLibOpen]=useState(false);
@@ -76,38 +81,6 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:21.38,color:C.gold,letterSpacing:3}}>設定</div>
       <div style={{width:50,height:1,background:`linear-gradient(90deg,transparent,${C.gold},transparent)`,margin:"10px auto 0"}}/>
     </div>
-{/* 帳號 */}
-<div style={{ background: C.bgCard, border: `1px solid ${C.gridBorder}`, borderRadius: 16, padding: 16, marginBottom: 16 }}>
-  <div style={{ fontSize: 13, fontWeight: 700, color: C.accent, letterSpacing: "0.05em", marginBottom: 12 }}>
-    帳號
-  </div>
-  {userEmail ? (
-    <>
-      <div style={{ fontSize: 13, color: C.textDim, marginBottom: 12, wordBreak: "break-all" }}>
-        已登入：{userEmail}
-      </div>
-      <button
-        onClick={onLogout}
-        style={{ width: "100%", padding: "11px 0", fontSize: 14, fontWeight: 600, color: C.textDim, background: "transparent", border: `1px solid ${C.gridBorder}`, borderRadius: 12, cursor: "pointer", fontFamily: "'Noto Sans TC', sans-serif" }}
-      >
-        登出
-      </button>
-    </>
-  ) : (
-    <>
-      <div style={{ fontSize: 13, color: C.textDim, marginBottom: 12 }}>
-        目前為訪客模式 · 註冊後可跨裝置同步
-      </div>
-      <button
-        className="pay-btn"
-        onClick={onLogout}
-        style={{ width: "100%", padding: "11px 0", fontSize: 14, fontWeight: 700, color: C.bg, background: `linear-gradient(135deg, ${C.accent}, ${C.accentDim})`, border: "none", borderRadius: 12, cursor: "pointer", fontFamily: "'Noto Sans TC', sans-serif" }}
-      >
-        登入 / 註冊帳號
-      </button>
-    </>
-  )}
-</div>
 
     <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:"0 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
       {[["推播通知","每日抽牌提醒",notif,()=>{if(notif){setNotif(false);save("notif_enabled",false);return;}if(typeof Notification==="undefined"){return;}Notification.requestPermission().then(p=>{const ok=p==="granted";setNotif(ok);save("notif_enabled",ok);});}],["音效","翻牌與環境音",sound,()=>setSound(v=>{const nv=!v;setSoundOn(nv);if(nv)playFlip();return nv;})],["顯示牌義","牌面解讀與關鍵詞",showMeaning,()=>setShowMeaning(v=>{const nv=!v;setMeaningShown(nv);return nv;})]].map(([label,sub,val,onT],i,arr)=><div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none"}}>
@@ -120,7 +93,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
     </div>
 
     <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:"0 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
-      {[{t:"帳戶管理",fn:null},{t:"隱私權政策",fn:()=>window.open("/privacy.html","_blank")},{t:"服務條款",fn:()=>window.open("/terms.html","_blank")},{t:"付款方式",fn:null},{t:"聯絡支援",fn:()=>{window.location.href="mailto:"+SUPPORT_EMAIL;}},{t:"關於應用",fn:()=>setAbout(true)}].map((it,i,arr)=><div key={i} onClick={it.fn||undefined} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none",cursor:it.fn?"pointer":"default"}}>
+      {[{t:"帳戶管理",fn:()=>setAcctOpen(true)},{t:"隱私權政策",fn:()=>window.open("/privacy.html","_blank")},{t:"服務條款",fn:()=>window.open("/terms.html","_blank")},{t:"聯絡支援",fn:()=>{window.location.href="mailto:"+SUPPORT_EMAIL;}},{t:"關於應用",fn:()=>setAbout(true)}].map((it,i,arr)=><div key={i} onClick={it.fn} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none",cursor:"pointer"}}>
         <div style={{fontSize:15.44,color:C.text}}>{it.t}</div>
         <div style={{color:C.goldDim,fontSize:16}}>›</div>
       </div>)}
@@ -305,6 +278,52 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       </div>}
     </div>
 
+
+    {acctOpen&&createPortal(<div onClick={()=>setAcctOpen(false)} style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:360,maxHeight:"84vh",overflowY:"auto",background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:20,padding:"20px 18px",boxShadow:"0 20px 60px rgba(0,0,0,.5)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:C.gold,letterSpacing:2}}>帳戶管理</div>
+          <div onClick={()=>setAcctOpen(false)} style={{fontSize:13,color:C.text,border:`1px solid ${C.gridBorder}`,borderRadius:50,padding:"4px 12px",cursor:"pointer"}}>✕ 離開</div>
+        </div>
+        <div style={{background:C.bgCard,border:`1px solid ${C.gridBorder}`,borderRadius:14,padding:14,marginBottom:14}}>
+          <div style={{fontSize:11,color:C.accent,letterSpacing:1,marginBottom:8}}>帳號</div>
+          {userEmail?(
+            <div style={{fontSize:13,color:C.text,wordBreak:"break-all"}}>已登入 · {userEmail}</div>
+          ):(
+            <>
+              <div style={{fontSize:13,color:C.textDim,marginBottom:10}}>目前為訪客 · 註冊後可跨裝置同步</div>
+              <button className="pay-btn" onClick={onLogout} style={{width:"100%",padding:"10px 0",fontSize:13,fontWeight:700,color:C.bg,background:`linear-gradient(135deg,${C.accent},${C.accentDim})`,border:"none",borderRadius:12,cursor:"pointer"}}>登入 / 註冊帳號</button>
+            </>
+          )}
+        </div>
+        <div style={{marginBottom:14}}>
+          <div style={{fontSize:12,color:C.textDim,marginBottom:6}}>用戶暱稱</div>
+          <input value={nick} onChange={e=>{const v=e.target.value;setNick(v);save("profile_nick",v);}} onBlur={()=>db.updateProfile({nickname:nick}).catch(()=>{})} placeholder="輸入暱稱" style={{width:"100%",padding:"10px 12px",fontSize:14,color:C.text,background:C.bgCard,border:`1px solid ${C.gridBorder}`,borderRadius:12,outline:"none"}}/>
+        </div>
+        <div style={{marginBottom:14}}>
+          <div style={{fontSize:12,color:C.textDim,marginBottom:6}}>E-mail</div>
+          <div style={{padding:"10px 12px",fontSize:14,color:userEmail?C.text:C.textFaint,background:C.bgCard,border:`1px solid ${C.gridBorder}`,borderRadius:12,wordBreak:"break-all"}}>{userEmail||"（未登入）"}</div>
+        </div>
+        <div style={{marginBottom:14}}>
+          <div style={{fontSize:12,color:C.textDim,marginBottom:6}}>性別</div>
+          <div style={{display:"flex",gap:8}}>
+            {["男","女","其他","不透露"].map(g=><div key={g} onClick={()=>{setGender(g);save("profile_gender",g);db.updateProfile({gender:g}).catch(()=>{});}} style={{flex:1,textAlign:"center",padding:"9px 0",fontSize:13,cursor:"pointer",borderRadius:50,color:gender===g?C.bg:C.textDim,background:gender===g?C.accent:"transparent",border:`1px solid ${gender===g?C.accent:C.gridBorder}`,transition:"all .2s"}}>{g}</div>)}
+          </div>
+        </div>
+        <div style={{marginBottom:14}}>
+          <div style={{fontSize:12,color:C.textDim,marginBottom:6}}>星座</div>
+          <select value={zodiac} onChange={e=>{const v=e.target.value;setZodiac(v);save("profile_zodiac",v);db.updateProfile({zodiac:v}).catch(()=>{});}} style={{width:"100%",padding:"10px 12px",fontSize:14,color:zodiac?C.text:C.textFaint,background:C.bgCard,border:`1px solid ${C.gridBorder}`,borderRadius:12,outline:"none",appearance:"none",WebkitAppearance:"none"}}>
+            <option value="">未選擇</option>
+            {["牡羊座","金牛座","雙子座","巨蟹座","獅子座","處女座","天秤座","天蠍座","射手座","摩羯座","水瓶座","雙魚座"].map(z=><option key={z} value={z}>{z}</option>)}
+          </select>
+        </div>
+        <div style={{marginBottom:16,background:C.bgCard,border:`1px solid ${C.gridBorder}`,borderRadius:14,padding:14}}>
+          <div style={{fontSize:12,color:C.accent,letterSpacing:1,marginBottom:6}}>付款方式</div>
+          <div style={{fontSize:12.5,lineHeight:1.7,color:C.textDim}}>商城的主題、牌背與訂閱皆透過 App Store／Google Play 官方內購處理，App 內不另外綁定信用卡或收款。未來的訂閱與加購紀錄會在此顯示與管理。</div>
+        </div>
+        {userEmail&&<button onClick={onLogout} style={{width:"100%",padding:"11px 0",fontSize:14,fontWeight:600,color:C.textDim,background:"transparent",border:`1px solid ${C.gridBorder}`,borderRadius:12,cursor:"pointer"}}>登出</button>}
+      </div>
+    </div>, document.body)}
 
     {about&&createPortal(<div onClick={()=>setAbout(false)} style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
       <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:320,background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:20,padding:"26px 22px",textAlign:"center",boxShadow:"0 20px 60px rgba(0,0,0,.5)"}}>
