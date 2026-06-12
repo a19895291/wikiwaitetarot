@@ -1,5 +1,5 @@
 // 模組 16 — SettingsPage（設定頁，主題/牌背快選）
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { C, THEMES, THEME_IDS } from "../data/themes";
 import { CARD_BACKS } from "../data/cardBacks";
@@ -19,6 +19,8 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
   const [nick,setNick]=useState(()=>load("profile_nick",""));
   const [gender,setGender]=useState(()=>load("profile_gender",""));
   const [zodiac,setZodiac]=useState(()=>load("profile_zodiac",""));
+  const [anns,setAnns]=useState([]);
+  const [annView,setAnnView]=useState(null);
   const SUPPORT_EMAIL="support@example.com"; // ← 換成你的聯絡信箱
   const [openMenu,setOpenMenu]=useState(null);
   const [libOpen,setLibOpen]=useState(false);
@@ -33,6 +35,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
   const [kwInR,setKwInR]=useState("");
   const lpTimer=useRef(null);
   const lpPos=useRef({x:0,y:0});
+  useEffect(()=>{let c=false;db.listAnnouncements().then(r=>{if(!c)setAnns(Array.isArray(r)?r:[]);}).catch(()=>{});return ()=>{c=true;};},[]);
   const startLP=(card)=>(e)=>{lpPos.current={x:e.clientX,y:e.clientY};clearTimeout(lpTimer.current);lpTimer.current=setTimeout(()=>setLibCard(card),420);};
   const moveLP=(e)=>{const dx=e.clientX-lpPos.current.x,dy=e.clientY-lpPos.current.y;if(Math.hypot(dx,dy)>10)clearTimeout(lpTimer.current);};
   const cancelLP=()=>clearTimeout(lpTimer.current);
@@ -82,6 +85,22 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       <div style={{width:50,height:1,background:`linear-gradient(90deg,transparent,${C.gold},transparent)`,margin:"10px auto 0"}}/>
     </div>
 
+    {/* 公布欄 */}
+    <div style={{marginBottom:8,fontSize:13,fontWeight:700,color:C.accent,letterSpacing:1}}>📢 公布欄</div>
+    <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:anns.length?"4px 16px":16,marginBottom:14,backdropFilter:"blur(10px)"}}>
+      {anns.length===0
+        ? <div style={{fontSize:13,color:C.textFaint,textAlign:"center",padding:"6px 0"}}>目前沒有公告</div>
+        : anns.map((a,i)=><div key={a.id||i} onClick={()=>setAnnView(a)} style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,padding:"12px 0",borderBottom:i<anns.length-1?`1px solid ${C.gridBorder}`:"none",cursor:"pointer"}}>
+            <div style={{minWidth:0}}>
+              <div style={{fontSize:14,color:C.text,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{a.title}</div>
+              <div style={{fontSize:11,color:C.textFaint,marginTop:2}}>{(a.published_at||"").slice(0,10)}</div>
+            </div>
+            <div style={{color:C.goldDim,fontSize:16,flexShrink:0}}>›</div>
+          </div>)}
+    </div>
+
+    {/* 一般設定 */}
+    <div style={{marginBottom:8,fontSize:13,fontWeight:700,color:C.accent,letterSpacing:1}}>⚙ 一般設定</div>
     <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:"0 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
       {[["推播通知","每日抽牌提醒",notif,()=>{if(notif){setNotif(false);save("notif_enabled",false);return;}if(typeof Notification==="undefined"){return;}Notification.requestPermission().then(p=>{const ok=p==="granted";setNotif(ok);save("notif_enabled",ok);});}],["音效","翻牌與環境音",sound,()=>setSound(v=>{const nv=!v;setSoundOn(nv);if(nv)playFlip();return nv;})],["顯示牌義","牌面解讀與關鍵詞",showMeaning,()=>setShowMeaning(v=>{const nv=!v;setMeaningShown(nv);return nv;})]].map(([label,sub,val,onT],i,arr)=><div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none"}}>
         <div>
@@ -278,6 +297,15 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       </div>}
     </div>
 
+
+    {annView&&createPortal(<div onClick={()=>setAnnView(null)} style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:360,maxHeight:"80vh",overflowY:"auto",background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:20,padding:"22px 20px",boxShadow:"0 20px 60px rgba(0,0,0,.5)"}}>
+        <div style={{fontSize:17,color:C.text,fontWeight:500,marginBottom:4}}>{annView.title}</div>
+        <div style={{fontSize:11,color:C.textFaint,marginBottom:14}}>{(annView.published_at||"").slice(0,10)}</div>
+        <div style={{fontSize:14,lineHeight:1.8,color:C.text,whiteSpace:"pre-wrap",marginBottom:18}}>{annView.body}</div>
+        <button onClick={()=>setAnnView(null)} style={{width:"100%",padding:"11px 0",fontSize:13,color:C.text,background:`${C.accent}18`,border:`1px solid ${C.accentDim}`,borderRadius:50,cursor:"pointer"}}>關閉</button>
+      </div>
+    </div>, document.body)}
 
     {acctOpen&&createPortal(<div onClick={()=>setAcctOpen(false)} style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
       <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:360,maxHeight:"84vh",overflowY:"auto",background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:20,padding:"20px 18px",boxShadow:"0 20px 60px rgba(0,0,0,.5)"}}>
