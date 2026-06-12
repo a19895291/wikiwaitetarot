@@ -1,5 +1,5 @@
 // 模組 05 — SpreadPage（多牌陣占卜，含凱爾特十字佈局）
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { C } from "../data/themes";
 import { CB } from "../data/cardBacks";
 import { DECK } from "../data/deck";
@@ -12,9 +12,14 @@ import * as db from "../lib/db";
 
 
 export function SpreadPage(){
-  const [grid,setGrid]=useState(Array(36).fill(null));
-  const [drawn,setDrawn]=useState([]);
-  const [deck,setDeck]=useState(()=>shuffle(DECK));
+  const savedRef=useRef();
+  if(savedRef.current===undefined){
+    try{savedRef.current=JSON.parse(localStorage.getItem("spread_working")||"null");}catch{savedRef.current=null;}
+  }
+  const saved=savedRef.current;
+  const [grid,setGrid]=useState(()=>(saved&&Array.isArray(saved.grid)&&saved.grid.length===36)?saved.grid:Array(36).fill(null));
+  const [drawn,setDrawn]=useState(()=>(saved&&Array.isArray(saved.drawn))?saved.drawn:[]);
+  const [deck,setDeck]=useState(()=>(saved&&Array.isArray(saved.deck)&&saved.deck.length)?saved.deck:shuffle(DECK));
   const [zoom,setZoom]=useState(null);
   const [shuffleAnim,setShuffleAnim]=useState(false);
   const [liftedCard,setLiftedCard]=useState(null);
@@ -46,7 +51,11 @@ export function SpreadPage(){
     deckPtr.current=0;setDeck(shuffle(DECK));setDrawn([]);setGrid(Array(36).fill(null));
   },[]);
 
-  const deckPtr=useRef(0);
+  const deckPtr=useRef(saved&&typeof saved.deckPtr==="number"?saved.deckPtr:0);
+  // 工作狀態持久化：離開頁面再回來時還原已抽/已擺放的牌
+  useEffect(()=>{
+    try{localStorage.setItem("spread_working",JSON.stringify({grid,drawn,deck,deckPtr:deckPtr.current}));}catch{}
+  },[grid,drawn,deck]);
   const drawCard=useCallback(()=>{
     if(deckPtr.current>=deck.length)return;
     playDraw();
