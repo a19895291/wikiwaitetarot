@@ -88,7 +88,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
     </div>
 
     <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:"0 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
-      {[{t:"公布欄",fn:()=>setBoardOpen(true)},{t:"一般設定",fn:()=>setGenOpen(true)},{t:"帳戶管理",fn:()=>setAcctOpen(true)},{t:"隱私權政策",fn:()=>window.open("/privacy.html","_blank")},{t:"服務條款",fn:()=>window.open("/terms.html","_blank")},{t:"聯絡支援",fn:()=>{window.location.href="mailto:"+SUPPORT_EMAIL;}},{t:"關於應用",fn:()=>setAbout(true)}].map((it,i,arr)=><div key={i} onClick={it.fn} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none",cursor:"pointer"}}>
+      {[{t:"公布欄",fn:()=>setBoardOpen(true)},{t:"一般設定",fn:()=>setGenOpen(true)},{t:"帳號管理",fn:()=>setAcctOpen(true)},{t:"隱私權政策",fn:()=>window.open("/privacy.html","_blank")},{t:"服務條款",fn:()=>window.open("/terms.html","_blank")},{t:"聯絡支援",fn:()=>{window.location.href="mailto:"+SUPPORT_EMAIL;}},{t:"關於應用",fn:()=>setAbout(true)}].map((it,i,arr)=><div key={i} onClick={it.fn} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none",cursor:"pointer"}}>
         <div style={{fontSize:15.44,color:C.text}}>{it.t}</div>
         <div style={{color:C.goldDim,fontSize:16}}>›</div>
       </div>)}
@@ -274,7 +274,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
     </div>
 
 
-    {boardOpen&&createPortal(<div style={{position:"fixed",top:0,left:0,right:0,bottom:"calc(env(safe-area-inset-bottom,0px) + 56px)",zIndex:500,...libBg,display:"flex",flexDirection:"column"}}>
+    {boardOpen&&createPortal(<div style={{position:"fixed",top:0,left:0,right:0,bottom:"calc(env(safe-area-inset-bottom,0px) + 56px)",zIndex:500,...libBg,display:"flex",flexDirection:"column",paddingTop:"env(safe-area-inset-top,0px)"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 16px 12px",flexShrink:0}}>
         <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:19,color:C.gold,letterSpacing:2}}>📢 公布欄</div>
         <div onClick={()=>setBoardOpen(false)} style={{fontSize:13,color:C.text,border:`1px solid ${C.gridBorder}`,borderRadius:50,padding:"5px 14px",cursor:"pointer"}}>✕ 離開</div>
@@ -292,7 +292,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       </div>
     </div>, document.body)}
 
-    {genOpen&&createPortal(<div style={{position:"fixed",top:0,left:0,right:0,bottom:"calc(env(safe-area-inset-bottom,0px) + 56px)",zIndex:500,...libBg,display:"flex",flexDirection:"column"}}>
+    {genOpen&&createPortal(<div style={{position:"fixed",top:0,left:0,right:0,bottom:"calc(env(safe-area-inset-bottom,0px) + 56px)",zIndex:500,...libBg,display:"flex",flexDirection:"column",paddingTop:"env(safe-area-inset-top,0px)"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 16px 12px",flexShrink:0}}>
         <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:19,color:C.gold,letterSpacing:2}}>⚙ 一般設定</div>
         <div onClick={()=>setGenOpen(false)} style={{fontSize:13,color:C.text,border:`1px solid ${C.gridBorder}`,borderRadius:50,padding:"5px 14px",cursor:"pointer"}}>✕ 離開</div>
@@ -319,12 +319,12 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       </div>
     </div>, document.body)}
 
-    {acctOpen&&createPortal(<div onClick={()=>setAcctOpen(false)} style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
-      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:360,maxHeight:"84vh",overflowY:"auto",background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:20,padding:"20px 18px",boxShadow:"0 20px 60px rgba(0,0,0,.5)"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-          <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:18,color:C.gold,letterSpacing:2}}>帳戶管理</div>
-          <div onClick={()=>setAcctOpen(false)} style={{fontSize:13,color:C.text,border:`1px solid ${C.gridBorder}`,borderRadius:50,padding:"4px 12px",cursor:"pointer"}}>✕ 離開</div>
-        </div>
+    {acctOpen&&createPortal(<div style={{position:"fixed",top:0,left:0,right:0,bottom:"calc(env(safe-area-inset-bottom,0px) + 56px)",zIndex:500,...libBg,display:"flex",flexDirection:"column",paddingTop:"env(safe-area-inset-top,0px)"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 16px 12px",flexShrink:0}}>
+        <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:19,color:C.gold,letterSpacing:2}}>👤 帳號管理</div>
+        <div onClick={()=>setAcctOpen(false)} style={{fontSize:13,color:C.text,border:`1px solid ${C.gridBorder}`,borderRadius:50,padding:"5px 14px",cursor:"pointer"}}>✕ 離開</div>
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"0 16px 16px"}}>
         <div style={{background:C.bgCard,border:`1px solid ${C.gridBorder}`,borderRadius:14,padding:14,marginBottom:14}}>
           <div style={{fontSize:11,color:C.accent,letterSpacing:1,marginBottom:8}}>帳號</div>
           {userEmail?(
