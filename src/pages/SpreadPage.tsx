@@ -7,6 +7,7 @@ import { shuffle } from "../utils/deck";
 import { CardBack } from "../components/shared/CardBack";
 import { CardModal } from "../components/shared/CardModal";
 import { cbBgStyle } from "../components/shared/cbBgStyle";
+import { playFlip, playDraw, playShuffle } from "../utils/sfx";
 import * as db from "../lib/db";
 
 
@@ -39,6 +40,7 @@ export function SpreadPage(){
   },[]);
 
   const doShuffle=useCallback(()=>{
+    playShuffle();
     setShuffleAnim(true);
     setTimeout(()=>setShuffleAnim(false),600);
     deckPtr.current=0;setDeck(shuffle(DECK));setDrawn([]);setGrid(Array(36).fill(null));
@@ -47,6 +49,7 @@ export function SpreadPage(){
   const deckPtr=useRef(0);
   const drawCard=useCallback(()=>{
     if(deckPtr.current>=deck.length)return;
+    playDraw();
     const card=deck[deckPtr.current];
     deckPtr.current+=1;
     setDrawn(p=>[...p,card]);
@@ -87,6 +90,7 @@ export function SpreadPage(){
       if(toIdx>=0)setCellHL(toIdx,false);hovered.current=-1;
       if(toIdx>=0&&dragging.current){
         const dropped=dragging.current.card;
+        playFlip();
         setGrid(g=>{
           const ng=[...g];
           const displaced=ng[toIdx]; // 目標格原本的牌

@@ -6,10 +6,11 @@ import { CARD_BACKS } from "../data/cardBacks";
 import { DECK, KEYWORDS } from "../data/deck";
 import { load } from "../utils/storage";
 import { CardBack } from "../components/shared/CardBack";
+import { isSoundOn, setSoundOn, playFlip } from "../utils/sfx";
 
 export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,userEmail,onLogout,uiScale=1}){
   const [notif,setNotif]=useState(true);
-  const [sound,setSound]=useState(false);
+  const [sound,setSound]=useState(isSoundOn());
   const [dark,setDark]=useState(true);
   const [openMenu,setOpenMenu]=useState(null);
   const [libOpen,setLibOpen]=useState(false);
@@ -99,7 +100,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
 </div>
 
     <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:"0 16px",marginBottom:14,backdropFilter:"blur(10px)"}}>
-      {[["推播通知","每日抽牌提醒",notif,()=>setNotif(v=>!v)],["音效","翻牌與環境音",sound,()=>setSound(v=>!v)],["深色模式","",dark,()=>setDark(v=>!v)]].map(([label,sub,val,onT],i,arr)=><div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none"}}>
+      {[["推播通知","每日抽牌提醒",notif,()=>setNotif(v=>!v)],["音效","翻牌與環境音",sound,()=>setSound(v=>{const nv=!v;setSoundOn(nv);if(nv)playFlip();return nv;})],["深色模式","",dark,()=>setDark(v=>!v)]].map(([label,sub,val,onT],i,arr)=><div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none"}}>
         <div>
           <div style={{fontSize:15.44,color:C.text,fontWeight:400}}>{label}</div>
           {sub&&<div style={{fontSize:11.88,color:C.textFaint,marginTop:2}}>{sub}</div>}

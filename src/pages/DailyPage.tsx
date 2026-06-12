@@ -6,6 +6,7 @@ import { CB } from "../data/cardBacks";
 import { KEYWORDS } from "../data/deck";
 import { GoldPayBtn } from "../components/shared/GoldPayBtn";
 import { cbBgStyle } from "../components/shared/cbBgStyle";
+import { playFlip, playDraw, playShuffle } from "../utils/sfx";
 
 export function DailyPage({drawnCards,onDraw,remaining,onReset}){
   const [started,setStarted]=useState(drawnCards.length>0);
@@ -83,6 +84,7 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
   const handleStart=()=>{
     if(started)return;
     setStarted(true);
+    playShuffle();
     onDraw();
     setFanVisible(true);
     // deal animation: first card
@@ -115,6 +117,7 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
       if(el){el.style.display="block";setTimeout(()=>el.style.display="none",500);}
     };
 
+    playFlip();
     setFlippedSet(s=>{
       const ns=new Set([...s,i]);
       refreshActiveDot(ns,cards.length);
@@ -133,6 +136,7 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
     if(i<cards.length){
       handleCardClick(i);
     } else if(i===cards.length&&remaining>0){
+      playDraw();
       onDraw();
     }
   },[handleCardClick,remaining,onDraw]);
