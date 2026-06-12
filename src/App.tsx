@@ -66,9 +66,16 @@ export default function App(){
             setActiveC(p.active_costumes);
           }
           if (typeof p.show_meaning === "boolean") save("show_meaning", p.show_meaning);
-          if (typeof p.nickname === "string") save("profile_nick", p.nickname);
-          if (typeof p.gender === "string") save("profile_gender", p.gender);
-          if (typeof p.zodiac === "string") save("profile_zodiac", p.zodiac);
+          // 暱稱/性別/星座：雲端有→拉回（雲端優先）；雲端空但本機有→上傳（訪客資料遷移）
+          {
+            const _upd: any = {};
+            ([["nickname", "profile_nick"], ["gender", "profile_gender"], ["zodiac", "profile_zodiac"]] as [string, string][]).forEach(([col, lk]) => {
+              const cloudV = p[col];
+              if (typeof cloudV === "string" && cloudV) { save(lk, cloudV); }
+              else { const localV = load(lk, ""); if (localV) _upd[col] = localV; }
+            });
+            if (Object.keys(_upd).length) db.updateProfile(_upd).catch(() => {});
+          }
         }
         // 載入雲端今日占卜紀錄（雲端優先）
         const dk = todayKey();
