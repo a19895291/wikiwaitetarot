@@ -21,9 +21,16 @@ const SHOP={
     {id:"t3",name:"神諭卡牌包",desc:"42 張神諭卡，感性直覺系，每日靈感引導",price:198,emoji:"🌙",badge:null},
     {id:"t4",name:"凱爾特牌陣",desc:"解鎖高階十字牌陣佈局，感情與事業深度解析",price:128,emoji:"☯️",badge:"熱銷"},
     {id:"t5",name:"元素四色牌組",desc:"火水風土四元素重新詮釋，美學與能量兼備",price:328,emoji:"🔮",badge:"新品"},
-  ],  
+  ],
+  spread:[
+    {id:"spread_three",name:"三牌陣",desc:"過去・現在・未來，最萬用的入門牌陣",price:60,emoji:"✦",badge:"入門"},
+    {id:"spread_twochoice",name:"二擇一牌陣",desc:"比較兩個選項的現況與走向，輔助抉擇",price:60,emoji:"⚖️",badge:null},
+    {id:"spread_relationship",name:"關係牌陣",desc:"看清你與對方的狀態、課題與關係走向",price:90,emoji:"💞",badge:"熱門"},
+    {id:"spread_horseshoe",name:"馬蹄鐵牌陣",desc:"七張拱形展開，兼顧過去、外在與建議",price:90,emoji:"🧲",badge:null},
+    {id:"spread_celtic",name:"凱爾特十字",desc:"最詳盡的十張牌全局分析，深入單一問題",price:120,emoji:"✚",badge:"進階"},
+  ],
 };
-const SHOP_TABS=[["monthly","月費方案"],["tarot","塔羅牌"],["spirit","牌靈造型"],["theme","介面主題"]];
+const SHOP_TABS=[["monthly","月費方案"],["tarot","塔羅牌"],["spread","牌陣"],["spirit","牌靈造型"],["theme","介面主題"]];
 
 const SHOP_THEMES=[
   {id:"th_default",name:"星夜秘境",desc:"深邃星空，經典神秘配色",price:0,owned:true,themeKey:"midnight",preview:{bg:"#04060d",accent:"#d4a843",card:"#0c1630",border:"rgba(212,168,67,.45)",nav:"rgba(4,6,13,.97)"},emoji:"🌙",badge:"預設"},
@@ -317,7 +324,7 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack,costumes,setCost
         </div>
         {pl.perMonth&&<div style={{fontSize:11,color:C.gold,marginTop:2}}>{pl.perMonth}</div>}
         <div style={{margin:"10px 0 6px"}}>
-          {["✦ 牌陣占卜全解鎖","✎ 自訂・修改牌義","👁 牌義顯示／隱藏切換","🚫 移除廣告"].map(t=><div key={t} style={{fontSize:12.5,color:C.text,padding:"3px 0"}}>{t}</div>)}
+          {["✎ 自訂・修改牌義","👁 牌義顯示／隱藏切換","🚫 移除廣告"].map(t=><div key={t} style={{fontSize:12.5,color:C.text,padding:"3px 0"}}>{t}</div>)}
         </div>
         <div style={{fontSize:12.5,color:C.textDim,lineHeight:1.7,margin:"4px 0"}}>{pl.id==="sub_life"?"永久解鎖美術":"付費期間解鎖美術"}：{pl.unlock}</div>
         {pl.trial&&<div style={{fontSize:11,color:C.textFaint}}>{pl.trial}</div>}
@@ -341,7 +348,7 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack,costumes,setCost
       <div style={{fontSize:10,color:C.textFaint,lineHeight:1.7,textAlign:"center"}}>訂閱透過 App Store 帳號付款，於到期前 24 小時自動續訂；可隨時在「設定 → Apple ID → 訂閱」管理或取消。</div>
     </>}
 
-    {tab==="tarot"&&<>
+    {(tab==="tarot"||tab==="spread")&&<>
       {items.map(item=><div key={item.id} style={{
         background:C.bgPanel,
         border:item.hl?`2px solid ${C.accentDim}`:`1px solid ${C.gridBorder}`,

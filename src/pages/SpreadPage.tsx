@@ -9,7 +9,8 @@ import { CardModal } from "../components/shared/CardModal";
 import { cbBgStyle } from "../components/shared/cbBgStyle";
 import { playFlip, playDraw, playShuffle } from "../utils/sfx";
 import * as db from "../lib/db";
-import { isMember } from "../utils/membership";
+import { SPREADS } from "../data/spreads";
+import { load } from "../utils/storage";
 
 
 export function SpreadPage({onGoShop}={}){
@@ -46,7 +47,6 @@ export function SpreadPage({onGoShop}={}){
   },[]);
 
   const doShuffle=useCallback(()=>{
-    if(!isMember()){onGoShop&&onGoShop();return;}
     playShuffle();
     setShuffleAnim(true);
     setTimeout(()=>setShuffleAnim(false),600);
@@ -59,13 +59,36 @@ export function SpreadPage({onGoShop}={}){
     try{localStorage.setItem("spread_working",JSON.stringify({grid,drawn,deck,deckPtr:deckPtr.current}));}catch{}
   },[grid,drawn,deck]);
   const drawCard=useCallback(()=>{
-    if(!isMember()){onGoShop&&onGoShop();return;}
     if(deckPtr.current>=deck.length)return;
     playDraw();
     const card=deck[deckPtr.current];
     deckPtr.current+=1;
     setDrawn(p=>[...p,card]);
   },[deck]);
+
+  // ── 牌陣分頁（自由盤 + 已購牌陣）──────────────────
+  const [mode,setMode]=useState("free");
+  const [pCards,setPCards]=useState([]);
+  const pDeck=useRef([]);
+  const pPtr=useRef(0);
+  const bought=load("shop_bought",[]);
+  const ownsSpread=id=>bought.includes("spread_"+id);
+  const curSpread=SPREADS.find(s=>s.id===mode)||null;
+  const startPreset=(sp)=>{ pDeck.current=shuffle(DECK); pPtr.current=0; setPCards(Array(sp.positions.length).fill(null)); };
+  const selectTab=(id)=>{
+    if(id==="free"){setMode("free");return;}
+    if(!ownsSpread(id)){onGoShop&&onGoShop();return;}
+    const sp=SPREADS.find(s=>s.id===id); if(!sp)return;
+    setMode(id); startPreset(sp);
+  };
+  const drawPreset=()=>{
+    const i=pCards.findIndex(c=>!c);
+    if(i<0||pPtr.current>=pDeck.current.length)return;
+    playDraw(); playFlip();
+    const card=pDeck.current[pPtr.current]; pPtr.current+=1;
+    setPCards(prev=>{const np=[...prev]; np[i]=card; return np;});
+  };
+  const resetPreset=()=>{ if(curSpread){playShuffle(); startPreset(curSpread);} };
 
   const makeGhost=(card,x,y)=>{
     const el=document.createElement("div");
@@ -82,7 +105,6 @@ export function SpreadPage({onGoShop}={}){
   };
 
   const startDrawnDrag=useCallback((e,card)=>{
-    if(!isMember()){onGoShop&&onGoShop();return;}
     e.preventDefault();
     setLiftedCard(card.id);
     const ghost=makeGhost(card,e.clientX,e.clientY);
@@ -124,7 +146,6 @@ export function SpreadPage({onGoShop}={}){
   },[]);
 
   const startGridInteract=useCallback((e,card,srcIdx)=>{
-    if(!isMember()){onGoShop&&onGoShop();return;}
     e.preventDefault();
     const startX=e.clientX,startY=e.clientY;
     const THRESHOLD=8;
@@ -169,32 +190,30 @@ export function SpreadPage({onGoShop}={}){
   const isImageCB=!!CB.isImage;
   const g=CB.glow;
   return <div style={{padding:"16px 16px 100px",animation:"fadeInUp .5s ease"}}>
-    {!isMember()&&<div onClick={()=>onGoShop&&onGoShop()} style={{display:"flex",alignItems:"center",gap:8,background:`linear-gradient(135deg,${C.accentFaint},${C.purpleGlow})`,border:`1px solid ${C.accentDim}`,borderRadius:14,padding:"10px 14px",marginBottom:14,cursor:"pointer"}}>
-      <span style={{fontSize:18}}>🔒</span>
-      <span style={{flex:1,fontSize:12,color:C.textDim,lineHeight:1.6}}>牌陣為星曜會員專屬，目前可預覽版面。升級後即可實際抽牌占卜。</span>
-      <span style={{fontSize:12,color:C.accent,whiteSpace:"nowrap"}}>升級 ›</span>
-    </div>}
-    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
       <div>
-        <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:21.38,color:C.gold,letterSpacing:3}}>牌陣展開</div>
-        <div style={{fontSize:10.69,color:C.goldDim,letterSpacing:3}}>6×6 SPREAD GRID</div>
+        <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:21.38,color:C.gold,letterSpacing:3}}>{mode==="free"?"牌陣展開":(curSpread?curSpread.name:"")}</div>
+        <div style={{fontSize:10.69,color:C.goldDim,letterSpacing:3}}>{mode==="free"?"6×6 SPREAD GRID":(curSpread?curSpread.en.toUpperCase():"")}</div>
       </div>
-      <button onClick={doShuffle} style={{
-        display:"flex",alignItems:"center",gap:6,padding:"8px 16px",borderRadius:50,
-        cursor:"pointer",
-        background:`linear-gradient(135deg,${C.blue},${C.blue}cc)`,
-        border:`1px solid ${C.accentDim}`,
-        fontFamily:"'Cinzel',serif",fontSize:11.88,color:C.gold,
-        letterSpacing:1,
-        transform:shuffleAnim?"scale(.93)":"scale(1)",
-        transition:"transform .15s",
-        boxShadow:"0 4px 14px rgba(0,0,0,.3)"
+      <button onClick={mode==="free"?doShuffle:resetPreset} style={{
+        display:"flex",alignItems:"center",gap:6,padding:"8px 16px",borderRadius:50,cursor:"pointer",
+        background:`linear-gradient(135deg,${C.blue},${C.blue}cc)`,border:`1px solid ${C.accentDim}`,
+        fontFamily:"'Cinzel',serif",fontSize:11.88,color:C.gold,letterSpacing:1,
+        transform:shuffleAnim?"scale(.93)":"scale(1)",transition:"transform .15s",boxShadow:"0 4px 14px rgba(0,0,0,.3)"
       }}>
         <span style={{fontSize:15.44,display:"inline-block",animation:shuffleAnim?"spin .6s linear":"none"}}>🔀</span>
-        <span>洗牌</span>
+        <span>{mode==="free"?"洗牌":"重新洗牌"}</span>
       </button>
     </div>
 
+    {/* 分頁：自由盤 + 各牌陣（未購顯示鎖，點擊導商城）*/}
+    <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:6,marginBottom:14}}>
+      {[{id:"free",name:"自由盤",owned:true},...SPREADS.map(sp=>({id:sp.id,name:sp.name,owned:ownsSpread(sp.id)}))].map(t=>(
+        <button key={t.id} onClick={()=>selectTab(t.id)} style={{flex:"0 0 auto",padding:"7px 13px",borderRadius:50,border:`1px solid ${mode===t.id?C.accentDim:C.gridBorder}`,cursor:"pointer",background:mode===t.id?`linear-gradient(135deg,${C.blue},${C.blue}cc)`:"transparent",fontFamily:"'Cinzel',serif",fontSize:11.5,color:mode===t.id?C.gold:(t.owned?C.textDim:C.textFaint),whiteSpace:"nowrap",letterSpacing:.5}}>{t.owned?"":"🔒 "}{t.name}</button>
+      ))}
+    </div>
+
+    {mode==="free"&&<>
     {/* 牌堆 + 抽出區 */}
     <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:14,marginBottom:14,backdropFilter:"blur(10px)"}}>
       <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:0}}>
@@ -300,6 +319,42 @@ export function SpreadPage({onGoShop}={}){
         </div>
       ))}
     </div>
+    </>}
+
+    {mode!=="free"&&curSpread&&<>
+      <div style={{position:"relative",width:"100%",aspectRatio:`${curSpread.cols}/${curSpread.rows*1.5}`,background:C.gridBg,border:`1px solid ${C.gridBorder}`,borderRadius:14,boxShadow:"inset 0 2px 20px rgba(0,0,0,.3)",marginBottom:14}}>
+        {curSpread.positions.map((pos,i)=>{
+          const card=pCards[i];
+          const isNext=pCards.findIndex(c=>!c)===i;
+          return <div key={i} onClick={()=>{if(card)setZoom(card);}} style={{position:"absolute",left:`${(pos.x/curSpread.cols)*100}%`,top:`${(pos.y/curSpread.rows)*100}%`,width:`${(1/curSpread.cols)*100}%`,height:`${(1/curSpread.rows)*100}%`,padding:3,boxSizing:"border-box",zIndex:pos.rotated?5:1,cursor:card?"pointer":"default"}}>
+            <div style={{width:"100%",height:"100%",borderRadius:7,position:"relative",overflow:"hidden",transform:pos.rotated?"rotate(90deg)":"none",border:card?`1px solid ${C.cardBorder}`:`1px ${isNext?"solid":"dashed"} ${isNext?C.accent:C.gridBorder}`,background:card?C.bgCard:"transparent",boxShadow:isNext&&!card?`0 0 12px ${C.accentFaint}`:"none",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+              {card
+                ?(card.img
+                    ?<img src={card.img} alt={card.name} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",transform:card.reversed?"rotate(180deg)":"none"}}/>
+                    :<div style={{fontSize:18,transform:card.reversed?"rotate(180deg)":"none"}}>{card.emoji}</div>)
+                :<><div style={{fontSize:13,color:C.goldDim,fontFamily:"'Cinzel',serif",lineHeight:1}}>{i+1}</div><div style={{fontSize:7.5,color:C.textFaint,lineHeight:1.25,textAlign:"center",padding:"2px 2px 0"}}>{pos.name}</div></>}
+            </div>
+          </div>;
+        })}
+      </div>
+      <button onClick={drawPreset} disabled={!pCards.some(c=>!c)} className="pay-btn" style={{width:"100%",padding:"12px 0",fontSize:13,fontWeight:700,color:C.bg,background:pCards.some(c=>!c)?`linear-gradient(135deg,${C.accent},${C.accentDim})`:C.gridBorder,border:"none",borderRadius:50,cursor:pCards.some(c=>!c)?"pointer":"default",marginBottom:14,opacity:pCards.some(c=>!c)?1:.5}}>✦ 抽下一張（剩 {pCards.filter(c=>!c).length}）</button>
+      {/* 牌位說明（點已翻開的牌看牌義）*/}
+      <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:14,padding:"12px 14px",marginBottom:14}}>
+        <div style={{fontSize:11,color:C.accent,letterSpacing:1,marginBottom:8}}>牌位說明</div>
+        {curSpread.positions.map((pos,i)=>{
+          const card=pCards[i];
+          return <div key={i} onClick={()=>{if(card)setZoom(card);}} style={{display:"flex",gap:8,padding:"6px 0",borderBottom:i<curSpread.positions.length-1?`1px solid ${C.gridBorder}`:"none",cursor:card?"pointer":"default"}}>
+            <div style={{flexShrink:0,width:16,fontSize:11,color:C.gold,fontFamily:"'Cinzel',serif"}}>{i+1}</div>
+            <div style={{minWidth:0,flex:1}}>
+              <div style={{fontSize:12.5,color:C.text}}>{pos.name}{card?` — ${card.name}${card.reversed?"（逆）":""}`:""}</div>
+              <div style={{fontSize:11,color:C.textFaint,lineHeight:1.5}}>{pos.hint}</div>
+            </div>
+            {card&&<div style={{flexShrink:0,fontSize:11,color:C.goldDim}}>›</div>}
+          </div>;
+        })}
+      </div>
+    </>}
+
     <CardModal card={zoom} onClose={()=>setZoom(null)}/>
   </div>;
 }
