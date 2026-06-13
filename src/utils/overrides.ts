@@ -4,6 +4,7 @@
 import { load, save } from "./storage";
 import { KEYWORDS } from "../data/deck";
 import * as db from "../lib/db";
+import { isMember } from "./membership";
 
 const KEY = "card_overrides";
 
@@ -82,6 +83,7 @@ export async function hydrateOverridesFromCloud(): Promise<void> {
 // ── 顯示/隱藏牌義開關（全 App，localStorage，預設顯示）──
 const SHOW_KEY = "show_meaning";
 export function isMeaningShown(): boolean {
+  if (!isMember()) return true; // 非會員一律顯示牌義（隱藏為會員專屬）
   try { return load(SHOW_KEY, true) !== false; } catch { return true; }
 }
 export function setMeaningShown(on: boolean): void {
