@@ -39,11 +39,11 @@ export default function App(){
       try {
         ["shop_bought", "profile_nick", "profile_gender", "profile_zodiac", "card_overrides",
          "active_theme", "active_card_back", "active_spirit", "active_costumes", "show_meaning",
-         "spread_history", "online_history", "spread_working", "friend_order", "appointments"]
+         "spread_history", "online_history", "spread_working", "spread_mode", "friend_order", "appointments"]
           .forEach(k => localStorage.removeItem(k));
         Object.keys(localStorage).forEach(k => {
           if (k.startsWith("active_costume_") || k.startsWith("daily_") ||
-              k.startsWith("friend_notes_") || k.startsWith("story_unlock_")) localStorage.removeItem(k);
+              k.startsWith("friend_notes_") || k.startsWith("story_unlock_") || k.startsWith("spread_preset_")) localStorage.removeItem(k);
         });
       } catch {}
     }
