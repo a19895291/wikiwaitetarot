@@ -9,9 +9,10 @@ import { CardModal } from "../components/shared/CardModal";
 import { cbBgStyle } from "../components/shared/cbBgStyle";
 import { playFlip, playDraw, playShuffle } from "../utils/sfx";
 import * as db from "../lib/db";
+import { isMember } from "../utils/membership";
 
 
-export function SpreadPage(){
+export function SpreadPage({onGoShop}={}){
   const savedRef=useRef();
   if(savedRef.current===undefined){
     try{savedRef.current=JSON.parse(localStorage.getItem("spread_working")||"null");}catch{savedRef.current=null;}
@@ -163,6 +164,12 @@ export function SpreadPage(){
 
   const isImageCB=!!CB.isImage;
   const g=CB.glow;
+  if(!isMember()) return <div style={{padding:"16px 16px 100px",animation:"fadeInUp .5s ease",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:"60vh",textAlign:"center"}}>
+    <div style={{fontSize:48,marginBottom:14,filter:`drop-shadow(0 0 16px ${C.accentFaint})`}}>🔒</div>
+    <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:20,color:C.gold,letterSpacing:2,marginBottom:8}}>牌陣占卜</div>
+    <div style={{fontSize:14,color:C.textDim,lineHeight:1.8,maxWidth:280,marginBottom:22}}>牌陣占卜為星曜會員專屬功能。升級即可解鎖凱爾特十字等完整牌陣。</div>
+    <button onClick={()=>onGoShop&&onGoShop()} className="pay-btn" style={{padding:"12px 28px",fontSize:14,fontWeight:700,color:C.bg,background:`linear-gradient(135deg,${C.accent},${C.accentDim})`,border:"none",borderRadius:50,cursor:"pointer"}}>前往商城升級</button>
+  </div>;
   return <div style={{padding:"16px 16px 100px",animation:"fadeInUp .5s ease"}}>
     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
       <div>

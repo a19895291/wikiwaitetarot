@@ -9,8 +9,9 @@ import { CardBack } from "../components/shared/CardBack";
 import { meaningUp, meaningRev, kwUp, kwRev, hasOverride, setOverride, clearOverride, isMeaningShown, setMeaningShown } from "../utils/overrides";
 import { isSoundOn, setSoundOn, playFlip } from "../utils/sfx";
 import * as db from "../lib/db";
+import { isMember } from "../utils/membership";
 
-export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,userEmail,onLogout,uiScale=1}){
+export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,userEmail,onLogout,onGoShop,uiScale=1}){
   const [notif,setNotif]=useState(()=>{try{return typeof Notification!=="undefined"&&Notification.permission==="granted"&&load("notif_enabled",true)!==false;}catch{return false;}});
   const [sound,setSound]=useState(isSoundOn());
   const [showMeaning,setShowMeaning]=useState(isMeaningShown());
@@ -185,7 +186,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
             <button onClick={()=>setEditing(false)} style={{padding:"12px 18px",borderRadius:50,cursor:"pointer",background:"transparent",border:`1px solid ${C.gridBorder}`,color:C.textDim,fontFamily:"'Cinzel',serif",fontSize:14}}>取消</button>
             {hasOverride(libCard.id)&&<button onClick={()=>{clearOverride(libCard.id);setEditing(false);setLibCard({...libCard});}} style={{padding:"12px 14px",borderRadius:50,cursor:"pointer",background:"transparent",border:"1px solid rgba(140,80,220,.4)",color:"#b478ff",fontFamily:"'Cinzel',serif",fontSize:13}}>↺ 還原</button>}
           </div>
-          :<button onClick={()=>{setDUp(meaningUp(libCard));setDRev(meaningRev(libCard));setDKwUp(kwUp(libCard.id));setDKwRev(kwRev(libCard.id));setKwInU("");setKwInR("");setEditing(true);}} style={{width:"100%",padding:"12px",borderRadius:50,cursor:"pointer",background:"transparent",border:`1px solid ${C.accentDim}`,color:C.accent,fontFamily:"'Cinzel',serif",fontSize:15,letterSpacing:1}}>✎ 編輯牌義</button>}
+          :<button onClick={()=>{if(!isMember()){onGoShop&&onGoShop();return;}setDUp(meaningUp(libCard));setDRev(meaningRev(libCard));setDKwUp(kwUp(libCard.id));setDKwRev(kwRev(libCard.id));setKwInU("");setKwInR("");setEditing(true);}} style={{width:"100%",padding:"12px",borderRadius:50,cursor:"pointer",background:"transparent",border:`1px solid ${C.accentDim}`,color:C.accent,fontFamily:"'Cinzel',serif",fontSize:15,letterSpacing:1}}>{isMember()?"✎ 編輯牌義":"✎ 編輯牌義（會員專屬）"}</button>}
       </div>
     </div>, document.body)}
 
@@ -299,7 +300,7 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
       </div>
       <div style={{flex:1,overflowY:"auto",padding:"0 16px 16px"}}>
         <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:"0 16px",backdropFilter:"blur(10px)"}}>
-          {[["推播通知","每日抽牌提醒",notif,()=>{if(notif){setNotif(false);save("notif_enabled",false);return;}if(typeof Notification==="undefined"){return;}Notification.requestPermission().then(p=>{const ok=p==="granted";setNotif(ok);save("notif_enabled",ok);});}],["音效","翻牌與環境音",sound,()=>setSound(v=>{const nv=!v;setSoundOn(nv);if(nv)playFlip();return nv;})],["顯示牌義","牌面解讀與關鍵詞",showMeaning,()=>setShowMeaning(v=>{const nv=!v;setMeaningShown(nv);return nv;})]].map(([label,sub,val,onT],i,arr)=><div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none"}}>
+          {[["推播通知","每日抽牌提醒",notif,()=>{if(notif){setNotif(false);save("notif_enabled",false);return;}if(typeof Notification==="undefined"){return;}Notification.requestPermission().then(p=>{const ok=p==="granted";setNotif(ok);save("notif_enabled",ok);});}],["音效","翻牌與環境音",sound,()=>setSound(v=>{const nv=!v;setSoundOn(nv);if(nv)playFlip();return nv;})],["顯示牌義",isMember()?"牌面解讀與關鍵詞":"牌面解讀與關鍵詞 · 會員專屬",isMember()?showMeaning:true,()=>{if(!isMember()){onGoShop&&onGoShop();return;}setShowMeaning(v=>{const nv=!v;setMeaningShown(nv);return nv;});}]].map(([label,sub,val,onT],i,arr)=><div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 0",borderBottom:i<arr.length-1?`1px solid ${C.gridBorder}`:"none"}}>
         <div>
           <div style={{fontSize:15.44,color:C.text,fontWeight:400}}>{label}</div>
           {sub&&<div style={{fontSize:11.88,color:C.textFaint,marginTop:2}}>{sub}</div>}
