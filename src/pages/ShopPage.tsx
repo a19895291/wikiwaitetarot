@@ -11,9 +11,9 @@ import * as db from "../lib/db";
 
 const SHOP={
   monthly:[
-    {id:"m1",name:"月光會員",desc:"每月無限每日占卜・進階牌義解析・專屬月相日曆",price:99,emoji:"🌙",badge:"基礎",hl:false},
-    {id:"m2",name:"星辰 VIP",desc:"月光全功能＋線上優先媒合・10% 折扣・私人牌陣存檔",price:199,emoji:"⭐",badge:"推薦",hl:true},
-    {id:"m3",name:"宇宙祭司",desc:"星辰全功能＋獨家隱藏牌陣・專屬占卜師一對一通道",price:399,emoji:"👑",badge:"尊貴",hl:false},
+    {id:"sub_month",name:"月訂閱",price:120,period:"/月",emoji:"🌙",unlock:"月光銀曜 牌背｜藍天白雲 主題",note:"隨時可取消",btn:"訂閱",hl:false,grants:["silverMoon","th_skyblue"]},
+    {id:"sub_year",name:"年訂閱",price:1080,period:"/年",perMonth:"約 NT$90 / 月 · 最划算",emoji:"⭐",badge:"省 25%",unlock:"月光銀曜・帝王金箔 牌背｜藍天白雲・帝王黑金 主題",trial:"前 7 天免費，到期前可隨時取消",btn:"開始 7 天免費試用",hl:true,grants:["silverMoon","imperialGold","th_skyblue","th_imperial"]},
+    {id:"sub_life",name:"永久解鎖",price:1620,period:"",emoji:"👑",badge:"免訂閱",unlock:"月光銀曜・帝王金箔・珊瑚礁潮浪 牌背｜藍天白雲・帝王黑金・仲夏珊瑚礁 主題",note:"一次付清 · 永久擁有，不續訂",btn:"買斷",hl:false,grants:["silverMoon","imperialGold","coralReef","th_skyblue","th_imperial","th_summer2026"]},
   ],
   tarot:[
     {id:"t1",name:"萊德韋特牌組",desc:"經典 78 張，適合初學者，含詳盡中文牌義說明",price:288,emoji:"🃏",badge:"經典"},
@@ -293,21 +293,58 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack,costumes,setCost
     </div>}
 
     {/* Other tabs */}
-    {(tab==="monthly"||tab==="tarot")&&<>
-      {/* VIP highlight for monthly */}
-      {tab==="monthly"&&<div style={{
-        background:`linear-gradient(135deg,${C.purpleGlow},${C.blueGlow})`,
-        border:`1px solid ${C.purple}4d`,
-        borderRadius:14,padding:"10px 14px",marginBottom:16,
-        display:"flex",alignItems:"center",gap:10,
-      }}>
+    {tab==="monthly"&&<>
+      {/* 會員橫幅 */}
+      <div style={{background:`linear-gradient(135deg,${C.purpleGlow},${C.blueGlow})`,border:`1px solid ${C.purple}4d`,borderRadius:14,padding:"12px 14px",marginBottom:14,display:"flex",alignItems:"center",gap:10}}>
         <div style={{fontSize:24}}>✦</div>
         <div style={{flex:1}}>
-          <div style={{fontSize:13.07,color:C.purple,fontFamily:"'Cinzel',serif",marginBottom:3}}>限時優惠</div>
-          <div style={{fontSize:11.88,color:C.textDim,lineHeight:1.65}}>首月訂閱 VIP 享 <span style={{color:C.gold,fontWeight:700}}>50% 折扣</span>，進入神秘高端占卜圈</div>
+          <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:15,color:C.gold,marginBottom:3}}>星曜會員</div>
+          <div style={{fontSize:12,color:C.textDim,lineHeight:1.6}}>解鎖完整的占卜體驗</div>
         </div>
-      </div>}
+      </div>
 
+      {/* 共通權益 */}
+      <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:14,padding:"12px 16px",marginBottom:14}}>
+        <div style={{fontSize:11,color:C.accent,letterSpacing:1,marginBottom:8}}>所有付費方案共通</div>
+        {["✦ 牌陣占卜全解鎖","✎ 自訂・修改牌義","👁 牌義顯示／隱藏切換","🚫 移除廣告"].map(t=><div key={t} style={{fontSize:13,color:C.text,padding:"4px 0"}}>{t}</div>)}
+      </div>
+
+      {/* 方案卡 */}
+      {items.map(pl=><div key={pl.id} style={{background:C.bgPanel,border:pl.hl?`2px solid ${C.accentDim}`:`1px solid ${C.gridBorder}`,borderRadius:18,padding:16,marginBottom:12,position:"relative",overflow:"hidden",boxShadow:pl.hl?`0 0 20px ${C.accentFaint}`:"0 4px 14px rgba(0,0,0,.1)",backdropFilter:"blur(10px)"}}>
+        {pl.hl&&<div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,transparent,${C.accent},transparent)`}}/>}
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+          <div style={{fontSize:22}}>{pl.emoji}</div>
+          <div style={{fontFamily:"'Cinzel',serif",fontSize:16,color:C.accent}}>{pl.name}</div>
+          {pl.badge&&<Badge label={pl.badge}/>}
+        </div>
+        <div style={{display:"flex",alignItems:"baseline",gap:6}}>
+          <span style={{fontFamily:"'Cinzel',serif",fontSize:22,color:C.blue,fontWeight:700}}>NT${pl.price}</span>
+          {pl.period&&<span style={{fontSize:11,color:C.textFaint}}>{pl.period}</span>}
+        </div>
+        {pl.perMonth&&<div style={{fontSize:11,color:C.gold,marginTop:2}}>{pl.perMonth}</div>}
+        <div style={{fontSize:12.5,color:C.textDim,lineHeight:1.7,margin:"8px 0 4px"}}>解鎖美術：{pl.unlock}</div>
+        {pl.trial&&<div style={{fontSize:11,color:C.textFaint}}>{pl.trial}</div>}
+        {pl.note&&<div style={{fontSize:11,color:C.textFaint}}>{pl.note}</div>}
+        <div style={{marginTop:10}}>
+          {bought.has(pl.id)
+            ?<div style={{display:"inline-block",padding:"7px 16px",borderRadius:50,background:"rgba(52,211,153,.12)",border:"1px solid rgba(52,211,153,.3)",fontFamily:"'Cinzel',serif",fontSize:10.69,color:C.green}}>✓ {pl.id==="sub_life"?"已解鎖":"已訂閱"}</div>
+            :<GoldPayBtn onClick={()=>setConfirm(pl)} style={{padding:"9px 20px",fontSize:10}}>{pl.btn}</GoldPayBtn>}
+        </div>
+      </div>)}
+
+      {/* 免費層說明 */}
+      <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:14,padding:"12px 16px",marginBottom:14}}>
+        <div style={{fontSize:13,color:C.text,fontWeight:500,marginBottom:6}}>免費也能玩</div>
+        <div style={{fontSize:12,color:C.textDim,lineHeight:1.7}}>每天可抽 5 張每日牌、瀏覽牌庫。牌陣占卜、自訂牌義、牌義隱藏與無廣告體驗為星曜會員專屬。</div>
+        <div style={{fontSize:10.5,color:C.textFaint,marginTop:6}}>免費版會顯示廣告</div>
+      </div>
+
+      {/* 恢復購買 + 條款 */}
+      <button onClick={async()=>{try{const rows=await db.listPurchases();if(rows&&rows.length){const ids=rows.map(r=>r.item_id);save("shop_bought",Array.from(new Set([...load("shop_bought",[]),...ids])));setBought(pp=>new Set([...pp,...ids]));setCardBacks(pp=>pp.map(x=>ids.includes(x.id)?{...x,owned:true}:x));setThemes(pp=>pp.map(x=>ids.includes(x.id)?{...x,owned:true}:x));}}catch{}}} style={{width:"100%",padding:"11px 0",fontSize:12,color:C.textDim,background:"transparent",border:`1px solid ${C.gridBorder}`,borderRadius:50,cursor:"pointer",marginBottom:10}}>恢復購買</button>
+      <div style={{fontSize:10,color:C.textFaint,lineHeight:1.7,textAlign:"center"}}>訂閱透過 App Store 帳號付款，於到期前 24 小時自動續訂；可隨時在「設定 → Apple ID → 訂閱」管理或取消。</div>
+    </>}
+
+    {tab==="tarot"&&<>
       {items.map(item=><div key={item.id} style={{
         background:C.bgPanel,
         border:item.hl?`2px solid ${C.accentDim}`:`1px solid ${C.gridBorder}`,
@@ -352,13 +389,21 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack,costumes,setCost
       <div onClick={e=>e.stopPropagation()} className="card-reveal-anim" style={{width:"100%",maxWidth:300,background:C.bgModal,border:`1px solid ${C.accentDim}`,borderRadius:24,padding:28,textAlign:"center",boxShadow:`0 0 60px ${C.purpleGlow}, 0 20px 60px rgba(0,0,0,.5)`}}>
         <div style={{fontSize:54.65,marginBottom:12,filter:`drop-shadow(0 0 20px ${C.accentDim})`}}>{confirm.emoji}</div>
         <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:16.63,color:C.gold,marginBottom:5}}>{confirm.name}</div>
-        <div style={{fontSize:21.38,color:C.blue,fontFamily:"'Cinzel',serif",marginBottom:5,fontWeight:700}}>NT${confirm.price}</div>
-        <div style={{fontSize:12.47,color:C.textFaint,marginBottom:24,lineHeight:1.75}}>{confirm.desc}</div>
+        <div style={{fontSize:21.38,color:C.blue,fontFamily:"'Cinzel',serif",marginBottom:5,fontWeight:700}}>NT${confirm.price}{confirm.period||""}</div>
+        <div style={{fontSize:12.47,color:C.textFaint,marginBottom:24,lineHeight:1.75}}>{confirm.desc||confirm.unlock||""}</div>
         <div style={{width:60,height:1,background:`linear-gradient(90deg,transparent,${C.gold},transparent)`,margin:"0 auto 22px"}}/>
         <div style={{display:"flex",gap:10}}>
           <button onClick={()=>setConfirm(null)} style={{flex:1,padding:"11px 0",background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:50,fontFamily:"'Cinzel',serif",fontSize:11.88,color:C.textDim,cursor:"pointer"}}>取消</button>
           <GoldPayBtn onClick={()=>{
-            if(confirm.id?.startsWith("th_")){buyTheme(confirm);}
+            if(confirm.id?.startsWith("sub_")){
+              const ids=[confirm.id,...(confirm.grants||[])];
+              ids.forEach(persistBuy);
+              setBought(pp=>new Set([...pp,...ids]));
+              setCardBacks(pp=>pp.map(x=>ids.includes(x.id)?{...x,owned:true}:x));
+              setThemes(pp=>pp.map(x=>ids.includes(x.id)?{...x,owned:true}:x));
+              setConfirm(null);
+            }
+            else if(confirm.id?.startsWith("th_")){buyTheme(confirm);}
             else if(confirm.isCardBack){
               persistBuy(confirm.id);
               setCardBacks(p=>p.map(x=>x.id===confirm.id?{...x,owned:true}:x));
