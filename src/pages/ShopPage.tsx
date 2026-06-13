@@ -349,6 +349,7 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack,costumes,setCost
     </>}
 
     {(tab==="tarot"||tab==="spread")&&<>
+      {tab==="spread"&&<div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:14,padding:"11px 14px",marginBottom:14,fontSize:12,color:C.textDim,lineHeight:1.7}}>✦ 本區僅販售牌陣版面（牌位與佈局指引），不含整體牌義解釋。</div>}
       {items.map(item=><div key={item.id} style={{
         background:C.bgPanel,
         border:item.hl?`2px solid ${C.accentDim}`:`1px solid ${C.gridBorder}`,

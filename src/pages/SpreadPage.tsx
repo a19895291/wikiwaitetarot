@@ -10,7 +10,7 @@ import { cbBgStyle } from "../components/shared/cbBgStyle";
 import { playFlip, playDraw, playShuffle } from "../utils/sfx";
 import * as db from "../lib/db";
 import { SPREADS } from "../data/spreads";
-import { load } from "../utils/storage";
+import { load, save } from "../utils/storage";
 
 
 export function SpreadPage({onGoShop}={}){
@@ -66,29 +66,43 @@ export function SpreadPage({onGoShop}={}){
     setDrawn(p=>[...p,card]);
   },[deck]);
 
-  // ── 牌陣分頁（自由盤 + 已購牌陣）──────────────────
-  const [mode,setMode]=useState("free");
-  const [pCards,setPCards]=useState([]);
-  const pDeck=useRef([]);
-  const pPtr=useRef(0);
+  // ── 牌陣分頁（自由盤 + 已購牌陣）；抽出的牌持久化：切換分頁/離開頁面再回來都保留，只有「重新洗牌」才清 ──
   const bought=load("shop_bought",[]);
   const ownsSpread=id=>bought.includes("spread_"+id);
+  const initMode=(()=>{try{const m=load("spread_mode","free");return (m!=="free"&&!bought.includes("spread_"+m))?"free":m;}catch{return "free";}})();
+  const initPreset=initMode!=="free"?load("spread_preset_"+initMode,null):null;
+  const initSp=SPREADS.find(s=>s.id===initMode)||null;
+  const [mode,setMode]=useState(initMode);
+  const [pCards,setPCards]=useState(()=>{
+    if(initPreset&&Array.isArray(initPreset.cards))return initPreset.cards;
+    return initSp?Array(initSp.positions.length).fill(null):[];
+  });
+  const pDeck=useRef(initPreset&&Array.isArray(initPreset.deck)&&initPreset.deck.length?initPreset.deck:(initSp?shuffle(DECK):[]));
+  const pPtr=useRef(initPreset&&typeof initPreset.ptr==="number"?initPreset.ptr:0);
   const curSpread=SPREADS.find(s=>s.id===mode)||null;
-  const startPreset=(sp)=>{ pDeck.current=shuffle(DECK); pPtr.current=0; setPCards(Array(sp.positions.length).fill(null)); };
+  const savePreset=(id,cards,deck,ptr)=>{ try{localStorage.setItem("spread_preset_"+id,JSON.stringify({cards,deck,ptr}));}catch{} };
   const selectTab=(id)=>{
-    if(id==="free"){setMode("free");return;}
+    if(id==="free"){setMode("free");save("spread_mode","free");return;}
     if(!ownsSpread(id)){onGoShop&&onGoShop();return;}
     const sp=SPREADS.find(s=>s.id===id); if(!sp)return;
-    setMode(id); startPreset(sp);
+    setMode(id); save("spread_mode",id);
+    const sv=load("spread_preset_"+id,null);
+    if(sv&&Array.isArray(sv.cards)){ pDeck.current=sv.deck; pPtr.current=sv.ptr||0; setPCards(sv.cards); }
+    else{ const d=shuffle(DECK); pDeck.current=d; pPtr.current=0; const cards=Array(sp.positions.length).fill(null); setPCards(cards); savePreset(id,cards,d,0); }
   };
   const drawPreset=()=>{
     const i=pCards.findIndex(c=>!c);
     if(i<0||pPtr.current>=pDeck.current.length)return;
     playDraw(); playFlip();
     const card=pDeck.current[pPtr.current]; pPtr.current+=1;
-    setPCards(prev=>{const np=[...prev]; np[i]=card; return np;});
+    setPCards(prev=>{ const np=[...prev]; np[i]=card; savePreset(mode,np,pDeck.current,pPtr.current); return np; });
   };
-  const resetPreset=()=>{ if(curSpread){playShuffle(); startPreset(curSpread);} };
+  const resetPreset=()=>{
+    if(!curSpread)return; playShuffle();
+    const d=shuffle(DECK); pDeck.current=d; pPtr.current=0;
+    const cards=Array(curSpread.positions.length).fill(null);
+    setPCards(cards); savePreset(mode,cards,d,0);
+  };
 
   const makeGhost=(card,x,y)=>{
     const el=document.createElement("div");
