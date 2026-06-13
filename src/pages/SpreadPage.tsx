@@ -46,6 +46,7 @@ export function SpreadPage({onGoShop}={}){
   },[]);
 
   const doShuffle=useCallback(()=>{
+    if(!isMember()){onGoShop&&onGoShop();return;}
     playShuffle();
     setShuffleAnim(true);
     setTimeout(()=>setShuffleAnim(false),600);
@@ -58,6 +59,7 @@ export function SpreadPage({onGoShop}={}){
     try{localStorage.setItem("spread_working",JSON.stringify({grid,drawn,deck,deckPtr:deckPtr.current}));}catch{}
   },[grid,drawn,deck]);
   const drawCard=useCallback(()=>{
+    if(!isMember()){onGoShop&&onGoShop();return;}
     if(deckPtr.current>=deck.length)return;
     playDraw();
     const card=deck[deckPtr.current];
@@ -80,6 +82,7 @@ export function SpreadPage({onGoShop}={}){
   };
 
   const startDrawnDrag=useCallback((e,card)=>{
+    if(!isMember()){onGoShop&&onGoShop();return;}
     e.preventDefault();
     setLiftedCard(card.id);
     const ghost=makeGhost(card,e.clientX,e.clientY);
@@ -121,6 +124,7 @@ export function SpreadPage({onGoShop}={}){
   },[]);
 
   const startGridInteract=useCallback((e,card,srcIdx)=>{
+    if(!isMember()){onGoShop&&onGoShop();return;}
     e.preventDefault();
     const startX=e.clientX,startY=e.clientY;
     const THRESHOLD=8;
@@ -164,13 +168,12 @@ export function SpreadPage({onGoShop}={}){
 
   const isImageCB=!!CB.isImage;
   const g=CB.glow;
-  if(!isMember()) return <div style={{padding:"16px 16px 100px",animation:"fadeInUp .5s ease",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:"60vh",textAlign:"center"}}>
-    <div style={{fontSize:48,marginBottom:14,filter:`drop-shadow(0 0 16px ${C.accentFaint})`}}>🔒</div>
-    <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:20,color:C.gold,letterSpacing:2,marginBottom:8}}>牌陣占卜</div>
-    <div style={{fontSize:14,color:C.textDim,lineHeight:1.8,maxWidth:280,marginBottom:22}}>牌陣占卜為星曜會員專屬功能。升級即可解鎖凱爾特十字等完整牌陣。</div>
-    <button onClick={()=>onGoShop&&onGoShop()} className="pay-btn" style={{padding:"12px 28px",fontSize:14,fontWeight:700,color:C.bg,background:`linear-gradient(135deg,${C.accent},${C.accentDim})`,border:"none",borderRadius:50,cursor:"pointer"}}>前往商城升級</button>
-  </div>;
   return <div style={{padding:"16px 16px 100px",animation:"fadeInUp .5s ease"}}>
+    {!isMember()&&<div onClick={()=>onGoShop&&onGoShop()} style={{display:"flex",alignItems:"center",gap:8,background:`linear-gradient(135deg,${C.accentFaint},${C.purpleGlow})`,border:`1px solid ${C.accentDim}`,borderRadius:14,padding:"10px 14px",marginBottom:14,cursor:"pointer"}}>
+      <span style={{fontSize:18}}>🔒</span>
+      <span style={{flex:1,fontSize:12,color:C.textDim,lineHeight:1.6}}>牌陣為星曜會員專屬，目前可預覽版面。升級後即可實際抽牌占卜。</span>
+      <span style={{fontSize:12,color:C.accent,whiteSpace:"nowrap"}}>升級 ›</span>
+    </div>}
     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
       <div>
         <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:21.38,color:C.gold,letterSpacing:3}}>牌陣展開</div>

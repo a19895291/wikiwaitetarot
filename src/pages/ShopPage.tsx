@@ -13,7 +13,7 @@ const SHOP={
   monthly:[
     {id:"sub_month",name:"月訂閱",price:120,period:"/月",emoji:"🌙",unlock:"月光銀曜 牌背｜藍天白雲 主題",note:"隨時可取消",btn:"訂閱",hl:false,grants:["silverMoon","th_skyblue"]},
     {id:"sub_year",name:"年訂閱",price:1080,period:"/年",perMonth:"約 NT$90 / 月 · 最划算",emoji:"⭐",badge:"省 25%",unlock:"月光銀曜・帝王金箔 牌背｜藍天白雲・帝王黑金 主題",trial:"前 7 天免費，到期前可隨時取消",btn:"開始 7 天免費試用",hl:true,grants:["silverMoon","imperialGold","th_skyblue","th_imperial"]},
-    {id:"sub_life",name:"永久解鎖",price:1620,period:"",emoji:"👑",badge:"免訂閱",unlock:"月光銀曜・帝王金箔・珊瑚礁潮浪 牌背｜藍天白雲・帝王黑金・仲夏珊瑚礁 主題",note:"一次付清 · 永久擁有，不續訂",btn:"買斷",hl:false,grants:["silverMoon","imperialGold","coralReef","th_skyblue","th_imperial","th_summer2026"]},
+    {id:"sub_life",name:"永久解鎖",price:1620,period:"",emoji:"👑",badge:"免訂閱",unlock:"月光銀曜 牌背｜藍天白雲 主題",note:"一次付清 · 永久擁有，不續訂",btn:"買斷",hl:false,grants:["silverMoon","th_skyblue"]},
   ],
   tarot:[
     {id:"t1",name:"萊德韋特牌組",desc:"經典 78 張，適合初學者，含詳盡中文牌義說明",price:288,emoji:"🃏",badge:"經典"},
@@ -303,12 +303,6 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack,costumes,setCost
         </div>
       </div>
 
-      {/* 共通權益 */}
-      <div style={{background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:14,padding:"12px 16px",marginBottom:14}}>
-        <div style={{fontSize:11,color:C.accent,letterSpacing:1,marginBottom:8}}>所有付費方案共通</div>
-        {["✦ 牌陣占卜全解鎖","✎ 自訂・修改牌義","👁 牌義顯示／隱藏切換","🚫 移除廣告"].map(t=><div key={t} style={{fontSize:13,color:C.text,padding:"4px 0"}}>{t}</div>)}
-      </div>
-
       {/* 方案卡 */}
       {items.map(pl=><div key={pl.id} style={{background:C.bgPanel,border:pl.hl?`2px solid ${C.accentDim}`:`1px solid ${C.gridBorder}`,borderRadius:18,padding:16,marginBottom:12,position:"relative",overflow:"hidden",boxShadow:pl.hl?`0 0 20px ${C.accentFaint}`:"0 4px 14px rgba(0,0,0,.1)",backdropFilter:"blur(10px)"}}>
         {pl.hl&&<div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,transparent,${C.accent},transparent)`}}/>}
@@ -322,7 +316,10 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack,costumes,setCost
           {pl.period&&<span style={{fontSize:11,color:C.textFaint}}>{pl.period}</span>}
         </div>
         {pl.perMonth&&<div style={{fontSize:11,color:C.gold,marginTop:2}}>{pl.perMonth}</div>}
-        <div style={{fontSize:12.5,color:C.textDim,lineHeight:1.7,margin:"8px 0 4px"}}>解鎖美術：{pl.unlock}</div>
+        <div style={{margin:"10px 0 6px"}}>
+          {["✦ 牌陣占卜全解鎖","✎ 自訂・修改牌義","👁 牌義顯示／隱藏切換","🚫 移除廣告"].map(t=><div key={t} style={{fontSize:12.5,color:C.text,padding:"3px 0"}}>{t}</div>)}
+        </div>
+        <div style={{fontSize:12.5,color:C.textDim,lineHeight:1.7,margin:"4px 0"}}>{pl.id==="sub_life"?"永久解鎖美術":"付費期間解鎖美術"}：{pl.unlock}</div>
         {pl.trial&&<div style={{fontSize:11,color:C.textFaint}}>{pl.trial}</div>}
         {pl.note&&<div style={{fontSize:11,color:C.textFaint}}>{pl.note}</div>}
         <div style={{marginTop:10}}>
