@@ -363,12 +363,12 @@ export default function App(){
      </div>
     )}
       {page==="daily"&&<DailyPage drawnCards={drawnCards} onDraw={drawDailyCard} remaining={remaining} onReset={()=>{const nd=shuffle(DECK);setDailyDeck(nd);save("daily_deck_"+todayKey(),nd);setDrawnCards([]);save("daily_"+todayKey(),[]);}}/>}
-      {page==="spread"&&<SpreadPage/>}
+      {page==="spread"&&<SpreadPage onGoShop={()=>setPage("shop")}/>}
       {page==="online"&&<OnlinePage onStepChange={setOnlineStep}/>}
       {page==="history"&&<HistoryPage/>}
       {page==="spirit"&&<SpiritPage spirit={spirit} onSelect={setSpirit} costumes={costumes} setCostumes={setCostumes} activeC={activeC} setActiveC={setActiveC} themeId={themeId} switchTheme={switchTheme}/>}
       {page==="shop"&&<ShopPage switchTheme={switchTheme} cardBackId={cardBackId} switchCardBack={switchCardBack} costumes={costumes} setCostumes={setCostumes}/>}
-      {page==="settings"&&<SettingsPage themeId={themeId} switchTheme={switchTheme} cardBackId={cardBackId} switchCardBack={switchCardBack} userEmail={session?.user?.email || null} onLogout={goToLogin} uiScale={uiScale}/>}
+      {page==="settings"&&<SettingsPage themeId={themeId} switchTheme={switchTheme} cardBackId={cardBackId} switchCardBack={switchCardBack} userEmail={session?.user?.email || null} onLogout={goToLogin} onGoShop={()=>setPage("shop")} uiScale={uiScale}/>}
     </div>
 
 
