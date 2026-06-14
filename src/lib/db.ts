@@ -73,7 +73,7 @@ export async function listSpreadRecords(): Promise<any[]> {
 
 export async function saveSpread(date: string, cards: any, meta: any = {}): Promise<any | null> {
   const id = await uid();
-  if (!id) { alert("[saveSpread] 未登入（uid=null）→ 不寫雲端"); return null; }
+  if (!id) return null;
   const { data, error } = await supabase
     .from("spread_records")
     .upsert(
@@ -81,10 +81,10 @@ export async function saveSpread(date: string, cards: any, meta: any = {}): Prom
       { onConflict: "user_id,date,spread_id" }
     )
     .select().maybeSingle();
-  if (error) { alert("[saveSpread 失敗] " + (error.code||"?") + " — " + (error.message||"")); throw error; }
-  alert("[saveSpread 成功] " + (meta.spreadId||"free") + " / " + date);
+  if (error) { alert("[saveSpread 失敗] " + (error.code || "?") + " — " + (error.message || "")); throw error; }
   return data;
 }
+
 
 
 
