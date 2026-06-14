@@ -38,8 +38,9 @@ export function SpreadPage({onGoShop}={}){
     const ts=`${dateKey} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
     try{
       const existing=JSON.parse(localStorage.getItem("spread_records")||"[]");
-      const todayIdx=existing.findIndex(r=>r.dateKey===dateKey);
-      const rec={id:dateKey,dateKey,ts,spreadId:"free",spreadName:"自由盤",cards:placed};
+      const rid=dateKey+"_free";
+      const todayIdx=existing.findIndex(r=>r.id===rid);
+      const rec={id:rid,dateKey,ts,spreadId:"free",spreadName:"自由盤",cards:placed};
       if(todayIdx>=0)existing[todayIdx]=rec;else existing.unshift(rec);
       localStorage.setItem("spread_records",JSON.stringify(existing.slice(0,30)));
     }catch{}
@@ -113,8 +114,9 @@ export function SpreadPage({onGoShop}={}){
     const ts=`${dateKey} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
     try{
       const existing=JSON.parse(localStorage.getItem("spread_records")||"[]");
-      const idx=existing.findIndex(r=>r.dateKey===dateKey);
-      const rec={id:dateKey,dateKey,ts,spreadId:sp.id,spreadName:sp.name,cards:placed};
+      const rid=dateKey+"_"+sp.id;
+      const idx=existing.findIndex(r=>r.id===rid);
+      const rec={id:rid,dateKey,ts,spreadId:sp.id,spreadName:sp.name,cards:placed};
       if(idx>=0)existing[idx]=rec;else existing.unshift(rec);
       localStorage.setItem("spread_records",JSON.stringify(existing.slice(0,30)));
     }catch{}
