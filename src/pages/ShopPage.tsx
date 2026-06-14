@@ -23,11 +23,16 @@ const SHOP={
     {id:"t5",name:"元素四色牌組",desc:"火水風土四元素重新詮釋，美學與能量兼備",price:328,emoji:"🔮",badge:"新品"},
   ],
   spread:[
-    {id:"spread_three",name:"三牌陣",desc:"過去・現在・未來，最萬用的入門牌陣",price:60,emoji:"✦",badge:"入門"},
-    {id:"spread_twochoice",name:"二擇一牌陣",desc:"比較兩個選項的現況與走向，輔助抉擇",price:60,emoji:"⚖️",badge:null},
-    {id:"spread_relationship",name:"關係牌陣",desc:"看清你與對方的狀態、課題與關係走向",price:90,emoji:"💞",badge:"熱門"},
-    {id:"spread_horseshoe",name:"馬蹄鐵牌陣",desc:"七張拱形展開，兼顧過去、外在與建議",price:90,emoji:"🧲",badge:null},
-    {id:"spread_celtic",name:"凱爾特十字",desc:"最詳盡的十張牌全局分析，深入單一問題",price:120,emoji:"✚",badge:"進階"},
+    {id:"spread_three",name:"三牌陣",en:"Three-Card",desc:"過去・現在・未來，最萬用的入門牌陣",price:60,emoji:"✦",badge:"入門"},
+    {id:"spread_twochoice",name:"二擇一牌陣",en:"Two Choices",desc:"比較兩個選項的現況與走向，輔助抉擇",price:60,emoji:"⚖️",badge:null},
+    {id:"spread_yesno",name:"是非牌陣",en:"Yes / No",desc:"三張快速判斷傾向，綜合正逆位給出是或否",price:60,emoji:"❓",badge:"速判"},
+    {id:"spread_bodymindspirit",name:"身心靈牌陣",en:"Body / Mind / Spirit",desc:"從身體、心智、靈性三個層面檢視當下的自己",price:60,emoji:"🧘",badge:null},
+    {id:"spread_relationship",name:"關係牌陣",en:"Relationship",desc:"看清你與對方的狀態、課題與關係走向",price:90,emoji:"💞",badge:"熱門"},
+    {id:"spread_horseshoe",name:"馬蹄鐵牌陣",en:"Horseshoe",desc:"七張拱形展開，兼顧過去、外在與建議",price:90,emoji:"🧲",badge:null},
+    {id:"spread_chakra",name:"脈輪牌陣",en:"Chakra",desc:"七脈輪由頂至底，檢視能量的流動與阻塞",price:90,emoji:"🌈",badge:null},
+    {id:"spread_celtic",name:"凱爾特十字",en:"Celtic Cross",desc:"最詳盡的十張牌全局分析，深入單一問題",price:120,emoji:"✚",badge:"進階"},
+    {id:"spread_tree",name:"生命之樹",en:"Tree of Life",desc:"卡巴拉生命之樹十輝耀，從神性到物質的映照",price:120,emoji:"🌳",badge:"進階"},
+    {id:"spread_houses",name:"星座宮位牌陣",en:"Zodiac Houses",desc:"對應占星十二宮，環狀檢視生活十二個領域",price:150,emoji:"♈",badge:"大牌陣"},
   ],
 };
 const SHOP_TABS=[["monthly","月費方案"],["tarot","塔羅牌"],["spread","牌陣"],["spirit","牌靈造型"],["theme","介面主題"]];
@@ -373,6 +378,7 @@ export function ShopPage({switchTheme,cardBackId,switchCardBack,costumes,setCost
             <div style={{fontFamily:"'Cinzel',serif",fontSize:14.85,color:C.accent}}>{item.name}</div>
             {item.badge&&<Badge label={item.badge}/>}
           </div>
+          {item.en&&<div style={{fontFamily:"'Cinzel',serif",fontSize:9.5,color:C.goldDim,letterSpacing:1.5,marginBottom:5,textTransform:"uppercase"}}>{item.en}</div>}
           <div style={{fontSize:12.47,color:C.textDim,marginBottom:9,lineHeight:1.65,fontWeight:300}}>{item.desc}</div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div style={{fontFamily:"'Cinzel',serif",fontSize:19.01,color:C.blue,fontWeight:600}}>
