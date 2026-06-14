@@ -73,17 +73,30 @@ export async function listSpreadRecords(): Promise<any[]> {
 
 export async function saveSpread(date: string, cards: any, meta: any = {}): Promise<any | null> {
   const id = await uid();
-  if (!id) return null;
+  if (!id) { alert("[saveSpread] 未登入（uid=null）→ 不寫雲端"); return null; }
+  const payload = {
+    user_id: id, date, cards,
+    spread_id: meta.spreadId || "free",
+    spread_name: meta.spreadName ?? null,
+  };
   const { data, error } = await supabase
     .from("spread_records")
-    .upsert(
-      { user_id: id, date, cards, spread_id: meta.spreadId || "free", spread_name: meta.spreadName ?? null },
-      { onConflict: "user_id,date,spread_id" }
-    )
+    .upsert(payload, { onConflict: "user_id,date,spread_id" })
     .select().maybeSingle();
-  if (error) throw error;
+  if (error) {
+    alert(
+      "[saveSpread 失敗]\n" +
+      "code: " + (error.code || "?") + "\n" +
+      "message: " + (error.message || "?") + "\n" +
+      "details: " + (error.details || "") + "\n" +
+      "hint: " + (error.hint || "")
+    );
+    throw error;
+  }
+  alert("[saveSpread 成功] " + payload.spread_id + " / " + date);
   return data;
 }
+
 
 // ============================================================
 // purchases
