@@ -19,7 +19,7 @@ export function SpreadPage({onGoShop}={}){
     try{savedRef.current=JSON.parse(localStorage.getItem("spread_working")||"null");}catch{savedRef.current=null;}
   }
   const saved=savedRef.current;
-  const [grid,setGrid]=useState(()=>(saved&&Array.isArray(saved.grid)&&saved.grid.length===36)?saved.grid:Array(36).fill(null));
+  const [grid,setGrid]=useState(()=>(saved&&Array.isArray(saved.grid)&&saved.grid.length===49)?saved.grid:Array(49).fill(null));
   const [drawn,setDrawn]=useState(()=>(saved&&Array.isArray(saved.drawn))?saved.drawn:[]);
   const [deck,setDeck]=useState(()=>(saved&&Array.isArray(saved.deck)&&saved.deck.length)?saved.deck:shuffle(DECK));
   const [zoom,setZoom]=useState(null);
@@ -30,7 +30,7 @@ export function SpreadPage({onGoShop}={}){
   const gridRef=useRef();
 
   const saveSpreadRecord=useCallback((newGrid)=>{
-    const placed=newGrid.map((c,idx)=>c?{...c,cellIdx:idx,pos:`第${Math.floor(idx/6)+1}列${idx%6+1}欄`,spreadId:"free",spreadName:"自由盤"}:null).filter(Boolean);
+    const placed=newGrid.map((c,idx)=>c?{...c,cellIdx:idx,pos:`第${Math.floor(idx/7)+1}列${idx%7+1}欄`,spreadId:"free",spreadName:"自由盤"}:null).filter(Boolean);
     if(placed.length===0)return;
     const now=new Date();
     const pad=n=>String(n).padStart(2,"0");
@@ -51,7 +51,7 @@ export function SpreadPage({onGoShop}={}){
     playShuffle();
     setShuffleAnim(true);
     setTimeout(()=>setShuffleAnim(false),600);
-    deckPtr.current=0;setDeck(shuffle(DECK));setDrawn([]);setGrid(Array(36).fill(null));
+    deckPtr.current=0;setDeck(shuffle(DECK));setDrawn([]);setGrid(Array(49).fill(null));
   },[]);
 
   const deckPtr=useRef(saved&&typeof saved.deckPtr==="number"?saved.deckPtr:0);
@@ -226,7 +226,7 @@ export function SpreadPage({onGoShop}={}){
     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
       <div>
         <div style={{fontFamily:"'Cinzel Decorative',serif",fontSize:21.38,color:C.gold,letterSpacing:3}}>{mode==="free"?"牌陣展開":(curSpread?curSpread.name:"")}</div>
-        <div style={{fontSize:10.69,color:C.goldDim,letterSpacing:3}}>{mode==="free"?"6×6 SPREAD GRID":(curSpread?curSpread.en.toUpperCase():"")}</div>
+        <div style={{fontSize:10.69,color:C.goldDim,letterSpacing:3}}>{mode==="free"?"7×7 SPREAD GRID":(curSpread?curSpread.en.toUpperCase():"")}</div>
       </div>
       <button onClick={mode==="free"?doShuffle:resetPreset} style={{
         display:"flex",alignItems:"center",gap:6,padding:"8px 16px",borderRadius:50,cursor:"pointer",
@@ -322,9 +322,9 @@ export function SpreadPage({onGoShop}={}){
       </div>
     </div>
 
-    {/* 6×6 Grid */}
+    {/* 7×7 Grid */}
     <div ref={gridRef} style={{
-      display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:4,
+      display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:4,
       background:C.gridBg,
       border:`1px solid ${C.gridBorder}`,
       borderRadius:14,padding:8,
