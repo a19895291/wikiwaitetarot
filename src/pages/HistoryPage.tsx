@@ -124,7 +124,17 @@ export function HistoryPage(){
         const [d,s]=await Promise.all([db.listDailyRecords(),db.listSpreadRecords()]);
         if(cancelled)return;
         if(d&&d.length)setDailyRecords(d.map(r=>({dateKey:r.date,ts:r.created_at?fmtTs(r.created_at):"",cards:Array.isArray(r.cards)?r.cards:[]})));
-        if(s&&s.length)setSpreadRecords(s.map(r=>({id:r.id,dateKey:r.date,ts:r.created_at?fmtTs(r.created_at):"",cards:Array.isArray(r.cards)?r.cards:[]})));
+        if(s&&s.length){
+          // 雲端是「一天一筆」；本機則同日每個牌陣各一筆。改為本機優先、雲端只補本機沒有的日子（跨裝置才補）
+          const cloud=s.map(r=>({id:r.id,dateKey:r.date,ts:r.created_at?fmtTs(r.created_at):"",spreadId:r.spread_id,spreadName:r.spread_name,cards:Array.isArray(r.cards)?r.cards:[]}));
+          setSpreadRecords(prev=>{
+            const realLocal=(prev||[]).filter(r=>r.id!=="sp1"&&r.id!=="sp2"); // 去掉示範資料
+            const localDays=new Set(realLocal.map(r=>r.dateKey));
+            const cloudOnly=cloud.filter(r=>!localDays.has(r.dateKey));
+            const merged=[...realLocal,...cloudOnly];
+            return merged.length?merged.sort((a,b)=>String(b.dateKey||"").localeCompare(String(a.dateKey||""))):cloud;
+          });
+        }
       }catch(e){/* 未登入或失敗就用本機 */}
     })();
     return ()=>{cancelled=true;};

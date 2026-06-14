@@ -44,7 +44,7 @@ export function SpreadPage({onGoShop}={}){
       if(todayIdx>=0)existing[todayIdx]=rec;else existing.unshift(rec);
       localStorage.setItem("spread_records",JSON.stringify(existing.slice(0,30)));
     }catch{}
-    db.saveSpread(dateKey, placed).catch(()=>{});
+    db.saveSpread(dateKey, placed, {spreadId:"free",spreadName:"自由盤"}).catch(()=>{});
   },[]);
 
   const doShuffle=useCallback(()=>{
@@ -120,7 +120,7 @@ export function SpreadPage({onGoShop}={}){
       if(idx>=0)existing[idx]=rec;else existing.unshift(rec);
       localStorage.setItem("spread_records",JSON.stringify(existing.slice(0,30)));
     }catch{}
-    db.saveSpread(dateKey, placed).catch(()=>{});
+    db.saveSpread(dateKey, placed, {spreadId:sp.id,spreadName:sp.name}).catch(()=>{});
   };
 
   const makeGhost=(card,x,y)=>{
