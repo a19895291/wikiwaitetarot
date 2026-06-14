@@ -91,13 +91,13 @@ export function HistoryPage(){
     }catch{}
     // demo
     return [
-      {id:"sp1",dateKey:"2026-05-23",ts:"2026-05-23 21:30",cards:[
+      {id:"sp1",dateKey:"2026-05-23",ts:"2026-05-23 21:30",spreadName:"自由盤",cards:[
         {...DECK.find(c=>c.id===6),reversed:false,cellIdx:4},
         {...DECK.find(c=>c.id===7),reversed:true,cellIdx:10},
         {...DECK.find(c=>c.id===14),reversed:false,cellIdx:16},
         {...DECK.find(c=>c.id===21),reversed:false,cellIdx:22},
       ]},
-      {id:"sp2",dateKey:"2026-05-19",ts:"2026-05-19 15:10",cards:[
+      {id:"sp2",dateKey:"2026-05-19",ts:"2026-05-19 15:10",spreadName:"自由盤",cards:[
         {...DECK.find(c=>c.id===1),reversed:false,cellIdx:2},
         {...DECK.find(c=>c.id===8),reversed:true,cellIdx:9},
         {...DECK.find(c=>c.id===15),reversed:false,cellIdx:20},
@@ -234,6 +234,10 @@ function SpreadHistCard({rec,onLongPress}){
   const {dateKey,ts}=rec;
   const cards=Array.isArray(rec.cards)?rec.cards:[];
   const nonNull=cards.filter(Boolean);
+  // 牌陣名稱：本機紀錄帶 spreadName；雲端紀錄則從卡片內嵌欄位還原；都沒有則泛稱
+  const sName=rec.spreadName||(nonNull[0]&&nonNull[0].spreadName)||"牌陣";
+  // 牌位：優先用 pos；自由盤舊資料用 cellIdx 還原成「第X列Y欄」
+  const posOf=card=>card.pos||(typeof card.cellIdx==="number"?`第${Math.floor(card.cellIdx/6)+1}列${card.cellIdx%6+1}欄`:null);
   return <div style={{
     background:C.bgPanel,border:"1px solid rgba(124,58,237,.2)",
     borderRadius:16,padding:14,marginBottom:12,backdropFilter:"blur(8px)",
@@ -244,19 +248,22 @@ function SpreadHistCard({rec,onLongPress}){
         {ts&&ts!==dateKey&&<div style={{fontSize:9.5,color:C.textFaint,marginTop:1}}>{ts}</div>}
       </div>
       <div style={{display:"flex",alignItems:"center",gap:6}}>
-        <div style={{fontSize:9.5,color:"rgba(180,140,255,.7)",background:C.purpleGlow.replace(",.4)",",.12)"),padding:"2px 9px",borderRadius:50,fontFamily:"'Cinzel',serif",letterSpacing:.5,border:"1px solid rgba(124,58,237,.25)"}}>牌陣</div>
+        <div style={{fontSize:9.5,color:"rgba(180,140,255,.85)",background:C.purpleGlow.replace(",.4)",",.12)"),padding:"2px 9px",borderRadius:50,fontFamily:"'Cinzel',serif",letterSpacing:.5,border:"1px solid rgba(124,58,237,.25)",whiteSpace:"nowrap"}}>{sName}</div>
         <div style={{fontSize:10.69,color:C.textFaint}}>{nonNull.length} 張</div>
       </div>
     </div>
-    <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-      {nonNull.map((card,j)=>(
-        <CardChip
-          key={j}
-          cardName={card.name}
-          reversed={card.reversed}
-          onLongPress={()=>onLongPress(card,card.reversed)}
-        />
-      ))}
+    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+      {nonNull.map((card,j)=>{
+        const pos=posOf(card);
+        return <div key={j} style={{display:"flex",flexDirection:"column",alignItems:"flex-start",gap:3}}>
+          {pos&&<div style={{fontSize:8.5,color:C.textFaint,letterSpacing:.3,maxWidth:88,lineHeight:1.2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{pos}</div>}
+          <CardChip
+            cardName={card.name}
+            reversed={card.reversed}
+            onLongPress={()=>onLongPress(card,card.reversed)}
+          />
+        </div>;
+      })}
     </div>
     <div style={{fontSize:9.5,color:C.textFaint,marginTop:8,letterSpacing:.5}}>長按牌名查看牌義 ✦</div>
   </div>;

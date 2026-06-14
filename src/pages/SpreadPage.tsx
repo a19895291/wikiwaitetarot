@@ -30,7 +30,7 @@ export function SpreadPage({onGoShop}={}){
   const gridRef=useRef();
 
   const saveSpreadRecord=useCallback((newGrid)=>{
-    const placed=newGrid.filter(Boolean);
+    const placed=newGrid.map((c,idx)=>c?{...c,cellIdx:idx,pos:`第${Math.floor(idx/6)+1}列${idx%6+1}欄`,spreadId:"free",spreadName:"自由盤"}:null).filter(Boolean);
     if(placed.length===0)return;
     const now=new Date();
     const pad=n=>String(n).padStart(2,"0");
@@ -39,7 +39,7 @@ export function SpreadPage({onGoShop}={}){
     try{
       const existing=JSON.parse(localStorage.getItem("spread_records")||"[]");
       const todayIdx=existing.findIndex(r=>r.dateKey===dateKey);
-      const rec={id:dateKey,dateKey,ts,cards:placed};
+      const rec={id:dateKey,dateKey,ts,spreadId:"free",spreadName:"自由盤",cards:placed};
       if(todayIdx>=0)existing[todayIdx]=rec;else existing.unshift(rec);
       localStorage.setItem("spread_records",JSON.stringify(existing.slice(0,30)));
     }catch{}
@@ -95,13 +95,30 @@ export function SpreadPage({onGoShop}={}){
     if(i<0||pPtr.current>=pDeck.current.length)return;
     playDraw(); playFlip();
     const card=pDeck.current[pPtr.current]; pPtr.current+=1;
-    setPCards(prev=>{ const np=[...prev]; np[i]=card; savePreset(mode,np,pDeck.current,pPtr.current); return np; });
+    setPCards(prev=>{ const np=[...prev]; np[i]=card; savePreset(mode,np,pDeck.current,pPtr.current); savePresetRecord(curSpread,np); return np; });
   };
   const resetPreset=()=>{
     if(!curSpread)return; playShuffle();
     const d=shuffle(DECK); pDeck.current=d; pPtr.current=0;
     const cards=Array(curSpread.positions.length).fill(null);
     setPCards(cards); savePreset(mode,cards,d,0);
+  };
+  // 預設牌陣寫入歷程（每抽一張更新當日該紀錄；帶牌陣名 + 每張牌的牌位）
+  const savePresetRecord=(sp,arr)=>{
+    if(!sp)return;
+    const placed=arr.map((c,i)=>c?{...c,pos:(sp.positions[i]&&sp.positions[i].name)||`位置${i+1}`,spreadId:sp.id,spreadName:sp.name}:null).filter(Boolean);
+    if(placed.length===0)return;
+    const now=new Date(); const pad=n=>String(n).padStart(2,"0");
+    const dateKey=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+    const ts=`${dateKey} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    try{
+      const existing=JSON.parse(localStorage.getItem("spread_records")||"[]");
+      const idx=existing.findIndex(r=>r.dateKey===dateKey);
+      const rec={id:dateKey,dateKey,ts,spreadId:sp.id,spreadName:sp.name,cards:placed};
+      if(idx>=0)existing[idx]=rec;else existing.unshift(rec);
+      localStorage.setItem("spread_records",JSON.stringify(existing.slice(0,30)));
+    }catch{}
+    db.saveSpread(dateKey, placed).catch(()=>{});
   };
 
   const makeGhost=(card,x,y)=>{
