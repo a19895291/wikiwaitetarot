@@ -71,12 +71,15 @@ export async function listSpreadRecords(): Promise<any[]> {
   return data || [];
 }
 
-export async function saveSpread(date: string, cards: any): Promise<any | null> {
+export async function saveSpread(date: string, cards: any, meta: any = {}): Promise<any | null> {
   const id = await uid();
   if (!id) return null;
   const { data, error } = await supabase
     .from("spread_records")
-    .upsert({ user_id: id, date, cards }, { onConflict: "user_id,date" })
+    .upsert(
+      { user_id: id, date, cards, spread_id: meta.spreadId || "free", spread_name: meta.spreadName ?? null },
+      { onConflict: "user_id,date,spread_id" }
+    )
     .select().maybeSingle();
   if (error) throw error;
   return data;
