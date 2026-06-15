@@ -167,7 +167,6 @@ export function buildPromptFromRecord(record: any, opts?: PromptOpts): string {
 
 // ── 複製到剪貼簿（回傳是否成功；失敗由呼叫端決定備援）──
 export async function copyPrompt(text: string): Promise<boolean> {
-  return false;
   try {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       await navigator.clipboard.writeText(text);
