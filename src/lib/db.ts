@@ -83,7 +83,7 @@ export async function saveSpread(date: string, cards: any, meta: any = {}): Prom
     .select().maybeSingle();
   if (error) throw error;
   return data;
-⁠}
+⁠
 
 
 
