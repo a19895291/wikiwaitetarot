@@ -10,11 +10,21 @@ import { meaningUp, meaningRev, kwUp, kwRev, hasOverride, setOverride, clearOver
 import { isSoundOn, setSoundOn, playFlip } from "../utils/sfx";
 import * as db from "../lib/db";
 import { isMember } from "../utils/membership";
+import { AI_TARGETS, TONE_OPTIONS, LENGTH_OPTIONS, DEFAULT_TEMPLATE, buildReadingPrompt } from "../utils/prompt";
 
 export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,userEmail,onLogout,onGoShop,uiScale=1}){
   const [notif,setNotif]=useState(()=>{try{return typeof Notification!=="undefined"&&Notification.permission==="granted"&&load("notif_enabled",true)!==false;}catch{return false;}});
   const [sound,setSound]=useState(isSoundOn());
   const [showMeaning,setShowMeaning]=useState(isMeaningShown());
+  const [aiHelper,setAiHelper]=useState(()=>load("ai_helper","chatgpt"));
+  const [aiUrl,setAiUrl]=useState(()=>load("ai_helper_url",""));
+  const [pTone,setPTone]=useState(()=>load("prompt_tone","warm"));
+  const [pLen,setPLen]=useState(()=>load("prompt_length","medium"));
+  const [pExtra,setPExtra]=useState(()=>load("prompt_extra",""));
+  const [pFull,setPFull]=useState(()=>load("prompt_full_meaning",false));
+  const [advOpen,setAdvOpen]=useState(false);
+  const [pTpl,setPTpl]=useState(()=>load("prompt_template","")||DEFAULT_TEMPLATE);
+  const tplRef=useRef(null);
   const [about,setAbout]=useState(false);
   const [acctOpen,setAcctOpen]=useState(false);
   const [nick,setNick]=useState(()=>load("profile_nick",""));
@@ -308,6 +318,70 @@ export function SettingsPage({themeId,switchTheme,cardBackId,switchCardBack,user
         <Toggle v={val} onT={onT}/>
       </div>)}
         </div>
+
+        {(()=>{
+          const aiPill=(a)=>({padding:"6px 12px",borderRadius:50,cursor:"pointer",fontSize:12,fontFamily:"'Cinzel',serif",border:`1px solid ${a?C.accentDim:C.gridBorder}`,background:a?`linear-gradient(135deg,${C.blue},${C.blue}cc)`:"transparent",color:a?C.gold:C.textDim,whiteSpace:"nowrap"});
+          const lbl={fontSize:12.5,color:C.textDim,margin:"14px 0 6px"};
+          const inputCss={width:"100%",boxSizing:"border-box",padding:"10px 12px",borderRadius:10,background:C.bg,border:`1px solid ${C.gridBorder}`,color:C.text,fontSize:13,outline:"none",fontFamily:"'Noto Sans TC',sans-serif"};
+          const insertTok=(tk)=>{
+            const el=tplRef.current;
+            const s=el?el.selectionStart:pTpl.length, e=el?el.selectionEnd:pTpl.length;
+            const nv=pTpl.slice(0,s)+tk+pTpl.slice(e);
+            setPTpl(nv); save("prompt_template",nv);
+            setTimeout(()=>{try{el.focus();el.selectionStart=el.selectionEnd=s+tk.length;}catch(_){}},0);
+          };
+          const preview=buildReadingPrompt({kind:"spread",spreadName:"三牌陣",question:"這段關係會如何發展？",items:[{posName:"過去",card:{...DECK[0],reversed:false}},{posName:"現在",card:{...DECK[1],reversed:true}},{posName:"未來",card:{...DECK[2],reversed:false}}]},{template:pTpl,tone:pTone,length:pLen,extra:pExtra,includeFullMeaning:pFull});
+          return <div style={{marginTop:14,background:C.bgPanel,border:`1px solid ${C.gridBorder}`,borderRadius:16,padding:16,backdropFilter:"blur(10px)"}}>
+            <div style={{fontSize:15.44,color:C.text}}>解牌 AI 助手</div>
+            <div style={{fontSize:11.88,color:C.textFaint,marginTop:2}}>「複製給 AI 解牌」與牌靈會用這裡的設定產生提示詞</div>
+
+            <div style={lbl}>慣用 AI</div>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {["chatgpt","claude","gemini","custom"].map(k=>(
+                <button key={k} onClick={()=>{setAiHelper(k);save("ai_helper",k);}} style={aiPill(aiHelper===k)}>{k==="custom"?"自訂網址":AI_TARGETS[k].label}</button>
+              ))}
+            </div>
+            {aiHelper==="custom"&&<input value={aiUrl} onChange={e=>{setAiUrl(e.target.value);save("ai_helper_url",e.target.value);}} placeholder="https://你的 AI 網址" style={{...inputCss,marginTop:8}}/>}
+
+            <div style={lbl}>語氣</div>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {TONE_OPTIONS.map(o=><button key={o.key} onClick={()=>{setPTone(o.key);save("prompt_tone",o.key);}} style={aiPill(pTone===o.key)}>{o.label}</button>)}
+            </div>
+
+            <div style={lbl}>篇幅</div>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {LENGTH_OPTIONS.map(o=><button key={o.key} onClick={()=>{setPLen(o.key);save("prompt_length",o.key);}} style={aiPill(pLen===o.key)}>{o.label}</button>)}
+            </div>
+
+            <div style={lbl}>額外要求（選填）</div>
+            <textarea value={pExtra} onChange={e=>{setPExtra(e.target.value);save("prompt_extra",e.target.value);}} placeholder="例如：請特別著重在工作面向" rows={2} style={{...inputCss,resize:"vertical"}}/>
+
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:14}}>
+              <div style={{flex:1,paddingRight:10}}>
+                <div style={{fontSize:14,color:C.text}}>附上完整預設牌義</div>
+                <div style={{fontSize:11,color:C.textFaint,marginTop:2}}>讓 AI 參考每張牌詳細牌義（提示詞會變長）</div>
+              </div>
+              <Toggle v={pFull} onT={()=>setPFull(v=>{const nv=!v;save("prompt_full_meaning",nv);return nv;})}/>
+            </div>
+
+            <div onClick={()=>setAdvOpen(o=>!o)} style={{marginTop:14,display:"flex",justifyContent:"space-between",alignItems:"center",cursor:"pointer",color:C.textDim,fontSize:13}}>
+              <span>進階：自訂提示詞模板</span><span>{advOpen?"▲":"▼"}</span>
+            </div>
+            {advOpen&&<div style={{marginTop:10}}>
+              <div style={{fontSize:11,color:C.textFaint,lineHeight:1.6,marginBottom:8}}>點擊插入變數；其中 {"{牌組}"} 一定會自動帶入。</div>
+              <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+                {["{牌陣}","{問題}","{牌組}","{語氣}","{長度}","{額外}"].map(tk=><button key={tk} onClick={()=>insertTok(tk)} style={{...aiPill(false),fontFamily:"monospace",fontSize:11.5}}>{tk}</button>)}
+              </div>
+              <textarea ref={tplRef} value={pTpl} onChange={e=>{setPTpl(e.target.value);save("prompt_template",e.target.value);}} rows={8} style={{...inputCss,fontSize:12.5,lineHeight:1.6,resize:"vertical"}}/>
+              <div style={{display:"flex",justifyContent:"flex-end",marginTop:6}}>
+                <button onClick={()=>{setPTpl(DEFAULT_TEMPLATE);save("prompt_template","");}} style={{...aiPill(false),fontSize:11.5}}>↺ 還原預設</button>
+              </div>
+              <div style={{fontSize:11,color:C.textFaint,margin:"10px 0 6px"}}>即時預覽（範例：三牌陣）</div>
+              <pre style={{whiteSpace:"pre-wrap",wordBreak:"break-word",fontSize:11.5,lineHeight:1.6,color:C.textDim,background:C.bg,border:`1px solid ${C.gridBorder}`,borderRadius:10,padding:12,maxHeight:240,overflowY:"auto",fontFamily:"'Noto Sans TC',sans-serif",margin:0}}>{preview}</pre>
+            </div>}
+          </div>;
+        })()}
+
       </div>
     </div>, document.body)}
 
