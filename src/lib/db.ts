@@ -81,11 +81,8 @@ export async function saveSpread(date: string, cards: any, meta: any = {}): Prom
       { onConflict: "user_id,date,spread_id" }
     )
     .select().maybeSingle();
-  if (error) { alert("[saveSpread 失敗] " + (error.code || "?") + " — " + (error.message || "")); throw error; }
+  if (error) throw error;
   return data;
-}
-
-
 
 
 
