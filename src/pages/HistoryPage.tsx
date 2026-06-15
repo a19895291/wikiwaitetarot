@@ -226,7 +226,10 @@ function DailyHistCard({rec,onLongPress}){
         <div style={{fontFamily:"'Cinzel',serif",fontSize:12.47,color:C.gold,letterSpacing:1}}>{dateKey}</div>
         {ts&&ts!==dateKey&&<div style={{fontSize:9.5,color:C.textFaint,marginTop:1}}>{ts}</div>}
       </div>
-      <div style={{fontSize:9.5,color:C.textDim,background:"rgba(26,58,110,.28)",padding:"2px 9px",borderRadius:50,fontFamily:"'Cinzel',serif",letterSpacing:.5}}>每日占卜</div>
+      <div style={{display:"flex",alignItems:"center",gap:6}}>
+        <CopyAiButton reading={recordToReading(rec)} compact/>
+        <div style={{fontSize:9.5,color:C.textDim,background:"rgba(26,58,110,.28)",padding:"2px 9px",borderRadius:50,fontFamily:"'Cinzel',serif",letterSpacing:.5}}>每日占卜</div>
+      </div>
     </div>
     <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
       {cards.map((card,j)=>(
@@ -238,7 +241,6 @@ function DailyHistCard({rec,onLongPress}){
         />
       ))}
     </div>
-    <div style={{marginTop:10}}><CopyAiButton reading={recordToReading(rec)} withOpen={false}/></div>
     <div style={{fontSize:9.5,color:C.textFaint,marginTop:8,letterSpacing:.5}}>長按牌名查看牌義 ✦</div>
   </div>;
 }
@@ -261,6 +263,7 @@ function SpreadHistCard({rec,onLongPress}){
         {ts&&ts!==dateKey&&<div style={{fontSize:9.5,color:C.textFaint,marginTop:1}}>{ts}</div>}
       </div>
       <div style={{display:"flex",alignItems:"center",gap:6}}>
+        <CopyAiButton reading={recordToReading(rec)} compact/>
         <div style={{fontSize:9.5,color:"rgba(180,140,255,.85)",background:C.purpleGlow.replace(",.4)",",.12)"),padding:"2px 9px",borderRadius:50,fontFamily:"'Cinzel',serif",letterSpacing:.5,border:"1px solid rgba(124,58,237,.25)",whiteSpace:"nowrap"}}>{sName}</div>
         <div style={{fontSize:10.69,color:C.textFaint}}>{nonNull.length} 張</div>
       </div>
@@ -279,7 +282,6 @@ function SpreadHistCard({rec,onLongPress}){
         </div>;
       })}
     </div>
-    <div style={{marginTop:10}}><CopyAiButton reading={recordToReading(rec)} withOpen={false}/></div>
     <div style={{fontSize:9.5,color:C.textFaint,marginTop:8,letterSpacing:.5}}>長按牌名查看牌義 ✦</div>
   </div>;
 }
