@@ -6,6 +6,8 @@ import { C } from "../data/themes";
 import { DECK } from "../data/deck";
 import { CardModal } from "../components/shared/CardModal";
 import * as db from "../lib/db";
+import { CopyAiButton } from "../components/shared/CopyAiButton";
+import { recordToReading } from "../utils/prompt";
 
 const DEMO_ONLINE_RECORDS=[
   {id:"demo1",date:"2026-05-25",time:"19:00",diviner:"月影師 Luna",divinerAvatar:"🌙",item:"感情專項",duration:"32分鐘",fee:300,rating:5,cat:"感情"},
@@ -126,7 +128,7 @@ export function HistoryPage(){
         if(d&&d.length)setDailyRecords(d.map(r=>({dateKey:r.date,ts:r.created_at?fmtTs(r.created_at):"",cards:Array.isArray(r.cards)?r.cards:[]})));
         if(s&&s.length){
           // 雲端是「一天一筆」；本機則同日每個牌陣各一筆。改為本機優先、雲端只補本機沒有的日子（跨裝置才補）
-          const cloud=s.map(r=>({id:r.id,dateKey:r.date,ts:r.created_at?fmtTs(r.created_at):"",spreadId:r.spread_id,spreadName:r.spread_name,cards:Array.isArray(r.cards)?r.cards:[]}));
+          const cloud=s.map(r=>({id:r.id,dateKey:r.date,ts:r.created_at?fmtTs(r.created_at):"",spreadId:r.spread_id,spreadName:r.spread_name,question:r.question,cards:Array.isArray(r.cards)?r.cards:[]}));
           setSpreadRecords(prev=>{
             const realLocal=(prev||[]).filter(r=>r.id!=="sp1"&&r.id!=="sp2"); // 去掉示範資料
             const localDays=new Set(realLocal.map(r=>r.dateKey));
@@ -236,6 +238,7 @@ function DailyHistCard({rec,onLongPress}){
         />
       ))}
     </div>
+    <div style={{marginTop:10}}><CopyAiButton reading={recordToReading(rec)} withOpen={false}/></div>
     <div style={{fontSize:9.5,color:C.textFaint,marginTop:8,letterSpacing:.5}}>長按牌名查看牌義 ✦</div>
   </div>;
 }
@@ -262,6 +265,7 @@ function SpreadHistCard({rec,onLongPress}){
         <div style={{fontSize:10.69,color:C.textFaint}}>{nonNull.length} 張</div>
       </div>
     </div>
+    {rec.question&&<div style={{fontSize:11,color:C.textDim,marginBottom:8,lineHeight:1.5}}>你問的是：{rec.question}</div>}
     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
       {nonNull.map((card,j)=>{
         const pos=posOf(card);
@@ -275,6 +279,7 @@ function SpreadHistCard({rec,onLongPress}){
         </div>;
       })}
     </div>
+    <div style={{marginTop:10}}><CopyAiButton reading={recordToReading(rec)} withOpen={false}/></div>
     <div style={{fontSize:9.5,color:C.textFaint,marginTop:8,letterSpacing:.5}}>長按牌名查看牌義 ✦</div>
   </div>;
 }

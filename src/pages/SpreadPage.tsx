@@ -11,6 +11,7 @@ import { playFlip, playDraw, playShuffle } from "../utils/sfx";
 import * as db from "../lib/db";
 import { SPREADS } from "../data/spreads";
 import { load, save } from "../utils/storage";
+import { CopyAiButton } from "../components/shared/CopyAiButton";
 
 
 export function SpreadPage({onGoShop}={}){
@@ -53,7 +54,7 @@ export function SpreadPage({onGoShop}={}){
     playShuffle();
     setShuffleAnim(true);
     setTimeout(()=>setShuffleAnim(false),600);
-    deckPtr.current=0;setDeck(shuffle(DECK));setDrawn([]);setGrid(Array(49).fill(null));
+    deckPtr.current=0;setDeck(shuffle(DECK));setDrawn([]);setGrid(Array(49).fill(null));setQuestion("");
   },[]);
 
   const deckPtr=useRef(saved&&typeof saved.deckPtr==="number"?saved.deckPtr:0);
@@ -104,7 +105,7 @@ export function SpreadPage({onGoShop}={}){
     if(!curSpread)return; playShuffle();
     const d=shuffle(DECK); pDeck.current=d; pPtr.current=0;
     const cards=Array(curSpread.positions.length).fill(null);
-    setPCards(cards); savePreset(mode,cards,d,0);
+    setPCards(cards); savePreset(mode,cards,d,0); setQuestion("");
   };
   // 預設牌陣寫入歷程（每抽一張更新當日該紀錄；帶牌陣名 + 每張牌的牌位）
   const savePresetRecord=(sp,arr)=>{
@@ -224,6 +225,17 @@ export function SpreadPage({onGoShop}={}){
 
   const isImageCB=!!CB.isImage;
   const g=CB.glow;
+  const curReading=(()=>{
+    if(mode==="free"){
+      const items=grid.map((c,idx)=>c?{posName:`第${Math.floor(idx/7)+1}列${idx%7+1}欄`,card:c}:null).filter(Boolean);
+      return {kind:"spread",spreadName:"自由盤",question,items};
+    }
+    if(curSpread){
+      const items=pCards.map((c,i)=>c?{posName:(curSpread.positions[i]&&curSpread.positions[i].name)||`位置${i+1}`,posHint:(curSpread.positions[i]&&curSpread.positions[i].hint)||"",card:c}:null).filter(Boolean);
+      return {kind:"spread",spreadName:curSpread.name,question,items};
+    }
+    return {kind:"spread",items:[]};
+  })();
   return <div style={{padding:"16px 16px 100px",animation:"fadeInUp .5s ease"}}>
     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
       <div>
@@ -248,15 +260,13 @@ export function SpreadPage({onGoShop}={}){
       ))}
     </div>
 
-    {/* 問題輸入（兩種模式共用，選填）*/}
+    {/* 問題輸入（自由盤/牌陣共用；洗牌後清空） */}
     <div style={{marginBottom:14}}>
-      <input
-        value={question}
-        onChange={e=>setQuestion(e.target.value)}
-        placeholder="你想問什麼？（選填）"
-        maxLength={120}
-        style={{width:"100%",boxSizing:"border-box",padding:"11px 14px",borderRadius:12,background:C.bgPanel,border:`1px solid ${C.gridBorder}`,color:C.text,fontSize:13,fontFamily:"'Noto Sans TC',sans-serif",outline:"none"}}
-      />
+      <input value={question} onChange={e=>setQuestion(e.target.value)} maxLength={120} placeholder="你想問什麼？（選填）" style={{
+        width:"100%",boxSizing:"border-box",padding:"11px 14px",borderRadius:12,
+        background:C.bgPanel,border:`1px solid ${C.gridBorder}`,color:C.text,
+        fontSize:13,fontFamily:"'Noto Sans TC',sans-serif",outline:"none"
+      }}/>
     </div>
 
     {mode==="free"&&<>
@@ -401,6 +411,7 @@ export function SpreadPage({onGoShop}={}){
       </div>
     </>}
 
+    {curReading.items.length>0&&<div style={{marginBottom:14}}><CopyAiButton reading={curReading}/></div>}
     <CardModal card={zoom} onClose={()=>setZoom(null)}/>
   </div>;
 }
