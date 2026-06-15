@@ -25,6 +25,8 @@ export function SpreadPage({onGoShop}={}){
   const [zoom,setZoom]=useState(null);
   const [shuffleAnim,setShuffleAnim]=useState(false);
   const [liftedCard,setLiftedCard]=useState(null);
+  const [question,setQuestion]=useState(()=>(saved&&typeof saved.question==="string")?saved.question:"");
+  const questionRef=useRef(question); questionRef.current=question;
   const dragging=useRef(null);
   const hovered=useRef(-1);
   const gridRef=useRef();
@@ -40,11 +42,11 @@ export function SpreadPage({onGoShop}={}){
       const existing=JSON.parse(localStorage.getItem("spread_records")||"[]");
       const rid=dateKey+"_free";
       const todayIdx=existing.findIndex(r=>r.id===rid);
-      const rec={id:rid,dateKey,ts,spreadId:"free",spreadName:"自由盤",cards:placed};
+      const rec={id:rid,dateKey,ts,spreadId:"free",spreadName:"自由盤",question:questionRef.current,cards:placed};
       if(todayIdx>=0)existing[todayIdx]=rec;else existing.unshift(rec);
       localStorage.setItem("spread_records",JSON.stringify(existing.slice(0,30)));
     }catch{}
-    db.saveSpread(dateKey, placed, {spreadId:"free",spreadName:"自由盤"}).catch(()=>{});
+    db.saveSpread(dateKey, placed, {spreadId:"free",spreadName:"自由盤",question:questionRef.current}).catch(()=>{});
   },[]);
 
   const doShuffle=useCallback(()=>{
@@ -57,8 +59,8 @@ export function SpreadPage({onGoShop}={}){
   const deckPtr=useRef(saved&&typeof saved.deckPtr==="number"?saved.deckPtr:0);
   // 工作狀態持久化：離開頁面再回來時還原已抽/已擺放的牌
   useEffect(()=>{
-    try{localStorage.setItem("spread_working",JSON.stringify({grid,drawn,deck,deckPtr:deckPtr.current}));}catch{}
-  },[grid,drawn,deck]);
+    try{localStorage.setItem("spread_working",JSON.stringify({grid,drawn,deck,deckPtr:deckPtr.current,question}));}catch{}
+  },[grid,drawn,deck,question]);
   const drawCard=useCallback(()=>{
     if(deckPtr.current>=deck.length)return;
     playDraw();
@@ -116,11 +118,11 @@ export function SpreadPage({onGoShop}={}){
       const existing=JSON.parse(localStorage.getItem("spread_records")||"[]");
       const rid=dateKey+"_"+sp.id;
       const idx=existing.findIndex(r=>r.id===rid);
-      const rec={id:rid,dateKey,ts,spreadId:sp.id,spreadName:sp.name,cards:placed};
+      const rec={id:rid,dateKey,ts,spreadId:sp.id,spreadName:sp.name,question:questionRef.current,cards:placed};
       if(idx>=0)existing[idx]=rec;else existing.unshift(rec);
       localStorage.setItem("spread_records",JSON.stringify(existing.slice(0,30)));
     }catch{}
-    db.saveSpread(dateKey, placed, {spreadId:sp.id,spreadName:sp.name}).catch(()=>{});
+    db.saveSpread(dateKey, placed, {spreadId:sp.id,spreadName:sp.name,question:questionRef.current}).catch(()=>{});
   };
 
   const makeGhost=(card,x,y)=>{
@@ -244,6 +246,17 @@ export function SpreadPage({onGoShop}={}){
       {[{id:"free",name:"自由盤",owned:true},...SPREADS.map(sp=>({id:sp.id,name:sp.name,owned:ownsSpread(sp.id)}))].map(t=>(
         <button key={t.id} onClick={()=>selectTab(t.id)} style={{flex:"0 0 auto",padding:"7px 13px",borderRadius:50,border:`1px solid ${mode===t.id?C.accentDim:C.gridBorder}`,cursor:"pointer",background:mode===t.id?`linear-gradient(135deg,${C.blue},${C.blue}cc)`:"transparent",fontFamily:"'Cinzel',serif",fontSize:11.5,color:mode===t.id?C.gold:(t.owned?C.textDim:C.textFaint),whiteSpace:"nowrap",letterSpacing:.5}}>{t.owned?"":"🔒 "}{t.name}</button>
       ))}
+    </div>
+
+    {/* 問題輸入（兩種模式共用，選填）*/}
+    <div style={{marginBottom:14}}>
+      <input
+        value={question}
+        onChange={e=>setQuestion(e.target.value)}
+        placeholder="你想問什麼？（選填）"
+        maxLength={120}
+        style={{width:"100%",boxSizing:"border-box",padding:"11px 14px",borderRadius:12,background:C.bgPanel,border:`1px solid ${C.gridBorder}`,color:C.text,fontSize:13,fontFamily:"'Noto Sans TC',sans-serif",outline:"none"}}
+      />
     </div>
 
     {mode==="free"&&<>
