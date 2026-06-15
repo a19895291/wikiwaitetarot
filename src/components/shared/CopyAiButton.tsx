@@ -52,7 +52,7 @@ export function CopyAiButton({ reading, withOpen = true, compact = false, style 
         color: done ? "#fff" : C.gold,
         transition: "background .2s",
         ...style,
-      }}>{done ? "已複製 ✦" : "✦ 給 AI 解牌"}</button>
+      }}>{done ? "已複製" : "複製"}</button>
       {modal}
     </>;
   }
