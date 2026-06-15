@@ -1,6 +1,7 @@
 // 模組 12 — SpiritPet（右下角浮動寵物，支援拖曳與點擊表情動畫）
 import { useState, useEffect, useRef } from "react";
 import { C } from "../../data/themes";
+import { getAiUrl } from "../../utils/prompt";
 
 export function SpiritPet({spirit,activeSpiritEmoji,uiScale=1}){
   const [action,setAction]=useState("float");
@@ -9,6 +10,8 @@ export function SpiritPet({spirit,activeSpiritEmoji,uiScale=1}){
   const isDragging=useRef(false);
   const dragOffset=useRef({x:0,y:0});
   const petRef=useRef();
+  const downRef=useRef({x:0,y:0});
+  const movedRef=useRef(false);
 
   useEffect(()=>{
     const id=setInterval(()=>{
@@ -27,6 +30,8 @@ export function SpiritPet({spirit,activeSpiritEmoji,uiScale=1}){
   const onPointerDown=e=>{
     e.preventDefault();
     isDragging.current=true;
+    movedRef.current=false;
+    downRef.current={x:e.clientX,y:e.clientY};
     const r=petRef.current.getBoundingClientRect();
     dragOffset.current={x:e.clientX-r.left,y:e.clientY-r.top};
     petRef.current.setPointerCapture(e.pointerId);
@@ -34,9 +39,14 @@ export function SpiritPet({spirit,activeSpiritEmoji,uiScale=1}){
   };
   const onPointerMove=e=>{
     if(!isDragging.current)return;
+    if(Math.abs(e.clientX-downRef.current.x)>6||Math.abs(e.clientY-downRef.current.y)>6)movedRef.current=true;
     setPos({x:Math.min(Math.max(0,e.clientX-dragOffset.current.x),window.innerWidth-55),y:Math.min(Math.max(0,e.clientY-dragOffset.current.y),window.innerHeight-65)});
   };
-  const onPointerUp=()=>{isDragging.current=false;setAction("float");};
+  const onPointerUp=()=>{
+    const wasTap=!movedRef.current;
+    isDragging.current=false;setAction("float");
+    if(wasTap){try{window.open(getAiUrl(),"_blank");}catch(_){}}
+  };
 
   const animStyles = {
     float:{animation:"floatPet 3.5s ease-in-out infinite"},
