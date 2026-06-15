@@ -77,7 +77,7 @@ export async function saveSpread(date: string, cards: any, meta: any = {}): Prom
   const { data, error } = await supabase
     .from("spread_records")
     .upsert(
-      { user_id: id, date, cards, spread_id: meta.spreadId || "free", spread_name: meta.spreadName ?? null },
+      { user_id: id, date, cards, spread_id: meta.spreadId || "free", spread_name: meta.spreadName ?? null, question: meta.question ?? null },
       { onConflict: "user_id,date,spread_id" }
     )
     .select().maybeSingle();
