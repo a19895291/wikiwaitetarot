@@ -7,6 +7,8 @@ import { kwUp, kwRev, meaningUp, meaningRev, isMeaningShown } from "../utils/ove
 import { GoldPayBtn } from "../components/shared/GoldPayBtn";
 import { cbBgStyle } from "../components/shared/cbBgStyle";
 import { playFlip, playDraw, playChime } from "../utils/sfx";
+import { CopyAiButton } from "../components/shared/CopyAiButton";
+
 
 export function DailyPage({drawnCards,onDraw,remaining,onReset}){
   const [started,setStarted]=useState(drawnCards.length>0);
@@ -417,7 +419,9 @@ export function DailyPage({drawnCards,onDraw,remaining,onReset}){
             ✦ 再抽一張（剩餘 {remaining}）
           </GoldPayBtn>
         </div>}
+        <div style={{marginTop:12}}><CopyAiButton reading={{kind:"daily",items:drawnCards.map(card=>({card}))}}/></div>
       </div>}
     </div>}
   </div>;
 }
+
